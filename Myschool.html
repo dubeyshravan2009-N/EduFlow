@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduFlow | Pro School Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --primary: #4f46e5; --bg: #f8fafc; }
+        body { background-color: var(--bg); font-family: 'Inter', sans-serif; }
+        .screen { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <header class="max-w-5xl mx-auto mb-6 flex justify-between items-center">
+        <h1 class="text-2xl font-extrabold text-indigo-600">EduFlow <span class="font-normal text-slate-400 text-sm">v1.0 MVP</span></h1>
+        <div id="nav-controls" class="hidden">
+            <button onclick="showScreen('screen-login')" class="text-sm font-medium text-red-600 hover:underline">Logout / Exit</button>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto">
+        
+        <section id="screen-login" class="screen active">
+            <div class="grid md:grid-cols-2 gap-8 mt-12">
+                <div class="glass-card p-8">
+                    <h2 class="text-xl font-bold mb-4">Parent Access</h2>
+                    <p class="text-sm text-slate-500 mb-6">Enter ID (e.g. 10A-1) and password.</p>
+                    <input id="p-id" type="text" placeholder="Roll ID (10A-1)" class="w-full border p-3 rounded mb-3">
+                    <input id="p-pass" type="password" placeholder="Password" class="w-full border p-3 rounded mb-4">
+                    <button onclick="handleParentLogin()" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-bold">Login as Parent</button>
+                </div>
+                <div class="glass-card p-8 bg-slate-50">
+                    <h2 class="text-xl font-bold mb-4">Staff Portal</h2>
+                    <p class="text-sm text-slate-500 mb-6">Authorized personnel only.</p>
+                    <button onclick="showScreen('screen-teacher-class')" class="w-full bg-slate-800 text-white p-3 rounded-lg font-bold">Open Teacher Dashboard</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-teacher-class" class="screen">
+            <div class="glass-card p-8 max-w-md mx-auto">
+                <h2 class="text-xl font-bold mb-4">Select Class</h2>
+                <select id="class-selector" class="w-full border p-3 rounded mb-4">
+                    </select>
+                <button onclick="openClass()" class="w-full bg-indigo-600 text-white p-3 rounded-lg">Open Class Record</button>
+            </div>
+        </section>
+
+        <section id="screen-teacher-list" class="screen">
+            <button onclick="showScreen('screen-teacher-class')" class="mb-4 text-indigo-600">← Back to Class Select</button>
+            <div class="glass-card overflow-hidden">
+                <div class="p-4 bg-slate-100 border-b font-bold flex justify-between">
+                    <span id="display-class-name">Class List</span>
+                    <span>45 Students Total</span>
+                </div>
+                <div class="max-h-[500px] overflow-y-auto" id="student-list-container">
+                    </div>
+            </div>
+        </section>
+
+        <section id="screen-manage-student" class="screen">
+            <button onclick="showScreen('screen-teacher-list')" class="mb-4 text-indigo-600">← Back to List</button>
+            <div class="glass-card p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="manage-title" class="text-2xl font-bold">Manage Student</h2>
+                    <select id="exam-selector" class="border p-2 rounded">
+                        <option>PT-1</option><option>PT-2</option><option>PT-3</option>
+                        <option>Half-Yearly</option><option>Annual</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="marks-input-grid">
+                    </div>
+                <div class="mt-6">
+                    <label class="block text-sm font-bold mb-2">Teacher Remarks</label>
+                    <textarea id="remarks-input" class="w-full border p-3 rounded h-24"></textarea>
+                </div>
+                <button onclick="saveStudentData()" class="mt-6 bg-green-600 text-white px-8 py-3 rounded-lg font-bold">Save Academic Record</button>
+            </div>
+        </section>
+
+        <section id="screen-parent-dash" class="screen">
+            <div class="glass-card p-8 mb-6 bg-indigo-600 text-white">
+                <h2 id="parent-student-name" class="text-3xl font-bold">Student Name</h2>
+                <p id="parent-student-id">Roll: 10A-1</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 glass-card p-6">
+                    <div class="flex justify-between mb-4">
+                        <h3 class="font-bold">Academic Performance</h3>
+                        <select id="parent-exam-view" onchange="renderParentMarks()" class="border p-1 rounded text-sm text-black">
+                            <option>PT-1</option><option>PT-2</option><option>PT-3</option>
+                            <option>Half-Yearly</option><option>Annual</option>
+                        </select>
+                    </div>
+                    <div id="parent-marks-display" class="space-y-2">
+                        </div>
+                </div>
+
+                <div class="glass-card p-6">
+                    <h3 class="font-bold mb-4">Class Leaderboard</h3>
+                    <div id="leaderboard-display" class="space-y-3">
+                        </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- 1. CORE DATA LOGIC ---
+        const SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
+        const CLASSES = [];
+        for(let i=1; i<=10; i++) { CLASSES.push(`${i}A`, `${i}B`); }
+
+        // State
+        let currentClass = "";
+        let currentStudentId = "";
+        let db = JSON.parse(localStorage.getItem('edu_db')) || { students: {}, records: {} };
+
+        function saveDB() { localStorage.setItem('edu_db', JSON.stringify(db)); }
+
+        // --- 2. NAVIGATION ---
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('nav-controls').classList.toggle('hidden', id === 'screen-login');
+        }
+
+        // --- 3. TEACHER LOGIC ---
+        function populateClassDropdown() {
+            const el = document.getElementById('class-selector');
+            el.innerHTML = CLASSES.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+
+        function openClass() {
+            currentClass = document.getElementById('class-selector').value;
+            document.getElementById('display-class-name').innerText = `Class: ${currentClass}`;
+            renderStudentList();
+            showScreen('screen-teacher-list');
+        }
+
+        function renderStudentList() {
+            const container = document.getElementById('student-list-container');
+            let html = '';
+            for(let i=1; i<=45; i++) {
+                const sId = `${currentClass}-${i}`;
+                const name = db.students[sId]?.name || "";
+                html += `
+                    <div class="flex items-center gap-4 p-4 border-b hover:bg-slate-50">
+                        <span class="w-10 font-mono text-slate-400">${i}</span>
+                        <input type="text" placeholder="Enter Name" value="${name}" 
+                               onchange="updateStudentName('${sId}', this.value)"
+                               class="flex-1 border-b border-transparent focus:border-indigo-400 outline-none p-1 bg-transparent">
+                        <button onclick="manageStudent('${sId}')" class="text-indigo-600 font-bold text-sm bg-indigo-50 px-3 py-1 rounded">Manage</button>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function updateStudentName(id, val) {
+            if(!db.students[id]) db.students[id] = { name: "", password: "123" };
+            db.students[id].name = val;
+            saveDB();
+        }
+
+        function manageStudent(id) {
+            currentStudentId = id;
+            const name = db.students[id]?.name || `Student ${id}`;
+            document.getElementById('manage-title').innerText = `${name} (${id})`;
+            
+            // Render Input Grid
+            const grid = document.getElementById('marks-input-grid');
+            grid.innerHTML = SUBJECTS.map(sub => `
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase">${sub}</label>
+                    <input type="number" id="inp-${sub}" class="w-full border p-2 rounded" placeholder="0-100">
+                </div>
+            `).join('');
+            
+            loadExistingMarks();
+            showScreen('screen-manage-student');
+        }
+
+        function loadExistingMarks() {
+            const exam = document.getElementById('exam-selector').value;
+            const recKey = `${currentStudentId}_${exam}`;
+            const record = db.records[recKey] || {};
+            
+            SUBJECTS.forEach(sub => {
+                document.getElementById(`inp-${sub}`).value = record[sub] || "";
+            });
+            document.getElementById('remarks-input').value = record.remarks || "";
+        }
+
+        function saveStudentData() {
+            const exam = document.getElementById('exam-selector').value;
+            const recKey = `${currentStudentId}_${exam}`;
+            
+            let record = { total: 0 };
+            SUBJECTS.forEach(sub => {
+                const val = parseInt(document.getElementById(`inp-${sub}`).value) || 0;
+                record[sub] = val;
+                record.total += val;
+            });
+            record.remarks = document.getElementById('remarks-input').value;
+            record.studentId = currentStudentId;
+            record.class = currentStudentId.split('-')[0];
+            record.exam = exam;
+
+            db.records[recKey] = record;
+            saveDB();
+            alert("Data saved successfully!");
+        }
+
+        // --- 4. PARENT LOGIC ---
+        function handleParentLogin() {
+            const id = document.getElementById('p-id').value.toUpperCase();
+            const pass = document.getElementById('p-pass').value;
+            
+            if(db.students[id] && db.students[id].password === pass) {
+                currentStudentId = id;
+                document.getElementById('parent-student-name').innerText = db.students[id].name;
+                document.getElementById('parent-student-id').innerText = `Roll ID: ${id}`;
+                renderParentMarks();
+                showScreen('screen-parent-dash');
+            } else {
+                alert("Login Failed. Ensure teacher has added student name and use password '123'");
+            }
+        }
+
+        function renderParentMarks() {
+            const exam = document.getElementById('parent-exam-view').value;
+            const recKey = `${currentStudentId}_${exam}`;
+            const record = db.records[recKey];
+            const display = document.getElementById('parent-marks-display');
+
+            if(!record) {
+                display.innerHTML = `<p class="text-slate-400 italic">No data released for ${exam} yet.</p>`;
+            } else {
+                let html = SUBJECTS.map(sub => `
+                    <div class="flex justify-between border-b py-2">
+                        <span>${sub}</span>
+                        <span class="font-bold">${record[sub]}</span>
+                    </div>
+                `).join('');
+                html += `<div class="mt-4 p-3 bg-slate-100 rounded text-sm italic">" ${record.remarks} "</div>`;
+                display.innerHTML = html;
+            }
+            renderLeaderboard(exam);
+        }
+
+        function renderLeaderboard(exam) {
+            const pClass = currentStudentId.split('-')[0];
+            const list = Object.values(db.records)
+                .filter(r => r.class === pClass && r.exam === exam)
+                .sort((a, b) => b.total - a.total)
+                .slice(0, 10);
+
+            const display = document.getElementById('leaderboard-display');
+            if(list.length === 0) {
+                display.innerHTML = `<p class="text-xs text-slate-400">Not enough data.</p>`;
+                return;
+            }
+
+            display.innerHTML = list.map((r, i) => `
+                <div class="flex items-center justify-between p-2 rounded ${r.studentId === currentStudentId ? 'bg-indigo-100 border border-indigo-200' : ''}">
+                    <span class="text-sm font-bold">#${i+1} ${db.students[r.studentId]?.name || r.studentId}</span>
+                    <span class="text-xs font-mono">${r.total}</span>
+                </div>
+            `).join('');
+        }
+
+        // --- INIT ---
+        populateClassDropdown();
+        document.getElementById('exam-selector').addEventListener('change', loadExistingMarks);
+    </script>
+</body>
+</html>
