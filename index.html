@@ -3,24 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduFlow Pro | Full School Access</title>
+    <title>EduFlow Pro | 1K Capacity Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .screen { display: none; }
         .active { display: block; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid #e2e8f0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-900">
 
-    <nav class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+    <nav class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <h1 class="text-2xl font-black text-indigo-600 tracking-tighter">EDUFLOW <span class="text-slate-400 font-light">PRO</span></h1>
         <div class="flex items-center gap-4">
             <span id="role-badge" class="hidden px-3 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-600 uppercase"></span>
-            <button id="logout-btn" onclick="location.reload()" class="hidden text-red-500 text-sm font-bold hover:underline">Logout</button>
+            <button id="logout-btn" onclick="location.reload()" class="hidden text-red-500 text-sm font-bold border border-red-200 px-3 py-1 rounded-lg hover:bg-red-50">Logout</button>
         </div>
     </nav>
 
@@ -30,12 +29,9 @@
             <div class="max-w-md mx-auto mt-10 bg-white p-8 rounded-3xl shadow-2xl border border-slate-200">
                 <h2 class="text-2xl font-bold mb-6 text-center">System Portal</h2>
                 <div class="space-y-4">
-                    <input id="auth-id" type="text" placeholder="Roll ID (e.g. 1A-1) or 'teacher'" class="w-full border rounded-xl p-3 outline-none focus:ring-2 ring-indigo-400 transition-all">
-                    <input id="auth-pass" type="password" placeholder="Password" class="w-full border rounded-xl p-3 outline-none focus:ring-2 ring-indigo-400 transition-all">
-                    <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">Sign In</button>
-                </div>
-                <div class="mt-6 pt-4 border-t text-center text-[10px] text-slate-400">
-                    Staff: teacher / teacher123 | Admin: admin / admin789
+                    <input id="auth-id" type="text" placeholder="User ID (e.g., 10A-1 or teacher)" class="w-full border rounded-xl p-3 outline-none focus:ring-2 ring-indigo-400">
+                    <input id="auth-pass" type="password" placeholder="Password" class="w-full border rounded-xl p-3 outline-none focus:ring-2 ring-indigo-400">
+                    <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 transition-all">Sign In</button>
                 </div>
             </div>
         </section>
@@ -43,26 +39,35 @@
         <section id="screen-teacher" class="screen">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-1 space-y-4">
-                    <div class="bg-white p-6 rounded-2xl border shadow-sm">
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
                         <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Select Class</label>
-                        <select id="class-select" onchange="renderTeacherList()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold mb-4">
-                            </select>
-                        <p class="text-[10px] text-slate-400 italic">Editing is auto-saved to local database.</p>
+                        <select id="class-select" onchange="renderTeacherList()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold mb-4 focus:ring-2 ring-indigo-300"></select>
+                        
+                        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Quick Search</label>
+                        <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Name or Roll..." class="w-full border p-2 rounded-lg text-sm mb-2">
+                    </div>
+
+                    <div class="bg-slate-800 p-5 rounded-2xl text-white shadow-lg">
+                        <h4 class="text-xs font-bold uppercase mb-3 opacity-70">Database Management</h4>
+                        <button onclick="downloadBackup()" class="w-full bg-white/10 hover:bg-white/20 text-xs py-2 rounded-lg mb-2 transition-all">📥 Download Backup (JSON)</button>
+                        <input type="file" id="importFile" class="hidden" onchange="importBackup(event)">
+                        <button onclick="document.getElementById('importFile').click()" class="w-full bg-white/10 hover:bg-white/20 text-xs py-2 rounded-lg transition-all">📤 Restore Backup</button>
                     </div>
                 </div>
+
                 <div class="lg:col-span-3 bg-white rounded-2xl border shadow-sm overflow-hidden">
                     <div class="p-4 bg-slate-50 border-b flex justify-between items-center">
-                        <h3 class="font-bold text-slate-700">Student Enrollment (Roll 1-45)</h3>
-                        <span id="class-label" class="bg-indigo-600 text-white text-xs px-2 py-1 rounded"></span>
+                        <h3 class="font-bold text-slate-700">Records: <span id="class-label" class="text-indigo-600"></span></h3>
+                        <span class="text-[10px] text-slate-400 font-mono">Capacity: 45 Students/Class</span>
                     </div>
-                    <div class="max-h-[600px] overflow-y-auto">
+                    <div class="max-h-[65vh] overflow-y-auto">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-50 sticky top-0">
+                            <thead class="bg-slate-50 sticky top-0 shadow-sm z-10">
                                 <tr>
                                     <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Roll</th>
-                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Name</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Student Name</th>
                                     <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Password</th>
-                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">Marks</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="teacher-table-body"></tbody>
@@ -75,18 +80,16 @@
         <section id="screen-marks" class="screen">
             <div class="max-w-2xl mx-auto bg-white p-8 rounded-3xl border shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 id="m-student-name" class="text-2xl font-bold">Manage Result</h2>
-                    <select id="m-exam" onchange="loadExistingMarks()" class="border rounded-lg p-2 font-bold bg-slate-50">
-                        <option>PT-1</option><option>PT-2</option><option>PT-3</option>
-                        <option>Half-Yearly</option><option>Annual</option>
+                    <h2 id="m-student-name" class="text-2xl font-bold">Academic Entry</h2>
+                    <select id="m-exam" onchange="loadExistingMarks()" class="border rounded-lg p-2 font-bold bg-slate-50 outline-none">
+                        <option>PT-1</option><option>PT-2</option><option>PT-3</option><option>Half-Yearly</option><option>Annual</option>
                     </select>
                 </div>
-                <div id="m-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    </div>
-                <textarea id="m-remarks" placeholder="Teacher Remarks..." class="w-full border rounded-xl p-4 h-24 mb-4"></textarea>
+                <div id="m-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
+                <textarea id="m-remarks" placeholder="Add specific feedback for the parent..." class="w-full border rounded-xl p-4 h-24 mb-4 focus:ring-2 ring-indigo-200 outline-none"></textarea>
                 <div class="flex gap-2">
-                    <button onclick="saveMarks()" class="flex-1 bg-green-600 text-white p-4 rounded-xl font-bold">Save Record</button>
-                    <button onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold">Back</button>
+                    <button onclick="saveMarks()" class="flex-1 bg-green-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-green-100">Save Record</button>
+                    <button onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold">Cancel</button>
                 </div>
             </div>
         </section>
@@ -94,18 +97,15 @@
         <section id="screen-parent" class="screen">
             <div class="bg-indigo-600 p-8 rounded-3xl text-white shadow-xl mb-6">
                 <h2 id="p-name" class="text-3xl font-bold">Student Name</h2>
-                <p id="p-id" class="opacity-70 font-mono"></p>
+                <p id="p-id" class="opacity-70 font-mono text-sm"></p>
             </div>
-            <div class="bg-white p-6 rounded-3xl border shadow-sm">
+            <div class="bg-white p-8 rounded-3xl border shadow-sm">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold">Academic Performance</h3>
-                    <select id="p-exam-view" onchange="renderParentReport()" class="border p-2 rounded-lg font-bold">
-                        <option>PT-1</option><option>PT-2</option><option>PT-3</option>
-                        <option>Half-Yearly</option><option>Annual</option>
-                    </select>
+                    <h3 class="font-bold uppercase tracking-widest text-xs text-slate-400">Subject-wise Result</h3>
+                    <select id="p-exam-view" onchange="renderParentReport()" class="border p-2 rounded-lg font-bold bg-slate-50"></select>
                 </div>
-                <div id="p-marks-display" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                <div id="p-remarks-display" class="mt-6 p-4 bg-indigo-50 border-l-4 border-indigo-500 text-sm italic"></div>
+                <div id="p-marks-display" class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4"></div>
+                <div id="p-remarks-display" class="mt-8 p-5 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-xl text-sm italic text-indigo-900"></div>
             </div>
         </section>
 
@@ -113,39 +113,27 @@
 
     <script>
         const SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
-        let db = JSON.parse(localStorage.getItem('eduflow_v3')) || { students: {}, records: {} };
+        const EXAMS = ["PT-1", "PT-2", "PT-3", "Half-Yearly", "Annual"];
+        let db = JSON.parse(localStorage.getItem('eduflow_1k')) || { students: {}, records: {} };
         let currentUser = null;
         let activeId = null;
 
-        function sync() { localStorage.setItem('eduflow_v3', JSON.stringify(db)); }
+        const sync = () => localStorage.setItem('eduflow_1k', JSON.stringify(db));
 
-        // --- AUTH & SECURITY ---
         function handleLogin() {
             const id = document.getElementById('auth-id').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
-
-            if (id === 'admin' && pass === 'admin789') {
-                currentUser = { role: 'admin' };
-                initTeacherView();
-            } else if (id === 'teacher' && pass === 'teacher123') {
-                currentUser = { role: 'teacher' };
-                initTeacherView();
-            } else if (db.students[id] && db.students[id].pass === pass) {
-                currentUser = { role: 'parent', id: id };
-                activeId = id;
-                initParentView();
-            } else {
-                alert("🔐 Access Denied!");
-            }
+            if (id === 'teacher' && pass === 'teacher123') { currentUser = {role:'teacher'}; initTeacherView(); }
+            else if (id === 'admin' && pass === 'admin789') { currentUser = {role:'admin'}; initTeacherView(); }
+            else if (db.students[id] && db.students[id].pass === pass) {
+                currentUser = {role:'parent', id:id}; activeId = id; initParentView();
+            } else { alert("❌ Unauthorized"); }
         }
 
-        // --- TEACHER LOGIC ---
         function initTeacherView() {
             const select = document.getElementById('class-select');
             let options = '';
-            for(let i=1; i<=10; i++) {
-                ['A', 'B'].forEach(sec => { options += `<option value="${i}${sec}">${i}${sec}</option>`; });
-            }
+            for(let i=1; i<=10; i++) ['A', 'B'].forEach(s => options += `<option value="${i}${s}">Class ${i}${s}</option>`);
             select.innerHTML = options;
             renderTeacherList();
             showScreen('screen-teacher');
@@ -153,106 +141,106 @@
 
         function renderTeacherList() {
             const cls = document.getElementById('class-select').value;
-            document.getElementById('class-label').innerText = `Class ${cls}`;
+            const search = document.getElementById('search-input').value.toLowerCase();
+            document.getElementById('class-label').innerText = cls;
             const tbody = document.getElementById('teacher-table-body');
             tbody.innerHTML = '';
 
             for(let i=1; i<=45; i++) {
                 const sId = `${cls}-${i}`;
                 const data = db.students[sId] || { name: "", pass: "123" };
+                if(search && !data.name.toLowerCase().includes(search) && !sId.toLowerCase().includes(search)) continue;
+                
                 tbody.innerHTML += `
-                    <tr class="border-b hover:bg-slate-50 transition-colors">
+                    <tr class="border-b hover:bg-indigo-50/30 transition-colors">
                         <td class="p-4 font-mono text-slate-400 text-xs">${i}</td>
                         <td class="p-4">
-                            <input type="text" value="${data.name}" onchange="updateProfile('${sId}', 'name', this.value)" 
-                            placeholder="Student Name" class="w-full bg-transparent outline-none border-b border-transparent focus:border-indigo-400">
+                            <input type="text" value="${data.name}" onchange="updateProfile('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none border-b border-transparent focus:border-indigo-400 p-1">
                         </td>
-                        <td class="p-4 text-xs">
-                            <input type="text" value="${data.pass}" onchange="updateProfile('${sId}', 'pass', this.value)" 
-                            class="w-20 bg-slate-100 rounded px-1 text-slate-500">
+                        <td class="p-4">
+                            <input type="text" value="${data.pass}" onchange="updateProfile('${sId}','pass',this.value)" class="w-24 bg-slate-100 rounded px-2 py-1 text-xs font-mono">
                         </td>
                         <td class="p-4 text-center">
-                            <button onclick="openMarksModal('${sId}')" class="text-indigo-600 font-bold text-xs hover:underline">Manage</button>
+                            <button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all">Manage</button>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             }
         }
 
         function updateProfile(id, field, val) {
             if(!db.students[id]) db.students[id] = { name: "", pass: "123" };
-            db.students[id][field] = val;
-            sync();
+            db.students[id][field] = val; sync();
         }
 
         function openMarksModal(id) {
-            if(!db.students[id] || !db.students[id].name) return alert("Please enter student name first.");
-            activeId = id;
-            document.getElementById('m-student-name').innerText = db.students[id].name;
+            if(!db.students[id] || !db.students[id].name) return alert("Add student name first!");
+            activeId = id; document.getElementById('m-student-name').innerText = db.students[id].name;
             const grid = document.getElementById('m-grid');
-            grid.innerHTML = SUBJECTS.map(sub => `
-                <div class="bg-slate-50 p-3 rounded-xl">
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase">${sub}</label>
-                    <input type="number" id="inp-${sub}" class="w-full bg-transparent font-bold outline-none">
-                </div>
-            `).join('');
-            loadExistingMarks();
-            showScreen('screen-marks');
+            grid.innerHTML = SUBJECTS.map(s => `<div class="bg-slate-50 p-3 rounded-xl"><label class="text-[9px] font-black uppercase text-slate-400">${s}</label><input type="number" id="inp-${s}" class="w-full bg-transparent font-bold text-lg outline-none"></div>`).join('');
+            loadExistingMarks(); showScreen('screen-marks');
         }
 
         function loadExistingMarks() {
             const exam = document.getElementById('m-exam').value;
             const rec = db.records[`${activeId}_${exam}`] || { marks: {}, remarks: "" };
-            SUBJECTS.forEach(sub => document.getElementById(`inp-${sub}`).value = rec.marks[sub] || "");
+            SUBJECTS.forEach(s => document.getElementById(`inp-${s}`).value = rec.marks[s] || "");
             document.getElementById('m-remarks').value = rec.remarks || "";
         }
 
         function saveMarks() {
             const exam = document.getElementById('m-exam').value;
             const rec = { marks: {}, remarks: document.getElementById('m-remarks').value };
-            SUBJECTS.forEach(sub => rec.marks[sub] = document.getElementById(`inp-${sub}`).value);
-            db.records[`${activeId}_${exam}`] = rec;
-            sync();
-            alert("Record Saved!");
-            showScreen('screen-teacher');
+            SUBJECTS.forEach(s => rec.marks[s] = document.getElementById(`inp-${s}`).value);
+            db.records[`${activeId}_${exam}`] = rec; sync();
+            alert("Entry Saved Permanently."); showScreen('screen-teacher');
         }
 
-        // --- PARENT LOGIC ---
         function initParentView() {
             document.getElementById('p-name').innerText = db.students[activeId].name;
-            document.getElementById('p-id').innerText = `ID: ${activeId}`;
-            renderParentReport();
-            showScreen('screen-parent');
+            document.getElementById('p-id').innerText = `ROLL ID: ${activeId}`;
+            const sel = document.getElementById('p-exam-view');
+            sel.innerHTML = EXAMS.map(e => `<option>${e}</option>`).join('');
+            renderParentReport(); showScreen('screen-parent');
         }
 
         function renderParentReport() {
             const exam = document.getElementById('p-exam-view').value;
             const rec = db.records[`${activeId}_${exam}`];
-            const display = document.getElementById('p-marks-display');
-            const remDisplay = document.getElementById('p-remarks-display');
-
-            if(!rec) {
-                display.innerHTML = `<p class="col-span-2 text-slate-400 italic">No data released for ${exam}.</p>`;
-                remDisplay.innerText = "No remarks yet.";
-            } else {
-                display.innerHTML = SUBJECTS.map(sub => `
-                    <div class="flex justify-between border-b pb-2">
-                        <span class="text-slate-500 uppercase text-xs font-bold">${sub}</span>
-                        <span class="font-black text-indigo-600">${rec.marks[sub] || 0}</span>
-                    </div>
-                `).join('');
-                remDisplay.innerText = `"${rec.remarks || 'No remarks.'}"`;
+            const disp = document.getElementById('p-marks-display');
+            const rem = document.getElementById('p-remarks-display');
+            if(!rec) { disp.innerHTML = "<p class='text-slate-400'>No data yet.</p>"; rem.innerText = "-"; }
+            else {
+                disp.innerHTML = SUBJECTS.map(s => `<div class="flex justify-between border-b border-slate-100 py-2"><span class="text-xs font-bold text-slate-400 uppercase">${s}</span><span class="font-black text-indigo-600">${rec.marks[s] || 0}</span></div>`).join('');
+                rem.innerText = rec.remarks || "No specific remarks.";
             }
         }
 
-        // --- UI HELPERS ---
+        // BACKUP SYSTEM
+        function downloadBackup() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `eduflow_backup_${new Date().toLocaleDateString()}.json`);
+            dlAnchor.click();
+        }
+
+        function importBackup(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                db = JSON.parse(ev.target.result); sync();
+                alert("Database Restored Successfully!");
+                location.reload();
+            };
+            reader.readAsText(file);
+        }
+
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.getElementById('logout-btn').classList.remove('hidden');
+            document.getElementById('logout-btn').classList.toggle('hidden', id==='screen-login');
             const badge = document.getElementById('role-badge');
-            badge.innerText = currentUser.role;
-            badge.classList.remove('hidden');
+            badge.innerText = currentUser.role; badge.classList.remove('hidden');
         }
     </script>
 </body>
