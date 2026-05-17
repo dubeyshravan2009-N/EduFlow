@@ -1,16 +1,14 @@
-apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
-  authDomain: "eduflow-pro-f6d04.firebaseapp.com",
-  projectId: "eduflow-pro-f6d04",
-  storageBucket: "eduflow-pro-f6d04.firebasestorage.app",
-  messagingSenderId: "961305546473",
-  appId: "1:961305546473:web:71db6c4d8da6c4950a6a78"
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduFlow Pro | 1K Capacity Edition</title>
+    <title>EduFlow Pro | Cloud Sync Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <style>
         .screen { display: none; }
         .active { display: block; animation: fadeIn 0.4s ease-out; }
@@ -24,6 +22,7 @@ apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
     <nav class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <h1 class="text-2xl font-black text-indigo-600 tracking-tighter">EDUFLOW <span class="text-slate-400 font-light">PRO</span></h1>
         <div class="flex items-center gap-4">
+            <div id="cloud-status" class="text-[10px] bg-amber-100 text-amber-600 px-3 py-1 rounded-full font-bold uppercase">Connecting...</div>
             <span id="role-badge" class="hidden px-3 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-600 uppercase"></span>
             <button id="logout-btn" onclick="location.reload()" class="hidden text-red-500 text-sm font-bold border border-red-200 px-3 py-1 rounded-lg hover:bg-red-50">Logout</button>
         </div>
@@ -120,11 +119,58 @@ apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
     <script>
         const SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
         const EXAMS = ["PT-1", "PT-2", "PT-3", "Half-Yearly", "Annual"];
-        let db = JSON.parse(localStorage.getItem('eduflow_1k')) || { students: {}, records: {} };
+        
+        // Your real-time cloud tracking structure
+        let db = { students: {}, records: {} };
         let currentUser = null;
         let activeId = null;
 
-        const sync = () => localStorage.setItem('eduflow_1k', JSON.stringify(db));
+        // 2. Inserted your exact Firebase profile keys
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
+            authDomain: "eduflow-pro-f6d04.firebaseapp.com",
+            projectId: "eduflow-pro-f6d04",
+            storageBucket: "eduflow-pro-f6d04.firebasestorage.app",
+            messagingSenderId: "961305546473",
+            appId: "1:961305546473:web:71db6c4d8da6c4950a6a78"
+        };
+
+        // Initialize Firebase and Firestore Engine
+        firebase.initializeApp(firebaseConfig);
+        const cloudStorage = firebase.firestore();
+
+        // 3. THE MAGIC LINK: Continuous background cloud synchronization
+        cloudStorage.collection("school").doc("master").onSnapshot((doc) => {
+            if (doc.exists) {
+                db = doc.data();
+                
+                // Let the page headers know you are safely synced up to the cloud servers
+                const cloudPill = document.getElementById('cloud-status');
+                cloudPill.innerText = "☁️ Connected to Cloud";
+                cloudPill.className = "text-[10px] bg-green-100 text-green-600 px-3 py-1 rounded-full font-bold uppercase";
+                
+                // Re-render views automatically if active
+                if(currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin')) {
+                    renderTeacherList();
+                } else if(currentUser && currentUser.role === 'parent') {
+                    renderParentReport();
+                }
+            }
+        }, (error) => {
+            console.error("Firestore Synchronizer Failure:", error);
+            document.getElementById('cloud-status').innerText = "❌ Security Lockout";
+        });
+
+        // Save modification changes straight back up to global cloud document
+        async function syncToCloud() {
+            try {
+                await cloudStorage.collection("school").doc("master").set(db);
+                console.log("☁️ Successfully committed changes to database server.");
+            } catch (err) {
+                console.error("Sync Failure:", err);
+                alert("Cloud Sync Failure: Verify you completed Step 1 on your Rules window!");
+            }
+        }
 
         function handleLogin() {
             const id = document.getElementById('auth-id').value.trim();
@@ -133,7 +179,7 @@ apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
             else if (id === 'admin' && pass === 'admin789') { currentUser = {role:'admin'}; initTeacherView(); }
             else if (db.students[id] && db.students[id].pass === pass) {
                 currentUser = {role:'parent', id:id}; activeId = id; initParentView();
-            } else { alert("❌ Unauthorized"); }
+            } else { alert("❌ Unauthorized System Entry"); }
         }
 
         function initTeacherView() {
@@ -175,7 +221,8 @@ apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
 
         function updateProfile(id, field, val) {
             if(!db.students[id]) db.students[id] = { name: "", pass: "123" };
-            db.students[id][field] = val; sync();
+            db.students[id][field] = val; 
+            syncToCloud(); // Save instantly to server instead of old LocalStorage
         }
 
         function openMarksModal(id) {
@@ -197,8 +244,9 @@ apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
             const exam = document.getElementById('m-exam').value;
             const rec = { marks: {}, remarks: document.getElementById('m-remarks').value };
             SUBJECTS.forEach(s => rec.marks[s] = document.getElementById(`inp-${s}`).value);
-            db.records[`${activeId}_${exam}`] = rec; sync();
-            alert("Entry Saved Permanently."); showScreen('screen-teacher');
+            db.records[`${activeId}_${exam}`] = rec; 
+            syncToCloud(); // Push directly to Firebase
+            alert("Entry Saved Online."); showScreen('screen-teacher');
         }
 
         function initParentView() {
@@ -214,14 +262,14 @@ apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
             const rec = db.records[`${activeId}_${exam}`];
             const disp = document.getElementById('p-marks-display');
             const rem = document.getElementById('p-remarks-display');
-            if(!rec) { disp.innerHTML = "<p class='text-slate-400'>No data yet.</p>"; rem.innerText = "-"; }
+            if(!rec) { disp.innerHTML = "<p class='text-slate-400'>No results posted yet.</p>"; rem.innerText = "-"; }
             else {
                 disp.innerHTML = SUBJECTS.map(s => `<div class="flex justify-between border-b border-slate-100 py-2"><span class="text-xs font-bold text-slate-400 uppercase">${s}</span><span class="font-black text-indigo-600">${rec.marks[s] || 0}</span></div>`).join('');
-                rem.innerText = rec.remarks || "No specific remarks.";
+                rem.innerText = rec.remarks || "No specific remarks left by teacher.";
             }
         }
 
-        // BACKUP SYSTEM
+        // BACKUP COMPATIBILITY (Still allows offline backup downloads if desired)
         function downloadBackup() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
             const dlAnchor = document.createElement('a');
@@ -234,8 +282,9 @@ apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
             const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = (ev) => {
-                db = JSON.parse(ev.target.result); sync();
-                alert("Database Restored Successfully!");
+                db = JSON.parse(ev.target.result); 
+                syncToCloud();
+                alert("Database Restored Successfully to Cloud!");
                 location.reload();
             };
             reader.readAsText(file);
