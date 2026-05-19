@@ -139,27 +139,33 @@
         firebase.initializeApp(firebaseConfig);
         const cloudStorage = firebase.firestore();
 
-        // 3. THE MAGIC LINK: Continuous background cloud synchronization
-        cloudStorage.collection("school").doc("master").onSnapshot((doc) => {
-            if (doc.exists) {
-                db = doc.data();
-                
-                // Let the page headers know you are safely synced up to the cloud servers
-                const cloudPill = document.getElementById('cloud-status');
-                cloudPill.innerText = "☁️ Connected to Cloud";
-                cloudPill.className = "text-[10px] bg-green-100 text-green-600 px-3 py-1 rounded-full font-bold uppercase";
-                
-                // Re-render views automatically if active
-                if(currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin')) {
-                    renderTeacherList();
-                } else if(currentUser && currentUser.role === 'parent') {
-                    renderParentReport();
-                }
-            }
-        }, (error) => {
-            console.error("Firestore Synchronizer Failure:", error);
-            document.getElementById('cloud-status').innerText = "❌ Security Lockout";
-        });
+       // Look for your cloudStorage.collection("school").doc("master").onSnapshot block:
+cloudStorage.collection("school").doc("master").onSnapshot((doc) => {
+    if (doc.exists) {
+        db = doc.data();
+        
+        // SAFETY NET: If the document exists but is empty, initialize the objects
+        if (!db.students) db.students = {};
+        if (!db.records) db.records = {};
+
+        const cloudPill = document.getElementById('cloud-status');
+        cloudPill.innerText = "☁️ Connected to Cloud";
+        cloudPill.className = "text-[10px] bg-green-100 text-green-600 px-3 py-1 rounded-full font-bold uppercase";
+        
+        if(currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin')) {
+            renderTeacherList();
+        } else if(currentUser && currentUser.role === 'parent') {
+            renderParentReport();
+        }
+    } else {
+        // IF THE CLOUD DOCUMENT IS TOTALLY BLANK: Create a starting structure
+        db = { students: {}, records: {} };
+        cloudPill.innerText = "☁️ Cloud Ready (Empty)";
+    }
+}, (error) => {
+    console.error("Firestore Synchronizer Failure:", error);
+    document.getElementById('cloud-status').innerText = "❌ Security Lockout";
+});
 
         // Save modification changes straight back up to global cloud document
         async function syncToCloud() {
@@ -200,7 +206,7 @@
 
             for(let i=1; i<=45; i++) {
                 const sId = `${cls}-${i}`;
-                const data = db.students[sId] || { name: "", pass: "123" };
+                const data = (db && db.students && db.students[sId]) ? db.students[sId] : { name: "", pass: "123" };
                 if(search && !data.name.toLowerCase().includes(search) && !sId.toLowerCase().includes(search)) continue;
                 
                 tbody.innerHTML += `
