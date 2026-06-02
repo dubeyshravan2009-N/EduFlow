@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduFlow Pro | Full Suite Analytics</title>
+    <title>EduFlow Pro | Precision Analytics Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -78,15 +78,15 @@
                         <div class="flex items-start gap-2">
                             <span class="text-xs mt-0.5">⚡</span>
                             <div>
-                                <h5 class="text-[11px] font-bold text-indigo-400">Real-Time Synchronization</h5>
-                                <p class="text-[10px] text-slate-400">Instant cross-device database mirroring links phone and computer terminals effortlessly.</p>
+                                <h5 class="text-[11px] font-bold text-indigo-400">Date-Wise Master Attendance</h5>
+                                <p class="text-[10px] text-slate-400">Log institutional sessions by specific dates to compile whole-year student metrics.</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2">
-                            <span class="text-xs mt-0.5">👥</span>
+                            <span class="text-xs mt-0.5">📊</span>
                             <div>
-                                <h5 class="text-[11px] font-bold text-indigo-400">High-Capacity Scaling & Analytics</h5>
-                                <p class="text-[10px] text-slate-400">Architected effortlessly to maintain metrics, automatic attendance matrix, and analytics charts.</p>
+                                <h5 class="text-[11px] font-bold text-indigo-400">Integrated Exam-Wise Analytics</h5>
+                                <p class="text-[10px] text-slate-400">Tracks performance charts alongside classwork/homework indicators directly from marks panel.</p>
                             </div>
                         </div>
                     </div>
@@ -119,7 +119,12 @@
                         <select id="class-select" onchange="renderTeacherList()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold mb-4 focus:ring-2 ring-indigo-300"></select>
                         
                         <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Quick Search</label>
-                        <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Name or Roll..." class="w-full border p-2 rounded-lg text-sm mb-2">
+                        <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Name or Roll..." class="w-full border p-2 rounded-lg text-sm mb-4">
+                        
+                        <div class="border-t pt-3 mt-2">
+                            <label class="block text-xs font-bold text-indigo-600 mb-1.5 uppercase">📅 Attendance Ledger Date</label>
+                            <input id="attendance-date" type="date" onchange="renderTeacherList()" class="w-full border p-2 rounded-lg text-xs bg-indigo-50/50 font-bold outline-none focus:ring-2 ring-indigo-300">
+                        </div>
                     </div>
 
                     <div class="bg-slate-800 p-5 rounded-2xl text-white shadow-lg">
@@ -133,17 +138,16 @@
                 <div class="lg:col-span-3 bg-white rounded-2xl border shadow-sm overflow-hidden">
                     <div class="p-4 bg-slate-50 border-b flex justify-between items-center">
                         <h3 class="font-bold text-slate-700">Records: <span id="class-label" class="text-indigo-600"></span></h3>
-                        <span class="text-[10px] text-slate-400 font-mono">Live Session Grid</span>
+                        <span id="attendance-session-label" class="text-[10px] bg-indigo-100 text-indigo-700 font-mono px-2.5 py-1 rounded-full font-bold"></span>
                     </div>
                     <div class="max-h-[70vh] overflow-y-auto">
                         <table class="w-full text-left text-xs md:text-sm">
                             <thead class="bg-slate-50 sticky top-0 shadow-sm z-10">
                                 <tr>
-                                    <th class="p-3 text-[10px] font-bold text-slate-400 uppercase">Roll</th>
-                                    <th class="p-3 text-[10px] font-bold text-slate-400 uppercase">Student Name</th>
-                                    <th class="p-3 text-[10px] font-bold text-slate-400 uppercase text-center">Daily Attendance</th>
-                                    <th class="p-3 text-[10px] font-bold text-slate-400 uppercase text-center">Work Tracking</th>
-                                    <th class="p-3 text-[10px] font-bold text-slate-400 uppercase text-center">Action</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Roll</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Student Profile</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">Date Attendance Status</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">Academic Profiles</th>
                                 </tr>
                             </thead>
                             <tbody id="teacher-table-body"></tbody>
@@ -157,15 +161,37 @@
             <div class="bg-white p-8 rounded-3xl border shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
                     <h2 id="m-student-name" class="text-2xl font-bold">Academic Entry</h2>
-                    <select id="m-exam" onchange="loadExistingMarks()" class="border rounded-lg p-2 font-bold bg-slate-50 outline-none">
+                    <select id="m-exam" onchange="loadExistingMarks()" class="border rounded-lg p-2 font-bold bg-slate-50 outline-none text-sm">
                         <option>PT-1</option><option>PT-2</option><option>PT-3</option><option>Half-Yearly</option><option>Annual</option>
                     </select>
                 </div>
+                
                 <div id="m-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
-                <textarea id="m-remarks" placeholder="Add specific feedback for the parent..." class="w-full border rounded-xl p-4 h-24 mb-4 focus:ring-2 ring-indigo-200 outline-none"></textarea>
+                
+                <div class="bg-slate-50 border p-4 rounded-2xl mb-4 grid grid-cols-1 md:grid-cols-2 gap-4 shadow-sm">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Classwork Activity (Till this Exam)</label>
+                        <select id="m-cw-status" class="w-full border p-2 rounded-lg bg-white font-bold text-xs outline-none">
+                            <option>🟢 Active & Regular</option>
+                            <option>🟡 Incomplete Submission</option>
+                            <option>🔴 Highly Inactive</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Homework Activity (Till this Exam)</label>
+                        <select id="m-hw-status" class="w-full border p-2 rounded-lg bg-white font-bold text-xs outline-none">
+                            <option>🟢 On-Time & Excellent</option>
+                            <option>🟡 Irregular Submissions</option>
+                            <option>🔴 Neglected / Missing</option>
+                        </select>
+                    </div>
+                </div>
+
+                <textarea id="m-remarks" placeholder="Add specific evaluation comments for parents..." class="w-full border rounded-xl p-4 h-20 mb-4 focus:ring-2 ring-indigo-200 outline-none text-xs"></textarea>
+                
                 <div class="flex gap-2">
-                    <button onclick="saveMarks()" class="flex-1 bg-green-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-green-100">Save Record</button>
-                    <button onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold">Cancel</button>
+                    <button onclick="saveMarks()" class="flex-1 bg-green-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-green-100 text-sm">Save Complete Record</button>
+                    <button onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold text-sm">Cancel</button>
                 </div>
             </div>
         </section>
@@ -176,10 +202,10 @@
                     <h2 id="p-name" class="text-3xl font-bold">Student Name</h2>
                     <p id="p-id" class="opacity-70 font-mono text-xs mt-1"></p>
                 </div>
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center min-w-[120px]">
-                    <span class="text-[9px] uppercase tracking-wider block opacity-75 font-bold">Total Attendance</span>
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center min-w-[140px]">
+                    <span class="text-[9px] uppercase tracking-wider block opacity-75 font-bold">Session Attendance</span>
                     <h3 id="p-attn-percent" class="text-2xl font-black mt-0.5">100%</h3>
-                    <span id="p-attn-fraction" class="text-[10px] opacity-60 block font-mono">0/0 Days</span>
+                    <span id="p-attn-fraction" class="text-[10px] opacity-60 block font-mono">0/0 Days Conducted</span>
                 </div>
             </div>
 
@@ -187,14 +213,14 @@
                 <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex items-center gap-3">
                     <div class="text-2xl bg-emerald-500 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-md">🏆</div>
                     <div>
-                        <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">Strongest Academic Subject</span>
+                        <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">Strongest Subject</span>
                         <h4 id="p-strongest-subject" class="text-base font-black text-slate-800">—</h4>
                     </div>
                 </div>
                 <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-center gap-3">
                     <div class="text-2xl bg-amber-500 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-md">⚠️</div>
                     <div>
-                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">Subject Needing Focus</span>
+                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">Needs Attention</span>
                         <h4 id="p-weakest-subject" class="text-base font-black text-slate-800">—</h4>
                     </div>
                 </div>
@@ -212,15 +238,15 @@
                     </div>
 
                     <div class="bg-white p-6 rounded-2xl border shadow-sm">
-                        <h3 class="font-bold uppercase tracking-widest text-xs text-slate-400 mb-3">Daily Tasks & Assignment Tracking</h3>
+                        <h3 class="font-bold uppercase tracking-widest text-xs text-slate-400 mb-3">Academic Engagement Indicators (For Selected Exam Period)</h3>
                         <div class="grid grid-cols-2 gap-4 text-center">
                             <div class="bg-slate-50 p-3 rounded-xl border">
-                                <span class="text-[10px] uppercase font-bold text-slate-400">Classwork Matrix</span>
-                                <h4 id="p-cw-status" class="text-lg font-bold text-slate-700 mt-1">—</h4>
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block">Classwork Performance</span>
+                                <h4 id="p-cw-status" class="text-xs font-bold text-slate-700 mt-1.5">—</h4>
                             </div>
                             <div class="bg-slate-50 p-3 rounded-xl border">
-                                <span class="text-[10px] uppercase font-bold text-slate-400">Homework Matrix</span>
-                                <h4 id="p-hw-status" class="text-lg font-bold text-slate-700 mt-1">—</h4>
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block">Homework Submission</span>
+                                <h4 id="p-hw-status" class="text-xs font-bold text-slate-700 mt-1.5">—</h4>
                             </div>
                         </div>
                     </div>
@@ -229,7 +255,7 @@
                 <div class="lg:col-span-2 bg-white p-6 rounded-2xl border shadow-sm flex flex-col justify-between">
                     <div>
                         <h3 class="font-bold uppercase tracking-widest text-xs text-slate-400 mb-1">Performance Trend Analysis</h3>
-                        <p class="text-[10px] text-slate-400 mb-4">Visual progression map across all terms</p>
+                        <p class="text-[10px] text-slate-400 mb-4">Visual progression map across terms</p>
                     </div>
                     <div class="flex-1 flex items-center justify-center min-h-[220px]">
                         <canvas id="performanceChart"></canvas>
@@ -244,7 +270,8 @@
         const SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
         const EXAMS = ["PT-1", "PT-2", "PT-3", "Half-Yearly", "Annual"];
         
-        let db = { students: {}, records: {} };
+        // Initializing structural definitions safely
+        let db = { students: {}, records: {}, attendance: {} };
         let currentUser = null;
         let activeId = null;
         let dynamicChartInstance = null;
@@ -267,6 +294,7 @@
                 db = doc.data();
                 if (!db.students) db.students = {};
                 if (!db.records) db.records = {};
+                if (!db.attendance) db.attendance = {};
 
                 const cloudPill = document.getElementById('cloud-status');
                 cloudPill.innerText = "☁️ Connected to Cloud";
@@ -286,11 +314,17 @@
         async function syncToCloud() {
             try {
                 await cloudStorage.collection("school").doc("master").set(db);
-                console.log("☁️ Successfully committed changes to database server.");
+                console.log("☁️ Data successfully mirrored on cloud node.");
             } catch (err) {
                 console.error("Sync Failure:", err);
             }
         }
+
+        // Set default calendar date to today on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('attendance-date').value = today;
+        });
 
         function transitionToLogin() {
             showScreen('screen-login');
@@ -319,70 +353,61 @@
         function renderTeacherList() {
             const cls = document.getElementById('class-select').value;
             const search = document.getElementById('search-input').value.toLowerCase();
+            const selectedDate = document.getElementById('attendance-date').value;
+            
             document.getElementById('class-label').innerText = cls;
+            document.getElementById('attendance-session-label').innerText = `Date Log: ${selectedDate || 'Select Date'}`;
+            
             const tbody = document.getElementById('teacher-table-body');
             tbody.innerHTML = '';
 
+            // Safe lookup for date-specific tracking map
+            if(!db.attendance[cls]) db.attendance[cls] = {};
+            if(!db.attendance[cls][selectedDate]) db.attendance[cls][selectedDate] = {};
+
             for(let i=1; i<=45; i++) {
                 const sId = `${cls}-${i}`;
-                // Fallbacks to load fresh variables without destroying historical profiles
                 const data = (db && db.students && db.students[sId]) ? db.students[sId] : { name: "", pass: "123" };
-                if (!data.attended) data.attended = 0;
-                if (!data.held) data.held = 0;
-                if (!data.cw) data.cw = "🟢 Complete";
-                if (!data.hw) data.hw = "🟢 Complete";
-
                 if(search && !data.name.toLowerCase().includes(search) && !sId.toLowerCase().includes(search)) continue;
                 
+                // Track current state status for this exact target date
+                const dayStatus = db.attendance[cls][selectedDate][sId] || "Pending";
+                let statusBadgeColor = "bg-slate-100 text-slate-500";
+                if(dayStatus === "Present") statusBadgeColor = "bg-emerald-500 text-white font-bold";
+                if(dayStatus === "Absent") statusBadgeColor = "bg-rose-500 text-white font-bold";
+
                 tbody.innerHTML += `
                     <tr class="border-b hover:bg-indigo-50/30 transition-colors">
-                        <td class="p-3 font-mono text-slate-400 text-xs">${i}</td>
-                        <td class="p-3">
-                            <input type="text" value="${data.name}" onchange="updateProfileDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none border-b border-transparent focus:border-indigo-400 p-1 font-bold">
-                            <span class="text-[10px] text-slate-400 block font-mono mt-0.5">Password: ${data.pass}</span>
+                        <td class="p-4 font-mono text-slate-400 text-xs">${i}</td>
+                        <td class="p-4">
+                            <input type="text" value="${data.name}" onchange="updateProfileDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="bg-transparent outline-none border-b border-transparent focus:border-indigo-400 p-1 font-bold text-slate-800 text-sm">
+                            <span class="text-[10px] text-slate-400 block font-mono">ID: ${sId} | Pass: ${data.pass}</span>
                         </td>
-                        <td class="p-3 text-center">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <button onclick="triggerAttendance('${sId}', true)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-2 py-1 rounded text-[11px] font-bold">✔️ Present</button>
-                                <button onclick="triggerAttendance('${sId}', false)" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-2 py-1 rounded text-[11px] font-bold">❌ Absent</button>
-                            </div>
-                            <span class="text-[10px] text-slate-400 font-mono block mt-1">Score: ${data.attended}/${data.held} Days</span>
-                        </td>
-                        <td class="p-3 text-center">
-                            <div class="flex flex-col gap-1 items-center">
-                                <select onchange="updateProfileDirect('${sId}','cw',this.value)" class="bg-slate-100 text-[10px] p-1 rounded font-bold outline-none">
-                                    <option ${data.cw === '🟢 Complete' ? 'selected' : ''}>🟢 Complete</option>
-                                    <option ${data.cw === '🟡 Incomplete' ? 'selected' : ''}>🟡 Incomplete</option>
-                                    <option ${data.cw === '🔴 Missing' ? 'selected' : ''}>🔴 Missing</option>
-                                </select>
-                                <select onchange="updateProfileDirect('${sId}','hw',this.value)" class="bg-slate-100 text-[10px] p-1 rounded font-bold outline-none">
-                                    <option ${data.hw === '🟢 Complete' ? 'selected' : ''}>🟢 Complete</option>
-                                    <option ${data.hw === '🟡 Incomplete' ? 'selected' : ''}>🟡 Incomplete</option>
-                                    <option ${data.hw === '🔴 Missing' ? 'selected' : ''}>🔴 Missing</option>
-                                </select>
+                        <td class="p-4 text-center">
+                            <div class="flex items-center justify-center gap-1">
+                                <button onclick="saveDateAttendance('${cls}','${selectedDate}','${sId}','Present')" class="px-2 py-1 border rounded text-[10px] font-bold hover:bg-emerald-50">✔️ Present</button>
+                                <button onclick="saveDateAttendance('${cls}','${selectedDate}','${sId}','Absent')" class="px-2 py-1 border rounded text-[10px] font-bold hover:bg-rose-50">❌ Absent</button>
+                                <div class="text-[10px] ml-2 px-2 py-1 rounded-md ${statusBadgeColor}">${dayStatus}</div>
                             </div>
                         </td>
-                        <td class="p-3 text-center">
-                            <button onclick="openMarksModal('${sId}')" class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-indigo-700 shadow-sm transition-all">Marks</button>
+                        <td class="p-4 text-center">
+                            <button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all">Manage Academic</button>
                         </td>
                     </tr>`;
             }
         }
 
         function updateProfileDirect(id, field, val) {
-            if(!db.students[id]) db.students[id] = { name: "", pass: "123", attended: 0, held: 0, cw: "🟢 Complete", hw: "🟢 Complete" };
+            if(!db.students[id]) db.students[id] = { name: "", pass: "123" };
             db.students[id][field] = val; 
             syncToCloud();
         }
 
-        function triggerAttendance(id, wasPresent) {
-            if(!db.students[id] || !db.students[id].name) return alert("Assign student name first!");
-            if(!db.students[id].held) db.students[id].held = 0;
-            if(!db.students[id].attended) db.students[id].attended = 0;
+        function saveDateAttendance(cls, date, sId, status) {
+            if(!db.students[sId] || !db.students[sId].name) return alert("Assign student profile name before recording logs!");
+            if(!date) return alert("Select a valid calendar execution date first!");
             
-            db.students[id].held += 1;
-            if(wasPresent) db.students[id].attended += 1;
-            
+            db.attendance[cls][date][sId] = status;
             syncToCloud();
             renderTeacherList();
         }
@@ -397,18 +422,26 @@
 
         function loadExistingMarks() {
             const exam = document.getElementById('m-exam').value;
-            const rec = db.records[`${activeId}_${exam}`] || { marks: {}, remarks: "" };
+            const rec = db.records[`${activeId}_${exam}`] || { marks: {}, remarks: "", cw: "🟢 Active & Regular", hw: "🟢 On-Time & Excellent" };
+            
             SUBJECTS.forEach(s => document.getElementById(`inp-${s}`).value = rec.marks[s] || "");
             document.getElementById('m-remarks').value = rec.remarks || "";
+            document.getElementById('m-cw-status').value = rec.cw || "🟢 Active & Regular";
+            document.getElementById('m-hw-status').value = rec.hw || "🟢 On-Time & Excellent";
         }
 
         function saveMarks() {
             const exam = document.getElementById('m-exam').value;
-            const rec = { marks: {}, remarks: document.getElementById('m-remarks').value };
+            const rec = { 
+                marks: {}, 
+                remarks: document.getElementById('m-remarks').value,
+                cw: document.getElementById('m-cw-status').value,
+                hw: document.getElementById('m-hw-status').value
+            };
             SUBJECTS.forEach(s => rec.marks[s] = document.getElementById(`inp-${s}`).value);
             db.records[`${activeId}_${exam}`] = rec; 
             syncToCloud();
-            alert("Entry Saved Online."); showScreen('screen-teacher');
+            alert("Record Set Committed Successfully."); showScreen('screen-teacher');
         }
 
         function initParentView() {
@@ -422,33 +455,46 @@
         }
 
         function renderParentReport() {
-            const activeProfile = db.students[activeId];
+            const targetClass = activeId.split('-')[0];
             
-            // Render Live Real-Time Attendance Engine
-            const held = activeProfile.held || 0;
-            const att = activeProfile.attended || 0;
-            const percentage = held > 0 ? Math.round((att / held) * 100) : 100;
-            document.getElementById('p-attn-percent').innerText = `${percentage}%`;
-            document.getElementById('p-attn-fraction').innerText = `${att}/${held} Days Logged`;
+            // DYNAMIC ATTENDANCE ENGINE: Scans full master session history
+            let totalDaysSchoolConducted = 0;
+            let totalDaysChildAttended = 0;
 
-            // Render Core Assignment Tickers
-            document.getElementById('p-cw-status').innerText = activeProfile.cw || "🟢 Complete";
-            document.getElementById('p-hw-status').innerText = activeProfile.hw || "🟢 Complete";
+            if (db.attendance && db.attendance[targetClass]) {
+                const datesMap = db.attendance[targetClass];
+                for (const dateKey in datesMap) {
+                    if (datesMap[dateKey][activeId] !== undefined) {
+                        totalDaysSchoolConducted++;
+                        if (datesMap[dateKey][activeId] === "Present") {
+                            totalDaysChildAttended++;
+                        }
+                    }
+                }
+            }
+
+            const attendancePercentage = totalDaysSchoolConducted > 0 ? Math.round((totalDaysChildAttended / totalDaysSchoolConducted) * 100) : 100;
+            document.getElementById('p-attn-percent').innerText = `${attendancePercentage}%`;
+            document.getElementById('p-attn-fraction').innerText = `${totalDaysChildAttended}/${totalDaysSchoolConducted} Days Attended`;
 
             const exam = document.getElementById('p-exam-view').value;
             const rec = db.records[`${activeId}_${exam}`];
             const disp = document.getElementById('p-marks-display');
             const rem = document.getElementById('p-remarks-display');
             
-            let currentExamMarks = {};
-
             if(!rec) { 
-                disp.innerHTML = "<p class='text-slate-400 text-xs py-4'>No structural results posted yet for this term.</p>"; 
-                rem.innerText = "No localized review statement compiled.";
+                disp.innerHTML = "<p class='text-slate-400 text-xs py-4'>No results posted yet for this term.</p>"; 
+                rem.innerText = "No evaluation remarks recorded.";
                 document.getElementById('p-strongest-subject').innerText = "—";
                 document.getElementById('p-weakest-subject').innerText = "—";
+                document.getElementById('p-cw-status').innerText = "—";
+                document.getElementById('p-hw-status').innerText = "—";
             } else {
-                currentExamMarks = rec.marks || {};
+                // Populate Exam-specific work statuses updated alongside marks
+                document.getElementById('p-cw-status').innerText = rec.cw || "🟢 Active & Regular";
+                document.getElementById('p-hw-status').innerText = rec.hw || "🟢 On-Time & Excellent";
+                
+                let currentExamMarks = rec.marks || {};
                 disp.innerHTML = SUBJECTS.map(s => {
                     const mark = currentExamMarks[s] !== undefined && currentExamMarks[s] !== "" ? Number(currentExamMarks[s]) : "N/A";
                     return `
@@ -459,7 +505,7 @@
                 }).join('');
                 rem.innerText = rec.remarks || "No evaluation remarks recorded.";
 
-                // Computational Logic to isolate Highest/Lowest Subjects Dynamically
+                // Calculate Highest/Lowest Subjects Dynamically
                 let validScores = [];
                 SUBJECTS.forEach(s => {
                     if(currentExamMarks[s] !== undefined && currentExamMarks[s] !== "") {
@@ -477,14 +523,11 @@
                 }
             }
 
-            // Generate/Refresh performance analytics tracking graph lines
             renderAnalyticsChart();
         }
 
         function renderAnalyticsChart() {
             const ctx = document.getElementById('performanceChart').getContext('2d');
-            
-            // Compile total scores across exams to build progression vectors
             let chronologicalAverages = EXAMS.map(ex => {
                 const record = db.records[`${activeId}_${ex}`];
                 if (!record || !record.marks) return 0;
@@ -505,7 +548,7 @@
                 data: {
                     labels: EXAMS,
                     datasets: [{
-                        label: 'Term Evaluation Mean (%)',
+                        label: 'Term Average (%)',
                         data: chronologicalAverages,
                         borderColor: '#4f46e5',
                         backgroundColor: 'rgba(79, 70, 229, 0.05)',
