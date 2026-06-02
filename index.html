@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduFlow Pro | Precision Analytics Suite</title>
+    <title>EduFlow Pro | Production Infrastructure</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -61,7 +61,7 @@
                     <h3 class="text-lg font-bold text-slate-800 mt-3 leading-tight">Shravan Kumar Dubey</h3>
                     <div class="border-t border-dashed my-3 border-slate-200"></div>
                     <p class="text-xs text-slate-500 font-medium leading-relaxed">
-                        Young entrepreneur, futuristic thinker, and technology-driven innovator focused on building impactful systems for the next generation.
+                        Young entrepreneur, futuristic thinker, and technology-driven innovator focused on building systems for the next generation.
                     </p>
                 </div>
 
@@ -76,17 +76,17 @@
                     
                     <div class="space-y-2 mt-4 border-t border-white/10 pt-3">
                         <div class="flex items-start gap-2">
-                            <span class="text-xs mt-0.5">⚡</span>
+                            <span class="text-xs mt-0.5">📅</span>
                             <div>
-                                <h5 class="text-[11px] font-bold text-indigo-400">Date-Wise Master Attendance</h5>
-                                <p class="text-[10px] text-slate-400">Log institutional sessions by specific dates to compile whole-year student metrics.</p>
+                                <h5 class="text-[11px] font-bold text-indigo-400">Dedicated Attendance Matrix</h5>
+                                <p class="text-[10px] text-slate-400">Log institutional sessions dynamically by date to calculate accurate cumulative ratios.</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2">
-                            <span class="text-xs mt-0.5">📊</span>
+                            <span class="text-xs mt-0.5">🔒</span>
                             <div>
-                                <h5 class="text-[11px] font-bold text-indigo-400">Integrated Exam-Wise Analytics</h5>
-                                <p class="text-[10px] text-slate-400">Tracks performance charts alongside classwork/homework indicators directly from marks panel.</p>
+                                <h5 class="text-[11px] font-bold text-indigo-400">Deterministic Key Security</h5>
+                                <p class="text-[10px] text-slate-400">Automated password scaling removes administration overhead entirely.</p>
                             </div>
                         </div>
                     </div>
@@ -102,33 +102,48 @@
 
         <section id="screen-login" class="screen w-full">
             <div class="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-2xl border border-slate-200">
-                <h2 class="text-2xl font-bold mb-6 text-center">System Portal</h2>
+                <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">System Portal</h2>
                 <div class="space-y-4">
-                    <input id="auth-id" type="text" placeholder="User ID (e.g., 10A-1 or teacher)" class="w-full border rounded-xl p-3 outline-none focus:ring-2 ring-indigo-400 transition-all">
-                    <input id="auth-pass" type="password" placeholder="Password" class="w-full border rounded-xl p-3 outline-none focus:ring-2 ring-indigo-400 transition-all">
-                    <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">Sign In</button>
+                    <input id="auth-id" type="text" placeholder="User ID (e.g., 10A-5 or teacher)" class="w-full border rounded-xl p-3 text-sm outline-none focus:ring-2 ring-indigo-400 transition-all">
+                    
+                    <div class="relative">
+                        <input id="auth-pass" type="password" placeholder="Password" class="w-full border rounded-xl p-3 text-sm outline-none focus:ring-2 ring-indigo-400 transition-all pr-12">
+                        <button type="button" onclick="togglePasswordVisibility('auth-pass')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 text-xs font-bold px-2 py-1 rounded bg-slate-50 border">
+                            👁️ <span id="auth-pass-text" class="hidden md:inline">Show</span>
+                        </button>
+                    </div>
+                    
+                    <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 text-sm">Sign In</button>
                 </div>
             </div>
         </section>
 
+
         <section id="screen-teacher" class="screen w-full max-w-7xl">
+            <div class="flex gap-2 mb-4 border-b pb-2">
+                <button id="tab-btn-students" onclick="switchTeacherTab('students')" class="px-5 py-2 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm">👤 Student Management Ledger</button>
+                <button id="tab-btn-attendance" onclick="switchTeacherTab('attendance')" class="px-5 py-2 rounded-xl font-bold text-xs transition-all bg-slate-200 text-slate-700 hover:bg-slate-300">📅 Daily Attendance Panel</button>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-1 space-y-4">
                     <div class="bg-white p-5 rounded-2xl border shadow-sm">
-                        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Select Class</label>
-                        <select id="class-select" onchange="renderTeacherList()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold mb-4 focus:ring-2 ring-indigo-300"></select>
+                        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Select Target Class</label>
+                        <select id="class-select" onchange="refreshCurrentTeacherTab()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold mb-4 focus:ring-2 ring-indigo-300 text-sm"></select>
                         
-                        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Quick Search</label>
-                        <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Name or Roll..." class="w-full border p-2 rounded-lg text-sm mb-4">
-                        
-                        <div class="border-t pt-3 mt-2">
-                            <label class="block text-xs font-bold text-indigo-600 mb-1.5 uppercase">📅 Attendance Ledger Date</label>
-                            <input id="attendance-date" type="date" onchange="renderTeacherList()" class="w-full border p-2 rounded-lg text-xs bg-indigo-50/50 font-bold outline-none focus:ring-2 ring-indigo-300">
+                        <div id="search-container">
+                            <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Quick Search</label>
+                            <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Name or Roll..." class="w-full border p-2 rounded-lg text-xs mb-2">
+                        </div>
+
+                        <div id="date-picker-container" class="hidden border-t pt-3 mt-2">
+                            <label class="block text-xs font-bold text-indigo-600 mb-1.5 uppercase">Select Working Date</label>
+                            <input id="attendance-date" type="date" onchange="renderAttendancePanel()" class="w-full border p-2 rounded-lg text-xs bg-indigo-50/50 font-bold outline-none focus:ring-2 ring-indigo-300">
                         </div>
                     </div>
 
                     <div class="bg-slate-800 p-5 rounded-2xl text-white shadow-lg">
-                        <h4 class="text-xs font-bold uppercase mb-3 opacity-70">Database Management</h4>
+                        <h4 class="text-xs font-bold uppercase mb-3 opacity-70">Database Operations</h4>
                         <button onclick="downloadBackup()" class="w-full bg-white/10 hover:bg-white/20 text-xs py-2 rounded-lg mb-2 transition-all">📥 Download Backup (JSON)</button>
                         <input type="file" id="importFile" class="hidden" onchange="importBackup(event)">
                         <button onclick="document.getElementById('importFile').click()" class="w-full bg-white/10 hover:bg-white/20 text-xs py-2 rounded-lg transition-all">📤 Restore Backup</button>
@@ -137,30 +152,52 @@
 
                 <div class="lg:col-span-3 bg-white rounded-2xl border shadow-sm overflow-hidden">
                     <div class="p-4 bg-slate-50 border-b flex justify-between items-center">
-                        <h3 class="font-bold text-slate-700">Records: <span id="class-label" class="text-indigo-600"></span></h3>
-                        <span id="attendance-session-label" class="text-[10px] bg-indigo-100 text-indigo-700 font-mono px-2.5 py-1 rounded-full font-bold"></span>
+                        <h3 class="font-bold text-slate-700">Scope: <span id="class-label" class="text-indigo-600"></span></h3>
+                        <span id="tab-badge-indicator" class="text-[10px] bg-indigo-100 text-indigo-700 font-mono px-2.5 py-1 rounded-full font-bold uppercase">Student Roster</span>
                     </div>
-                    <div class="max-h-[70vh] overflow-y-auto">
+
+                    <div id="tab-pane-students" class="max-h-[70vh] overflow-y-auto">
                         <table class="w-full text-left text-xs md:text-sm">
                             <thead class="bg-slate-50 sticky top-0 shadow-sm z-10">
                                 <tr>
                                     <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Roll</th>
-                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Student Profile</th>
-                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">Date Attendance Status</th>
-                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">Academic Profiles</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Student Profile Meta</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">System Password Key</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">Academics</th>
                                 </tr>
                             </thead>
                             <tbody id="teacher-table-body"></tbody>
                         </table>
                     </div>
+
+                    <div id="tab-pane-attendance" class="hidden max-h-[70vh] overflow-y-auto p-4">
+                        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-4 flex justify-between items-center text-xs text-indigo-900">
+                            <p>📌 <strong>Instructions:</strong> Select a working session date from the panel on the left. Toggle the status button next to each student's name to modify attendance states, then press <strong>Commit Attendance Sheet</strong>.</p>
+                        </div>
+                        <table class="w-full text-left text-xs md:text-sm">
+                            <thead class="bg-slate-50 shadow-sm">
+                                <tr>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Roll</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Student Name</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">Attendance Registration status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-table-body"></tbody>
+                        </table>
+                        <div class="p-4 border-t flex justify-end">
+                            <button onclick="commitAttendanceSheet()" class="bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-xl text-xs hover:bg-indigo-700 shadow-md">💾 Commit Attendance Sheet</button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
 
+
         <section id="screen-marks" class="screen w-full max-w-2xl">
             <div class="bg-white p-8 rounded-3xl border shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 id="m-student-name" class="text-2xl font-bold">Academic Entry</h2>
+                    <h2 id="m-student-name" class="text-2xl font-bold text-slate-800">Academic Entry</h2>
                     <select id="m-exam" onchange="loadExistingMarks()" class="border rounded-lg p-2 font-bold bg-slate-50 outline-none text-sm">
                         <option>PT-1</option><option>PT-2</option><option>PT-3</option><option>Half-Yearly</option><option>Annual</option>
                     </select>
@@ -170,7 +207,7 @@
                 
                 <div class="bg-slate-50 border p-4 rounded-2xl mb-4 grid grid-cols-1 md:grid-cols-2 gap-4 shadow-sm">
                     <div>
-                        <label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Classwork Activity (Till this Exam)</label>
+                        <label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Classwork Behavior (Till this Exam)</label>
                         <select id="m-cw-status" class="w-full border p-2 rounded-lg bg-white font-bold text-xs outline-none">
                             <option>🟢 Active & Regular</option>
                             <option>🟡 Incomplete Submission</option>
@@ -178,7 +215,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Homework Activity (Till this Exam)</label>
+                        <label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Homework Delivery (Till this Exam)</label>
                         <select id="m-hw-status" class="w-full border p-2 rounded-lg bg-white font-bold text-xs outline-none">
                             <option>🟢 On-Time & Excellent</option>
                             <option>🟡 Irregular Submissions</option>
@@ -187,7 +224,7 @@
                     </div>
                 </div>
 
-                <textarea id="m-remarks" placeholder="Add specific evaluation comments for parents..." class="w-full border rounded-xl p-4 h-20 mb-4 focus:ring-2 ring-indigo-200 outline-none text-xs"></textarea>
+                <textarea id="m-remarks" placeholder="Add custom diagnostic performance report messages..." class="w-full border rounded-xl p-4 h-20 mb-4 focus:ring-2 ring-indigo-200 outline-none text-xs"></textarea>
                 
                 <div class="flex gap-2">
                     <button onclick="saveMarks()" class="flex-1 bg-green-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-green-100 text-sm">Save Complete Record</button>
@@ -196,16 +233,17 @@
             </div>
         </section>
 
+
         <section id="screen-parent" class="screen w-full max-w-4xl">
             <div class="bg-indigo-600 p-6 rounded-3xl text-white shadow-xl mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 id="p-name" class="text-3xl font-bold">Student Name</h2>
                     <p id="p-id" class="opacity-70 font-mono text-xs mt-1"></p>
                 </div>
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center min-w-[140px]">
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center min-w-[150px]">
                     <span class="text-[9px] uppercase tracking-wider block opacity-75 font-bold">Session Attendance</span>
                     <h3 id="p-attn-percent" class="text-2xl font-black mt-0.5">100%</h3>
-                    <span id="p-attn-fraction" class="text-[10px] opacity-60 block font-mono">0/0 Days Conducted</span>
+                    <span id="p-attn-fraction" class="text-[10px] opacity-60 block font-mono">0 / 0 Days</span>
                 </div>
             </div>
 
@@ -238,7 +276,7 @@
                     </div>
 
                     <div class="bg-white p-6 rounded-2xl border shadow-sm">
-                        <h3 class="font-bold uppercase tracking-widest text-xs text-slate-400 mb-3">Academic Engagement Indicators (For Selected Exam Period)</h3>
+                        <h3 class="font-bold uppercase tracking-widest text-xs text-slate-400 mb-3">Academic Engagement Indicators</h3>
                         <div class="grid grid-cols-2 gap-4 text-center">
                             <div class="bg-slate-50 p-3 rounded-xl border">
                                 <span class="text-[10px] uppercase font-bold text-slate-400 block">Classwork Performance</span>
@@ -270,11 +308,12 @@
         const SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
         const EXAMS = ["PT-1", "PT-2", "PT-3", "Half-Yearly", "Annual"];
         
-        // Initializing structural definitions safely
         let db = { students: {}, records: {}, attendance: {} };
         let currentUser = null;
         let activeId = null;
         let dynamicChartInstance = null;
+        let currentTeacherTab = "students"; // Tracks active structural tab frame view
+        let localAttendanceBuffer = {}; // Buffers local attendance modifications safely before committing
 
         const firebaseConfig = {
             apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
@@ -288,7 +327,6 @@
         firebase.initializeApp(firebaseConfig);
         const cloudStorage = firebase.firestore();
 
-        // Background Cloud Sync Listener
         cloudStorage.collection("school").doc("master").onSnapshot((doc) => {
             if (doc.exists) {
                 db = doc.data();
@@ -301,30 +339,42 @@
                 cloudPill.className = "text-[10px] bg-green-100 text-green-600 px-3 py-1 rounded-full font-bold uppercase";
                 
                 if(currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin')) {
-                    renderTeacherList();
+                    refreshCurrentTeacherTab();
                 } else if(currentUser && currentUser.role === 'parent') {
                     renderParentReport();
                 }
             }
         }, (error) => {
-            console.error("Firestore Synchronizer Failure:", error);
+            console.error("Firestore Core Synchronizer Failure:", error);
             document.getElementById('cloud-status').innerText = "❌ Security Lockout";
         });
 
         async function syncToCloud() {
             try {
                 await cloudStorage.collection("school").doc("master").set(db);
-                console.log("☁️ Data successfully mirrored on cloud node.");
+                console.log("☁️ Successfully synchronized master data block.");
             } catch (err) {
-                console.error("Sync Failure:", err);
+                console.error("Cloud Sync Core Write Error:", err);
             }
         }
 
-        // Set default calendar date to today on load
         window.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('attendance-date').value = today;
         });
+
+        // Show/Hide password reveal operation
+        function togglePasswordVisibility(fieldId) {
+            const inputField = document.getElementById(fieldId);
+            const statusIndicator = document.getElementById(fieldId + "-text");
+            if (inputField.type === "password") {
+                inputField.type = "text";
+                if(statusIndicator) statusIndicator.innerText = "Hide";
+            } else {
+                inputField.type = "password";
+                if(statusIndicator) statusIndicator.innerText = "Show";
+            }
+        }
 
         function transitionToLogin() {
             showScreen('screen-login');
@@ -334,11 +384,22 @@
         function handleLogin() {
             const id = document.getElementById('auth-id').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
-            if (id === 'teacher' && pass === 'teacher123') { currentUser = {role:'teacher'}; initTeacherView(); }
-            else if (id === 'admin' && pass === 'admin789') { currentUser = {role:'admin'}; initTeacherView(); }
-            else if (db.students[id] && db.students[id].pass === pass) {
-                currentUser = {role:'parent', id:id}; activeId = id; initParentView();
-            } else { alert("❌ Unauthorized System Entry"); }
+            
+            if (id === 'teacher' && pass === 'teacher123') { currentUser = {role:'teacher'}; initTeacherView(); return; }
+            if (id === 'admin' && pass === 'admin789') { currentUser = {role:'admin'}; initTeacherView(); return; }
+            
+            // Student Login Logic via automated formula
+            const parts = id.split('-');
+            if(parts.length === 2) {
+                const rollNum = parseInt(parts[1]);
+                const standardDeterministicPassword = "school" + rollNum;
+                
+                if(db.students[id] && db.students[id].name && pass === standardDeterministicPassword) {
+                    currentUser = {role:'parent', id:id}; activeId = id; initParentView();
+                    return;
+                }
+            }
+            alert("❌ Unauthorized System Entry Credentials");
         }
 
         function initTeacherView() {
@@ -346,74 +407,171 @@
             let options = '';
             for(let i=1; i<=10; i++) ['A', 'B'].forEach(s => options += `<option value="${i}${s}">Class ${i}${s}</option>`);
             select.innerHTML = options;
-            renderTeacherList();
+            switchTeacherTab('students');
             showScreen('screen-teacher');
+        }
+
+        function switchTeacherTab(targetTab) {
+            currentTeacherTab = targetTab;
+            
+            const btnStudents = document.getElementById('tab-btn-students');
+            const btnAttendance = document.getElementById('tab-btn-attendance');
+            const paneStudents = document.getElementById('tab-pane-students');
+            const paneAttendance = document.getElementById('tab-pane-attendance');
+            const searchContainer = document.getElementById('search-container');
+            const dateContainer = document.getElementById('date-picker-container');
+            const badgeIndicator = document.getElementById('tab-badge-indicator');
+
+            if (targetTab === 'students') {
+                btnStudents.className = "px-5 py-2 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm";
+                btnAttendance.className = "px-5 py-2 rounded-xl font-bold text-xs transition-all bg-slate-200 text-slate-700 hover:bg-slate-300";
+                paneStudents.classList.remove('hidden');
+                paneAttendance.classList.add('hidden');
+                searchContainer.classList.remove('hidden');
+                dateContainer.classList.add('hidden');
+                badgeIndicator.innerText = "Student Roster";
+            } else {
+                btnAttendance.className = "px-5 py-2 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm";
+                btnStudents.className = "px-5 py-2 rounded-xl font-bold text-xs transition-all bg-slate-200 text-slate-700 hover:bg-slate-300";
+                paneAttendance.classList.remove('hidden');
+                paneStudents.classList.add('hidden');
+                searchContainer.classList.add('hidden');
+                dateContainer.classList.remove('hidden');
+                badgeIndicator.innerText = "Daily Attendance Panel";
+            }
+            refreshCurrentTeacherTab();
+        }
+
+        function refreshCurrentTeacherTab() {
+            if (currentTeacherTab === 'students') {
+                renderTeacherList();
+            } else {
+                renderAttendancePanel();
+            }
         }
 
         function renderTeacherList() {
             const cls = document.getElementById('class-select').value;
             const search = document.getElementById('search-input').value.toLowerCase();
-            const selectedDate = document.getElementById('attendance-date').value;
-            
             document.getElementById('class-label').innerText = cls;
-            document.getElementById('attendance-session-label').innerText = `Date Log: ${selectedDate || 'Select Date'}`;
             
             const tbody = document.getElementById('teacher-table-body');
             tbody.innerHTML = '';
 
-            // Safe lookup for date-specific tracking map
-            if(!db.attendance[cls]) db.attendance[cls] = {};
-            if(!db.attendance[cls][selectedDate]) db.attendance[cls][selectedDate] = {};
-
             for(let i=1; i<=45; i++) {
                 const sId = `${cls}-${i}`;
-                const data = (db && db.students && db.students[sId]) ? db.students[sId] : { name: "", pass: "123" };
+                const data = (db && db.students && db.students[sId]) ? db.students[sId] : { name: "" };
                 if(search && !data.name.toLowerCase().includes(search) && !sId.toLowerCase().includes(search)) continue;
                 
-                // Track current state status for this exact target date
-                const dayStatus = db.attendance[cls][selectedDate][sId] || "Pending";
-                let statusBadgeColor = "bg-slate-100 text-slate-500";
-                if(dayStatus === "Present") statusBadgeColor = "bg-emerald-500 text-white font-bold";
-                if(dayStatus === "Absent") statusBadgeColor = "bg-rose-500 text-white font-bold";
-
+                // Deterministic configuration for security credentials
+                const standardPasswordFormulaOutput = "school" + i;
+                
                 tbody.innerHTML += `
                     <tr class="border-b hover:bg-indigo-50/30 transition-colors">
                         <td class="p-4 font-mono text-slate-400 text-xs">${i}</td>
                         <td class="p-4">
-                            <input type="text" value="${data.name}" onchange="updateProfileDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="bg-transparent outline-none border-b border-transparent focus:border-indigo-400 p-1 font-bold text-slate-800 text-sm">
-                            <span class="text-[10px] text-slate-400 block font-mono">ID: ${sId} | Pass: ${data.pass}</span>
+                            <input type="text" value="${data.name}" onchange="updateProfileDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none border-b border-transparent focus:border-indigo-400 p-1 font-bold text-slate-800 text-sm">
+                            <span class="text-[10px] text-slate-400 block font-mono">Roll ID: ${sId}</span>
+                        </td>
+                        <td class="p-4 text-center font-mono text-xs text-indigo-600 font-bold bg-slate-50/50">
+                            ${standardPasswordFormulaOutput}
                         </td>
                         <td class="p-4 text-center">
-                            <div class="flex items-center justify-center gap-1">
-                                <button onclick="saveDateAttendance('${cls}','${selectedDate}','${sId}','Present')" class="px-2 py-1 border rounded text-[10px] font-bold hover:bg-emerald-50">✔️ Present</button>
-                                <button onclick="saveDateAttendance('${cls}','${selectedDate}','${sId}','Absent')" class="px-2 py-1 border rounded text-[10px] font-bold hover:bg-rose-50">❌ Absent</button>
-                                <div class="text-[10px] ml-2 px-2 py-1 rounded-md ${statusBadgeColor}">${dayStatus}</div>
-                            </div>
-                        </td>
-                        <td class="p-4 text-center">
-                            <button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all">Manage Academic</button>
+                            <button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all">Manage Academic</button>
                         </td>
                     </tr>`;
             }
         }
 
         function updateProfileDirect(id, field, val) {
-            if(!db.students[id]) db.students[id] = { name: "", pass: "123" };
+            if(!db.students[id]) db.students[id] = { name: "" };
             db.students[id][field] = val; 
             syncToCloud();
         }
 
-        function saveDateAttendance(cls, date, sId, status) {
-            if(!db.students[sId] || !db.students[sId].name) return alert("Assign student profile name before recording logs!");
-            if(!date) return alert("Select a valid calendar execution date first!");
+        // Dedicated Separate Attendance Rendering logic
+        function renderAttendancePanel() {
+            const cls = document.getElementById('class-select').value;
+            const selectedDate = document.getElementById('attendance-date').value;
+            document.getElementById('class-label').innerText = cls;
             
-            db.attendance[cls][date][sId] = status;
+            const tbody = document.getElementById('attendance-table-body');
+            tbody.innerHTML = '';
+
+            if(!selectedDate) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 text-xs">Please configure an execution date to register records.</td></tr>`;
+                return;
+            }
+
+            // Isolate existing status frameworks or allocate dynamic fresh buffers
+            if(!db.attendance[cls]) db.attendance[cls] = {};
+            if(!db.attendance[cls][selectedDate]) db.attendance[cls][selectedDate] = {};
+            
+            localAttendanceBuffer = JSON.parse(JSON.stringify(db.attendance[cls][selectedDate]));
+
+            let activeCount = 0;
+            for(let i=1; i<=45; i++) {
+                const sId = `${cls}-${i}`;
+                const data = db.students[sId];
+                if(!data || !data.name) continue; // Only load active, named student profiles
+                activeCount++;
+
+                // Default status is Present unless marked Absent
+                if(localAttendanceBuffer[sId] === undefined) {
+                    localAttendanceBuffer[sId] = "Present"; 
+                }
+
+                const currentStatus = localAttendanceBuffer[sId];
+                const isPresent = currentStatus === "Present";
+
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50 transition-colors">
+                        <td class="p-4 font-mono text-slate-400 text-xs">${i}</td>
+                        <td class="p-4 font-bold text-slate-700 text-sm">${data.name}</td>
+                        <td class="p-4 text-center">
+                            <div class="inline-flex rounded-lg border p-0.5 bg-slate-100">
+                                <button type="button" onclick="setLocalAttendanceStatus('${sId}','Present')" id="btn-pres-${sId}" class="px-3 py-1 rounded-md text-xs font-bold transition-all ${isPresent ? 'bg-emerald-500 text-white shadow-sm':'text-slate-500 hover:text-slate-800'}">✔️ Present</button>
+                                <button type="button" onclick="setLocalAttendanceStatus('${sId}','Absent')" id="btn-abs-${sId}" class="px-3 py-1 rounded-md text-xs font-bold transition-all ${!isPresent ? 'bg-rose-500 text-white shadow-sm':'text-slate-500 hover:text-slate-800'}">❌ Absent</button>
+                            </div>
+                        </td>
+                    </tr>`;
+            }
+
+            if(activeCount === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 text-xs font-medium">No active student names assigned in Class ${cls} yet.<br><span class="text-[11px] text-indigo-500 font-bold">Please add student names in the Student Management Ledger tab first.</span></td></tr>`;
+            }
+        }
+
+        function setLocalAttendanceStatus(sId, status) {
+            localAttendanceBuffer[sId] = status;
+            
+            const btnPres = document.getElementById(`btn-pres-${sId}`);
+            const btnAbs = document.getElementById(`btn-abs-${sId}`);
+            
+            if(status === "Present") {
+                btnPres.className = "px-3 py-1 rounded-md text-xs font-bold transition-all bg-emerald-500 text-white shadow-sm";
+                btnAbs.className = "px-3 py-1 rounded-md text-xs font-bold transition-all text-slate-500 hover:text-slate-800";
+            } else {
+                btnAbs.className = "px-3 py-1 rounded-md text-xs font-bold transition-all bg-rose-500 text-white shadow-sm";
+                btnPres.className = "px-3 py-1 rounded-md text-xs font-bold transition-all text-slate-500 hover:text-slate-800";
+            }
+        }
+
+        function commitAttendanceSheet() {
+            const cls = document.getElementById('class-select').value;
+            const selectedDate = document.getElementById('attendance-date').value;
+            if(!selectedDate) return alert("Select a valid session ledger log date!");
+
+            if(!db.attendance[cls]) db.attendance[cls] = {};
+            db.attendance[cls][selectedDate] = localAttendanceBuffer;
+            
             syncToCloud();
-            renderTeacherList();
+            alert(`📝 Attendance logged successfully for Class ${cls} on date: ${selectedDate}`);
+            refreshCurrentTeacherTab();
         }
 
         function openMarksModal(id) {
-            if(!db.students[id] || !db.students[id].name) return alert("Add student name first!");
+            if(!db.students[id] || !db.students[id].name) return alert("Assign profile name first!");
             activeId = id; document.getElementById('m-student-name').innerText = db.students[id].name;
             const grid = document.getElementById('m-grid');
             grid.innerHTML = SUBJECTS.map(s => `<div class="bg-slate-50 p-3 rounded-xl"><label class="text-[9px] font-black uppercase text-slate-400">${s}</label><input type="number" id="inp-${s}" class="w-full bg-transparent font-bold text-lg outline-none"></div>`).join('');
@@ -441,7 +599,7 @@
             SUBJECTS.forEach(s => rec.marks[s] = document.getElementById(`inp-${s}`).value);
             db.records[`${activeId}_${exam}`] = rec; 
             syncToCloud();
-            alert("Record Set Committed Successfully."); showScreen('screen-teacher');
+            alert("Academic file committed to ledger cloud database."); showScreen('screen-teacher');
         }
 
         function initParentView() {
@@ -457,25 +615,28 @@
         function renderParentReport() {
             const targetClass = activeId.split('-')[0];
             
-            // DYNAMIC ATTENDANCE ENGINE: Scans full master session history
-            let totalDaysSchoolConducted = 0;
+            // ACCURATE TOTAL WORKING DAYS METRIC COMPILER
+            let totalWorkingSessionDays = 0;
             let totalDaysChildAttended = 0;
 
             if (db.attendance && db.attendance[targetClass]) {
-                const datesMap = db.attendance[targetClass];
-                for (const dateKey in datesMap) {
-                    if (datesMap[dateKey][activeId] !== undefined) {
-                        totalDaysSchoolConducted++;
-                        if (datesMap[dateKey][activeId] === "Present") {
+                const sessionDatesMap = db.attendance[targetClass];
+                // Loop through all unique registered session dates in the system
+                for (const targetSessionDate in sessionDatesMap) {
+                    if (sessionDatesMap[targetSessionDate][activeId] !== undefined) {
+                        totalWorkingSessionDays++;
+                        if (sessionDatesMap[targetSessionDate][activeId] === "Present") {
                             totalDaysChildAttended++;
                         }
                     }
                 }
             }
 
-            const attendancePercentage = totalDaysSchoolConducted > 0 ? Math.round((totalDaysChildAttended / totalDaysSchoolConducted) * 100) : 100;
+            const attendancePercentage = totalWorkingSessionDays > 0 ? Math.round((totalDaysChildAttended / totalWorkingSessionDays) * 100) : 100;
             document.getElementById('p-attn-percent').innerText = `${attendancePercentage}%`;
-            document.getElementById('p-attn-fraction').innerText = `${totalDaysChildAttended}/${totalDaysSchoolConducted} Days Attended`;
+            
+            // Updated Parent Label Format
+            document.getElementById('p-attn-fraction').innerText = `Working Days: ${totalWorkingSessionDays} | Attended: ${totalDaysChildAttended}`;
 
             const exam = document.getElementById('p-exam-view').value;
             const rec = db.records[`${activeId}_${exam}`];
@@ -483,14 +644,15 @@
             const rem = document.getElementById('p-remarks-display');
             
             if(!rec) { 
-                disp.innerHTML = "<p class='text-slate-400 text-xs py-4'>No results posted yet for this term.</p>"; 
+                disp.innerHTML = "<p class='text-slate-400 text-xs py-4'>No analytical results posted yet for this term.</p>"; 
                 rem.innerText = "No evaluation remarks recorded.";
                 document.getElementById('p-strongest-subject').innerText = "—";
                 document.getElementById('p-weakest-subject').innerText = "—";
                 document.getElementById('p-cw-status').innerText = "—";
                 document.getElementById('p-hw-status').innerText = "—";
             } else {
-                // Populate Exam-specific work statuses updated alongside marks
+                document.getElementById('p-strongest-subject').innerText = "—";
+                document.getElementById('p-weakest-subject').innerText = "—";
                 document.getElementById('p-cw-status').innerText = rec.cw || "🟢 Active & Regular";
                 document.getElementById('p-hw-status').innerText = rec.hw || "🟢 On-Time & Excellent";
                 
@@ -505,7 +667,6 @@
                 }).join('');
                 rem.innerText = rec.remarks || "No evaluation remarks recorded.";
 
-                // Calculate Highest/Lowest Subjects Dynamically
                 let validScores = [];
                 SUBJECTS.forEach(s => {
                     if(currentExamMarks[s] !== undefined && currentExamMarks[s] !== "") {
@@ -517,9 +678,6 @@
                     validScores.sort((a,b) => b.score - a.score);
                     document.getElementById('p-strongest-subject').innerText = `${validScores[0].subject} (${validScores[0].score})`;
                     document.getElementById('p-weakest-subject').innerText = `${validScores[validScores.length - 1].subject} (${validScores[validScores.length - 1].score})`;
-                } else {
-                    document.getElementById('p-strongest-subject').innerText = "—";
-                    document.getElementById('p-weakest-subject').innerText = "—";
                 }
             }
 
