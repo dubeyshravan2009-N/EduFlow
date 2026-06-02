@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduFlow Pro | Production Infrastructure</title>
+    <title>EduFlow Pro | Admin Infrastructure</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -76,17 +76,17 @@
                     
                     <div class="space-y-2 mt-4 border-t border-white/10 pt-3">
                         <div class="flex items-start gap-2">
-                            <span class="text-xs mt-0.5">📅</span>
+                            <span class="text-xs mt-0.5">📊</span>
                             <div>
-                                <h5 class="text-[11px] font-bold text-indigo-400">Dedicated Attendance Matrix</h5>
-                                <p class="text-[10px] text-slate-400">Log institutional sessions dynamically by date to calculate accurate cumulative ratios.</p>
+                                <h5 class="text-[11px] font-bold text-indigo-400">Spreadsheet Matrix Engine</h5>
+                                <p class="text-[10px] text-slate-400">Compiles historical student data lines into scannable Excel-compatible files.</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2">
-                            <span class="text-xs mt-0.5">🔒</span>
+                            <span class="text-xs mt-0.5">🗑️</span>
                             <div>
-                                <h5 class="text-[11px] font-bold text-indigo-400">Deterministic Key Security</h5>
-                                <p class="text-[10px] text-slate-400">Automated password scaling removes administration overhead entirely.</p>
+                                <h5 class="text-[11px] font-bold text-indigo-400">Targeted Purge Controllers</h5>
+                                <p class="text-[10px] text-slate-400">Isolate reset scopes to distinct classes without wiping master cloud trees.</p>
                             </div>
                         </div>
                     </div>
@@ -142,8 +142,27 @@
                         </div>
                     </div>
 
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+                        <h4 class="text-xs font-black text-slate-700 uppercase mb-2 tracking-wider">📦 Reporting Utilities</h4>
+                        <button onclick="exportClassAttendanceCSV()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl transition-all shadow-sm">
+                            📊 Export Attendance Ledger (.CSV)
+                        </button>
+                    </div>
+
+                    <div class="bg-rose-50 border border-rose-200 p-5 rounded-2xl space-y-2">
+                        <h4 class="text-xs font-black text-rose-700 uppercase tracking-wider mb-1">⚠️ Danger Zone Controls</h4>
+                        <p class="text-[10px] text-rose-600 leading-tight mb-2">Resets apply only to the class code selected above.</p>
+                        
+                        <button onclick="purgeClassProfiles()" class="w-full bg-white hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-[11px] py-2 rounded-lg transition-all">
+                            🗑️ Delete All Class Profiles
+                        </button>
+                        <button onclick="purgeClassAttendance()" class="w-full bg-white hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-[11px] py-2 rounded-lg transition-all">
+                            🛑 Clear Class Attendance History
+                        </button>
+                    </div>
+
                     <div class="bg-slate-800 p-5 rounded-2xl text-white shadow-lg">
-                        <h4 class="text-xs font-bold uppercase mb-3 opacity-70">Database Operations</h4>
+                        <h4 class="text-xs font-bold uppercase mb-3 opacity-70">Master Cloud Backups</h4>
                         <button onclick="downloadBackup()" class="w-full bg-white/10 hover:bg-white/20 text-xs py-2 rounded-lg mb-2 transition-all">📥 Download Backup (JSON)</button>
                         <input type="file" id="importFile" class="hidden" onchange="importBackup(event)">
                         <button onclick="document.getElementById('importFile').click()" class="w-full bg-white/10 hover:bg-white/20 text-xs py-2 rounded-lg transition-all">📤 Restore Backup</button>
@@ -172,14 +191,14 @@
 
                     <div id="tab-pane-attendance" class="hidden max-h-[70vh] overflow-y-auto p-4">
                         <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-4 flex justify-between items-center text-xs text-indigo-900">
-                            <p>📌 <strong>Instructions:</strong> Select a working session date from the panel on the left. Toggle the status button next to each student's name to modify attendance states, then press <strong>Commit Attendance Sheet</strong>.</p>
+                            <p>📌 <strong>Instructions:</strong> Select a working date from the left. Toggle the status buttons, then press <strong>Commit Attendance Sheet</strong>.</p>
                         </div>
                         <table class="w-full text-left text-xs md:text-sm">
                             <thead class="bg-slate-50 shadow-sm">
                                 <tr>
                                     <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Roll</th>
                                     <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Student Name</th>
-                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">Attendance Registration status</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">Attendance Status</th>
                                 </tr>
                             </thead>
                             <tbody id="attendance-table-body"></tbody>
@@ -224,7 +243,7 @@
                     </div>
                 </div>
 
-                <textarea id="m-remarks" placeholder="Add custom diagnostic performance report messages..." class="w-full border rounded-xl p-4 h-20 mb-4 focus:ring-2 ring-indigo-200 outline-none text-xs"></textarea>
+                <textarea id="m-remarks" placeholder="Add custom performance summary remarks..." class="w-full border rounded-xl p-4 h-20 mb-4 focus:ring-2 ring-indigo-200 outline-none text-xs"></textarea>
                 
                 <div class="flex gap-2">
                     <button onclick="saveMarks()" class="flex-1 bg-green-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-green-100 text-sm">Save Complete Record</button>
@@ -312,8 +331,8 @@
         let currentUser = null;
         let activeId = null;
         let dynamicChartInstance = null;
-        let currentTeacherTab = "students"; // Tracks active structural tab frame view
-        let localAttendanceBuffer = {}; // Buffers local attendance modifications safely before committing
+        let currentTeacherTab = "students"; 
+        let localAttendanceBuffer = {}; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
@@ -345,8 +364,7 @@
                 }
             }
         }, (error) => {
-            console.error("Firestore Core Synchronizer Failure:", error);
-            document.getElementById('cloud-status').innerText = "❌ Security Lockout";
+            console.error("Firestore Synchronizer Disconnect:", error);
         });
 
         async function syncToCloud() {
@@ -363,7 +381,6 @@
             document.getElementById('attendance-date').value = today;
         });
 
-        // Show/Hide password reveal operation
         function togglePasswordVisibility(fieldId) {
             const inputField = document.getElementById(fieldId);
             const statusIndicator = document.getElementById(fieldId + "-text");
@@ -388,15 +405,17 @@
             if (id === 'teacher' && pass === 'teacher123') { currentUser = {role:'teacher'}; initTeacherView(); return; }
             if (id === 'admin' && pass === 'admin789') { currentUser = {role:'admin'}; initTeacherView(); return; }
             
-            // Student Login Logic via automated formula
             const parts = id.split('-');
             if(parts.length === 2) {
                 const rollNum = parseInt(parts[1]);
-                const standardDeterministicPassword = "school" + rollNum;
+                const defaultFallbackPassword = "school" + rollNum;
                 
-                if(db.students[id] && db.students[id].name && pass === standardDeterministicPassword) {
-                    currentUser = {role:'parent', id:id}; activeId = id; initParentView();
-                    return;
+                if(db.students[id] && db.students[id].name) {
+                    const actualConfiguredPassword = db.students[id].pass || defaultFallbackPassword;
+                    if(pass === actualConfiguredPassword) {
+                        currentUser = {role:'parent', id:id}; activeId = id; initParentView();
+                        return;
+                    }
                 }
             }
             alert("❌ Unauthorized System Entry Credentials");
@@ -413,7 +432,6 @@
 
         function switchTeacherTab(targetTab) {
             currentTeacherTab = targetTab;
-            
             const btnStudents = document.getElementById('tab-btn-students');
             const btnAttendance = document.getElementById('tab-btn-attendance');
             const paneStudents = document.getElementById('tab-pane-students');
@@ -460,21 +478,21 @@
 
             for(let i=1; i<=45; i++) {
                 const sId = `${cls}-${i}`;
-                const data = (db && db.students && db.students[sId]) ? db.students[sId] : { name: "" };
+                const data = (db && db.students && db.students[sId]) ? db.students[sId] : { name: "", pass: "" };
                 if(search && !data.name.toLowerCase().includes(search) && !sId.toLowerCase().includes(search)) continue;
                 
-                // Deterministic configuration for security credentials
-                const standardPasswordFormulaOutput = "school" + i;
+                const fallbackPasswordValue = "school" + i;
+                const activePasswordToShow = data.pass !== undefined && data.pass !== "" ? data.pass : fallbackPasswordValue;
                 
                 tbody.innerHTML += `
                     <tr class="border-b hover:bg-indigo-50/30 transition-colors">
                         <td class="p-4 font-mono text-slate-400 text-xs">${i}</td>
                         <td class="p-4">
-                            <input type="text" value="${data.name}" onchange="updateProfileDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none border-b border-transparent focus:border-indigo-400 p-1 font-bold text-slate-800 text-sm">
+                            <input type="text" value="${data.name}" onchange="updateProfileFieldDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none border-b border-transparent focus:border-indigo-400 p-1 font-bold text-slate-800 text-sm">
                             <span class="text-[10px] text-slate-400 block font-mono">Roll ID: ${sId}</span>
                         </td>
-                        <td class="p-4 text-center font-mono text-xs text-indigo-600 font-bold bg-slate-50/50">
-                            ${standardPasswordFormulaOutput}
+                        <td class="p-4 text-center">
+                            <input type="text" value="${activePasswordToShow}" onchange="updateProfileFieldDirect('${sId}','pass',this.value)" placeholder="${fallbackPasswordValue}" class="border rounded-lg px-2 py-1 text-xs font-mono font-bold text-indigo-600 bg-slate-50 text-center w-32 focus:ring-2 ring-indigo-300 outline-none">
                         </td>
                         <td class="p-4 text-center">
                             <button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all">Manage Academic</button>
@@ -483,13 +501,12 @@
             }
         }
 
-        function updateProfileDirect(id, field, val) {
-            if(!db.students[id]) db.students[id] = { name: "" };
+        function updateProfileFieldDirect(id, field, val) {
+            if(!db.students[id]) db.students[id] = { name: "", pass: "" };
             db.students[id][field] = val; 
             syncToCloud();
         }
 
-        // Dedicated Separate Attendance Rendering logic
         function renderAttendancePanel() {
             const cls = document.getElementById('class-select').value;
             const selectedDate = document.getElementById('attendance-date').value;
@@ -499,11 +516,10 @@
             tbody.innerHTML = '';
 
             if(!selectedDate) {
-                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 text-xs">Please configure an execution date to register records.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 text-xs">Please configure an execution date.</td></tr>`;
                 return;
             }
 
-            // Isolate existing status frameworks or allocate dynamic fresh buffers
             if(!db.attendance[cls]) db.attendance[cls] = {};
             if(!db.attendance[cls][selectedDate]) db.attendance[cls][selectedDate] = {};
             
@@ -513,10 +529,9 @@
             for(let i=1; i<=45; i++) {
                 const sId = `${cls}-${i}`;
                 const data = db.students[sId];
-                if(!data || !data.name) continue; // Only load active, named student profiles
+                if(!data || !data.name) continue; 
                 activeCount++;
 
-                // Default status is Present unless marked Absent
                 if(localAttendanceBuffer[sId] === undefined) {
                     localAttendanceBuffer[sId] = "Present"; 
                 }
@@ -538,16 +553,14 @@
             }
 
             if(activeCount === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 text-xs font-medium">No active student names assigned in Class ${cls} yet.<br><span class="text-[11px] text-indigo-500 font-bold">Please add student names in the Student Management Ledger tab first.</span></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 text-xs font-medium">No active student profiles found in Class ${cls}.<br><span class="text-[11px] text-indigo-500 font-bold">Add student names inside the Student Management Ledger first.</span></td></tr>`;
             }
         }
 
         function setLocalAttendanceStatus(sId, status) {
             localAttendanceBuffer[sId] = status;
-            
             const btnPres = document.getElementById(`btn-pres-${sId}`);
             const btnAbs = document.getElementById(`btn-abs-${sId}`);
-            
             if(status === "Present") {
                 btnPres.className = "px-3 py-1 rounded-md text-xs font-bold transition-all bg-emerald-500 text-white shadow-sm";
                 btnAbs.className = "px-3 py-1 rounded-md text-xs font-bold transition-all text-slate-500 hover:text-slate-800";
@@ -560,14 +573,101 @@
         function commitAttendanceSheet() {
             const cls = document.getElementById('class-select').value;
             const selectedDate = document.getElementById('attendance-date').value;
-            if(!selectedDate) return alert("Select a valid session ledger log date!");
+            if(!selectedDate) return alert("Select a date first!");
 
             if(!db.attendance[cls]) db.attendance[cls] = {};
             db.attendance[cls][selectedDate] = localAttendanceBuffer;
             
             syncToCloud();
-            alert(`📝 Attendance logged successfully for Class ${cls} on date: ${selectedDate}`);
+            alert(`📝 Attendance logged successfully for Class ${cls} on: ${selectedDate}`);
             refreshCurrentTeacherTab();
+        }
+
+        // FEATURE 2A: PURGE ALL CLASS PROFILES ONLY
+        function purgeClassProfiles() {
+            const cls = document.getElementById('class-select').value;
+            if(!confirm(`⚠️ CRITICAL COMMAND:\nAre you sure you want to permanently delete ALL student names, profiles, and configuration passwords for Class ${cls}? This cannot be undone.`)) return;
+            
+            for(let i=1; i<=45; i++) {
+                const sId = `${cls}-${i}`;
+                if(db.students[sId]) delete db.students[sId];
+                
+                // Clear any academic scores assigned to this specific profile line
+                EXAMS.forEach(ex => {
+                    if(db.records[`${sId}_${ex}`]) delete db.records[`${sId}_${ex}`];
+                });
+            }
+            syncToCloud();
+            alert(`🗑️ All student profiles for Class ${cls} have been dropped successfully.`);
+            refreshCurrentTeacherTab();
+        }
+
+        // FEATURE 2B: PURGE CLASS ATTENDANCE HISTORY ONLY
+        function purgeClassAttendance() {
+            const cls = document.getElementById('class-select').value;
+            if(!confirm(`⚠️ CRITICAL COMMAND:\nAre you sure you want to completely clear the entire historical attendance ledger for Class ${cls}? This will reset all working day counts.`)) return;
+            
+            if(db.attendance[cls]) {
+                delete db.attendance[cls];
+            }
+            syncToCloud();
+            alert(`🛑 Attendance data cleared for Class ${cls}.`);
+            refreshCurrentTeacherTab();
+        }
+
+        // FEATURE 3: CHRONOLOGICAL SPREADSHEET MATRIX ENGINE (.CSV EXPORTER)
+        function exportClassAttendanceCSV() {
+            const cls = document.getElementById('class-select').value;
+            if(!db.attendance || !db.attendance[cls] || Object.keys(db.attendance[cls]).length === 0) {
+                return alert(`No attendance records found to export for Class ${cls}.`);
+            }
+
+            // Extract, filter, and sort dates chronologically
+            const sortedDates = Object.keys(db.attendance[cls]).sort((a, b) => new Date(a) - new Date(b));
+
+            // Gather active student rows
+            let activeStudents = [];
+            for(let i=1; i<=45; i++) {
+                const sId = `${cls}-${i}`;
+                if(db.students[sId] && db.students[sId].name) {
+                    activeStudents.push({ id: sId, roll: i, name: db.students[sId].name });
+                }
+            }
+
+            if(activeStudents.length === 0) {
+                return alert("No student profiles exist to populate rows. Ensure profiles have names.");
+            }
+
+            // Build CSV Header Row
+            let csvRows = [];
+            let headerRow = ["Roll No", "Student ID", "Student Name"];
+            
+            // Format dates cleanly for spreadsheet column headers
+            sortedDates.forEach(dateStr => {
+                headerRow.push(dateStr);
+            });
+            csvRows.push(headerRow.join(","));
+
+            // Compile data rows
+            activeStudents.forEach(student => {
+                let row = [student.roll, student.id, `"${student.name.replace(/"/g, '""')}"`];
+                
+                sortedDates.forEach(dateStr => {
+                    const status = db.attendance[cls][dateStr][student.id] || "N/A";
+                    row.push(status);
+                });
+                csvRows.push(row.join(","));
+            });
+
+            // Trigger file download pipeline
+            const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const downloadLink = document.createElement("a");
+            downloadLink.setAttribute("href", encodedUri);
+            downloadLink.setAttribute("download", `Attendance_Ledger_Class_${cls}_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
         }
 
         function openMarksModal(id) {
@@ -581,7 +681,6 @@
         function loadExistingMarks() {
             const exam = document.getElementById('m-exam').value;
             const rec = db.records[`${activeId}_${exam}`] || { marks: {}, remarks: "", cw: "🟢 Active & Regular", hw: "🟢 On-Time & Excellent" };
-            
             SUBJECTS.forEach(s => document.getElementById(`inp-${s}`).value = rec.marks[s] || "");
             document.getElementById('m-remarks').value = rec.remarks || "";
             document.getElementById('m-cw-status').value = rec.cw || "🟢 Active & Regular";
@@ -599,7 +698,7 @@
             SUBJECTS.forEach(s => rec.marks[s] = document.getElementById(`inp-${s}`).value);
             db.records[`${activeId}_${exam}`] = rec; 
             syncToCloud();
-            alert("Academic file committed to ledger cloud database."); showScreen('screen-teacher');
+            alert("Academic file committed to cloud."); showScreen('screen-teacher');
         }
 
         function initParentView() {
@@ -607,21 +706,17 @@
             document.getElementById('p-id').innerText = `ROLL ID TERMINAL: ${activeId}`;
             const sel = document.getElementById('p-exam-view');
             sel.innerHTML = EXAMS.map(e => `<option>${e}</option>`).join('');
-            
             renderParentReport(); 
             showScreen('screen-parent');
         }
 
         function renderParentReport() {
             const targetClass = activeId.split('-')[0];
-            
-            // ACCURATE TOTAL WORKING DAYS METRIC COMPILER
             let totalWorkingSessionDays = 0;
             let totalDaysChildAttended = 0;
 
             if (db.attendance && db.attendance[targetClass]) {
                 const sessionDatesMap = db.attendance[targetClass];
-                // Loop through all unique registered session dates in the system
                 for (const targetSessionDate in sessionDatesMap) {
                     if (sessionDatesMap[targetSessionDate][activeId] !== undefined) {
                         totalWorkingSessionDays++;
@@ -634,8 +729,6 @@
 
             const attendancePercentage = totalWorkingSessionDays > 0 ? Math.round((totalDaysChildAttended / totalWorkingSessionDays) * 100) : 100;
             document.getElementById('p-attn-percent').innerText = `${attendancePercentage}%`;
-            
-            // Updated Parent Label Format
             document.getElementById('p-attn-fraction').innerText = `Working Days: ${totalWorkingSessionDays} | Attended: ${totalDaysChildAttended}`;
 
             const exam = document.getElementById('p-exam-view').value;
@@ -644,7 +737,7 @@
             const rem = document.getElementById('p-remarks-display');
             
             if(!rec) { 
-                disp.innerHTML = "<p class='text-slate-400 text-xs py-4'>No analytical results posted yet for this term.</p>"; 
+                disp.innerHTML = "<p class='text-slate-400 text-xs py-4'>No analytical results posted yet.</p>"; 
                 rem.innerText = "No evaluation remarks recorded.";
                 document.getElementById('p-strongest-subject').innerText = "—";
                 document.getElementById('p-weakest-subject').innerText = "—";
@@ -680,7 +773,6 @@
                     document.getElementById('p-weakest-subject').innerText = `${validScores[validScores.length - 1].subject} (${validScores[validScores.length - 1].score})`;
                 }
             }
-
             renderAnalyticsChart();
         }
 
