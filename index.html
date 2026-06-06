@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AcademIQ Portal | Enterprise School Management Ecosystem</title>
+    <title>EduFlow PRO | Enterprise School Management Ecosystem</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -34,7 +34,7 @@
 
     <nav id="main-nav" class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div class="flex flex-col">
-            <h1 class="text-xl font-black text-indigo-600 tracking-tighter">ACADEMIQ <span class="text-slate-400 font-light">PORTAL</span></h1>
+            <h1 class="text-xl font-black text-indigo-600 tracking-tighter">EDUFLOW <span class="text-slate-400 font-light">PRO</span></h1>
             <span id="nav-school-display" class="text-[10px] text-slate-400 font-mono uppercase tracking-wider font-bold">Secure Network Workspace</span>
         </div>
         <div class="flex items-center gap-4">
@@ -45,45 +45,63 @@
 
     <main class="flex-1 flex items-center justify-center p-4 md:p-8 w-full">
 
-        <section id="screen-gate" class="screen active w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        <section id="screen-gate" class="screen active w-full max-w-6xl mx-auto space-y-8">
             
-            <div class="md:col-span-2 space-y-6">
-                <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-100">
-                    <span class="text-xl">💼</span>
-                </div>
-                <div class="space-y-2">
-                    <h2 class="text-3xl font-black tracking-tight text-slate-900">Unified School Management Workspace</h2>
-                    <p class="text-sm text-slate-500 leading-relaxed">Welcome to AcademIQ. This platform offers secure, professional environments for modern schools. It streamlines operations for administrators, facilitates instruction for educators, and delivers real-time performance analytics directly to parents.</p>
-                </div>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button onclick="showScreen('screen-login')" class="bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-md text-xs tracking-wide">Sign In to Your Workspace</button>
-                    <button onclick="showScreen('screen-register')" class="bg-white text-slate-700 border p-4 rounded-xl font-bold hover:bg-slate-50 transition-all text-xs tracking-wide shadow-sm">Register a New Institution</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                <div class="md:col-span-2 space-y-6">
+                    <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-100">
+                        <span class="text-xl">🚀</span>
+                    </div>
+                    <div class="space-y-2">
+                        <h2 class="text-4xl font-black tracking-tight text-slate-900">Smart Education. Simplified Management.</h2>
+                        <p class="text-sm text-slate-500 leading-relaxed">EduFlow PRO provides dynamic, highly isolated cloud environments built to power modern academic institutions. Engineered to ensure bulletproof security, simplify grading schemas, and connect parent stakeholders directly with verified student learning trajectories.</p>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="showScreen('screen-login')" class="bg-indigo-600 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-md text-xs tracking-wide">Get Started</button>
+                        <button onclick="showScreen('screen-register')" class="bg-white text-slate-700 border border-slate-200 px-6 py-3.5 rounded-xl font-bold hover:bg-slate-50 transition-all text-xs tracking-wide shadow-sm">Contact Us / Register</button>
+                    </div>
                 </div>
 
-                <div class="bg-white border rounded-2xl p-6 shadow-sm space-y-3">
-                    <h4 class="font-bold text-indigo-600 uppercase tracking-wider text-[10px]">Ecosystem Capabilities</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-600">
-                        <div class="flex gap-2"><span>🛡️</span> <div><strong>Granular Security:</strong> Isolated institutional nodes managed via structural access parameters.</div></div>
-                        <div class="flex gap-2"><span>📊</span> <div><strong>Live Grading Matrix:</strong> Flexible assessment configuration engines tracking outcomes instantly.</div></div>
+                <div class="bg-white border rounded-3xl p-6 shadow-sm space-y-4">
+                    <h3 class="font-black text-xs uppercase tracking-wider text-indigo-600">Our Vision</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">To become one of India's leading educational technology platforms, helping schools operate smarter, faster, and more efficiently through innovation and artificial intelligence.</p>
+                    <hr>
+                    <div class="flex gap-3 items-center text-xs text-slate-500">
+                        <span class="text-base">🛡️</span>
+                        <div><strong>Granular Security:</strong> Structurally isolated data layers built over global Firebase storage systems.</div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-b from-slate-900 to-slate-800 text-white p-6 rounded-3xl border border-slate-700 space-y-4 shadow-xl">
-                <div class="border-b border-slate-700 pb-3">
-                    <h3 class="font-black text-sm uppercase tracking-wider text-indigo-400">About the Founder</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Platform Design & Technical Architecture</p>
+            <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-8 rounded-3xl shadow-xl border border-slate-700 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                <div class="md:col-span-2 space-y-4">
+                    <div class="space-y-1">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-indigo-400 font-mono">Architect Profile</span>
+                        <h3 class="text-2xl font-black tracking-tight">About the Founder</h3>
+                        <p class="text-sm font-bold text-slate-300">Shravan Dubey — <span class="text-indigo-300 font-light">Founder & Developer, EduFlow PRO</span></p>
+                    </div>
+                    <blockquote class="border-l-2 border-indigo-500 pl-4 text-xs italic text-slate-300 leading-relaxed">
+                        "I believe education should be supported by technology that saves time, improves efficiency, and creates better learning environments for students and educators."
+                    </blockquote>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Through EduFlow PRO, my goal is to help schools embrace modern digital solutions while making management simpler, smarter, and more effective.
+                    </p>
                 </div>
-                <div class="space-y-3 text-xs leading-relaxed text-slate-300">
-                    <p>Greetings, I am the lead software architect behind **AcademIQ**. My goal was to develop an efficient, high-performance web dashboard that replaces old legacy tracking tools with live cloud coordination frameworks.</p>
-                    <p>By implementing real-time data listener pipes and structured audit safety layers, this engine enables institutions to protect data integrity while optimizing academic workflows.</p>
-                </div>
-                <hr class="border-slate-700">
-                <div class="text-[10px] text-slate-400 font-mono space-y-1">
-                    <div>👨‍💻 AUTHOR: Core System Engineer Node</div>
-                    <div>🛠️ COMPONENT: Real-time Cloud Store Framework</div>
-                    <div>🌐 STATUS: Node Enterprise Active</div>
+                <div class="bg-slate-800/60 border border-slate-700 p-6 rounded-2xl space-y-3">
+                    <h4 class="font-bold text-xs uppercase text-indigo-400 font-mono tracking-wider">Connect With Me</h4>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center gap-2 text-slate-300">
+                            <span>📧</span> <a href="mailto:your-dubeyshravan2009@gmail.com" class="hover:text-white transition-all underline font-mono text-[11px]">your-dubeyshravan2009@gmail.com</a>
+                        </div>
+                        <div class="flex items-center gap-2 text-slate-300">
+                            <span>📸</span> <a href="https://instagram.com/shravandubey.2807" target="_blank" class="hover:text-white transition-all font-mono">@shravandubey.2807</a>
+                        </div>
+                    </div>
+                    <hr class="border-slate-700 my-2">
+                    <div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest">
+                        ⚡ Engineered in India
+                    </div>
                 </div>
             </div>
         </section>
@@ -92,7 +110,7 @@
             <div class="bg-white p-6 rounded-3xl border shadow-xl space-y-4">
                 <div>
                     <h3 class="text-xl font-black text-slate-800">Institution Registration</h3>
-                    <p class="text-xs text-slate-400">Submit your facility criteria to request a dedicated infrastructure deployment code.</p>
+                    <p class="text-xs text-slate-400">Submit your facility criteria to request a dedicated infrastructure deployment code for EduFlow PRO.</p>
                 </div>
                 <hr>
                 <div class="space-y-3">
@@ -120,7 +138,7 @@
             <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200 space-y-4">
                 <div>
                     <h2 class="text-xl font-black text-slate-800">Identity Authentication</h2>
-                    <p class="text-xs text-slate-400">Please provide verified corporate network credentials below.</p>
+                    <p class="text-xs text-slate-400">Please provide verified credentials to enter your institutional workspace node.</p>
                 </div>
                 <hr>
                 <div class="space-y-3">
