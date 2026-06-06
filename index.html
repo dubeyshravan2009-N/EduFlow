@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AcademIQ Portal | Enterprise Architecture</title>
+    <title>AcademIQ Portal | Enterprise Infrastructure</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -13,58 +13,151 @@
     
     <style>
         .screen { display: none; }
-        .active { display: block; animation: smoothReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .active { display: block; animation: smoothReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes smoothReveal {
-            from { opacity: 0; transform: scale(0.97) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-900 flex flex-col">
+<body class="bg-slate-50 min-h-screen text-slate-900 flex flex-col font-sans">
 
-    <nav id="main-nav" class="hidden bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+    <nav id="main-nav" class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div class="flex flex-col">
-            <h1 class="text-2xl font-black text-indigo-600 tracking-tighter">ACADEMIQ <span class="text-slate-400 font-light">PORTAL</span></h1>
-            <span id="nav-school-display" class="text-[10px] text-slate-400 font-mono uppercase tracking-widest font-bold"></span>
+            <h1 class="text-xl font-black text-indigo-600 tracking-tighter">ACADEMIQ <span class="text-slate-400 font-light">PORTAL</span></h1>
+            <span id="nav-school-display" class="text-[10px] text-slate-400 font-mono uppercase tracking-wider font-bold">Secure Gateway Node</span>
         </div>
         <div class="flex items-center gap-4">
-            <div id="cloud-status" class="text-[10px] bg-amber-100 text-amber-600 px-3 py-1 rounded-full font-bold uppercase">Syncing...</div>
             <span id="role-badge" class="hidden px-3 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-600 uppercase"></span>
-            <button id="logout-btn" onclick="triggerSessionLogout()" class="hidden text-red-500 text-sm font-bold border border-red-200 px-3 py-1 rounded-lg hover:bg-red-50">Logout</button>
+            <button id="logout-btn" onclick="triggerSessionLogout()" class="hidden text-red-500 text-xs font-bold border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50">Logout</button>
         </div>
     </nav>
 
     <main class="flex-1 flex items-center justify-center p-4 md:p-8 w-full">
 
-        <section id="screen-credits" class="screen active w-full max-w-2xl mx-auto text-center py-6">
-            <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-xl shadow-indigo-200">
-                <span class="text-2xl">🦉</span>
+        <section id="screen-gate" class="screen active w-full max-w-md mx-auto text-center space-y-6">
+            <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 w-14 h-14 rounded-2xl mx-auto flex items-center justify-center shadow-xl shadow-indigo-100">
+                <span class="text-xl">🦉</span>
             </div>
-            <h1 class="text-3xl md:text-4xl font-black tracking-tight text-slate-900 mb-2">Welcome to <span class="text-indigo-600">AcademIQ Portal</span></h1>
-            <p class="text-slate-500 max-w-md mx-auto text-xs md:text-sm mb-6">Multi-tenant institutional infrastructure offering isolated ledger management and unalterable change audits.</p>
-            <button onclick="checkPersistentSession()" class="bg-indigo-600 text-white px-8 py-3.5 rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all text-sm">Launch Enterprise Terminal</button>
+            <div>
+                <h2 class="text-2xl font-black tracking-tight text-slate-900">Institutional Workspace</h2>
+                <p class="text-xs text-slate-400 mt-1">Access your network workspace or apply for host terminal registration.</p>
+            </div>
+            <div class="grid grid-cols-1 gap-3">
+                <button onclick="showScreen('screen-login')" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-md text-xs">Sign In To Workspace</button>
+                <button onclick="showScreen('screen-register')" class="w-full bg-white text-slate-700 border p-4 rounded-xl font-bold hover:bg-slate-50 transition-all text-xs">Request New School Registration</button>
+            </div>
         </section>
 
-        <section id="screen-login" class="screen w-full">
-            <div class="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-2xl border border-slate-200">
-                <h2 class="text-2xl font-bold mb-1 text-center text-slate-800">System Gateway</h2>
-                <p class="text-[11px] text-slate-400 text-center mb-6">Enter your dedicated institutional keys below.</p>
-                <div class="space-y-4">
+        <section id="screen-register" class="screen w-full max-w-md mx-auto">
+            <div class="bg-white p-6 rounded-3xl border shadow-xl space-y-4">
+                <div>
+                    <h3 class="text-xl font-black text-slate-800">Registration Request</h3>
+                    <p class="text-xs text-slate-400">Applications are routed instantly to the network super administrator for approval codes.</p>
+                </div>
+                <hr>
+                <div class="space-y-3">
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Institutional Code</label>
-                        <input id="auth-school" type="text" placeholder="e.g., DPS-101, KVS-202" class="w-full border rounded-xl p-3 text-sm font-mono uppercase bg-slate-50 outline-none focus:ring-2 ring-indigo-400">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Institution Name</label>
+                        <input id="reg-name" type="text" placeholder="e.g., Greenfield High School" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">User ID Configuration</label>
-                        <input id="auth-id" type="text" placeholder="admin, teacher, auditor, or 10A-5" class="w-full border rounded-xl p-3 text-sm outline-none focus:ring-2 ring-indigo-400">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Administrator Email</label>
+                        <input id="reg-email" type="email" placeholder="principal@school.com" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Passkey</label>
-                        <input id="auth-pass" type="password" placeholder="••••••••" class="w-full border rounded-xl p-3 text-sm outline-none focus:ring-2 ring-indigo-400">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Contact Phone</label>
+                        <input id="reg-phone" type="text" placeholder="+1 555-0144" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
                     </div>
-                    <button onclick="handleSecureLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg text-sm">Verify Security Credentials</button>
+                    <button onclick="submitRegistrationRequest()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold hover:bg-emerald-700 text-xs shadow-md">Submit Access Application</button>
+                    <button onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Return to Menu</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-login" class="screen w-full max-w-md mx-auto">
+            <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200 space-y-4">
+                <div>
+                    <h2 class="text-xl font-black text-slate-800">Security Gateway</h2>
+                    <p class="text-xs text-slate-400">Provide verified network credentials below.</p>
+                </div>
+                <hr>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">School Code / Network Route</label>
+                        <input id="auth-school" type="text" placeholder="Enter Code (Leave blank for Super Admin)" class="w-full border rounded-xl p-3 text-xs font-mono uppercase bg-slate-50 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Access Profile Role</label>
+                        <select id="auth-role" class="w-full border rounded-xl p-3 text-xs bg-slate-50 font-bold outline-none">
+                            <option value="admin">Principal / School Admin</option>
+                            <option value="teacher">Classroom Teacher</option>
+                            <option value="parent">Parent / Student Viewer</option>
+                            <option value="auditor">Independent Auditor</option>
+                            <option value="superadmin">👑 Network Super Administrator</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">User Identifier ID (For Parents/Students only)</label>
+                        <input id="auth-id" type="text" placeholder="e.g., 10A-5" class="w-full border rounded-xl p-3 text-xs outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Passkey Key</label>
+                        <input id="auth-pass" type="password" placeholder="••••••••" class="w-full border rounded-xl p-3 text-xs outline-none">
+                    </div>
+                    <button onclick="handleSecureLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 shadow-md text-xs">Authenticate Identity</button>
+                    <button onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Back</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-superadmin" class="screen w-full max-w-6xl">
+            <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-black tracking-tight text-indigo-400">Network Command Center</h2>
+                    <p class="text-xs text-slate-400">Global multi-tenant system oversight and real-time permission controls.</p>
+                </div>
+                <div class="bg-indigo-600 text-white px-4 py-1.5 rounded-full text-xs font-bold font-mono">Master Root Console</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active School Vaults</span>
+                    <h3 id="stat-schools" class="text-2xl font-black text-indigo-600 mt-1">Loading...</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Global Registrations Requested</span>
+                    <h3 id="stat-requests" class="text-2xl font-black text-amber-600 mt-1">0 Pending</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">System Operational Status</span>
+                    <h3 class="text-2xl font-black text-emerald-600 mt-1 flex items-center gap-1.5">🟢 Online</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border shadow-sm p-6 space-y-4">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <div>
+                        <h3 class="font-black text-slate-800 text-base">Incoming Registration Requests</h3>
+                        <p class="text-xs text-slate-400">Approve submissions below to allocate structural production space instantly.</p>
+                    </div>
+                    <span id="badge-request-count" class="bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-full">0 Requests</span>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 text-slate-400 font-bold uppercase border-b text-[10px]">
+                            <tr>
+                                <th class="p-4">Institution Context</th>
+                                <th class="p-4">Primary Email Contact</th>
+                                <th class="p-4">Phone Contact</th>
+                                <th class="p-4 text-center">Action Framework</th>
+                            </tr>
+                        </thead>
+                        <tbody id="superadmin-requests-table">
+                            <tr><td colspan="4" class="p-6 text-center text-slate-400">No active pending registration applications inside the pipeline.</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
@@ -75,64 +168,37 @@
                 <button id="tab-btn-attendance" onclick="switchTeacherTab('attendance')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📅 Daily Attendance</button>
                 <button id="tab-btn-config" onclick="switchTeacherTab('config')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700 admin-only">⚙️ Exam Setup</button>
             </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-1 space-y-4">
                     <div class="bg-white p-5 rounded-2xl border shadow-sm">
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Class Scope</label>
                         <select id="class-select" onchange="refreshCurrentTeacherTab()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold mb-4 text-xs"></select>
-                        
                         <div id="search-container">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Roster Filter</label>
                             <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Name or Roll..." class="w-full border p-2 rounded-lg text-xs">
                         </div>
-
                         <div id="date-picker-container" class="hidden border-t pt-3 mt-2">
                             <label class="block text-[10px] font-bold text-indigo-600 mb-1 uppercase">Working Date</label>
                             <input id="attendance-date" type="date" onchange="renderAttendancePanel()" class="w-full border p-2 rounded-lg text-xs bg-indigo-50/50 font-bold">
                         </div>
                     </div>
-
                     <div class="bg-white p-4 rounded-2xl border shadow-sm space-y-2">
-                        <h4 class="text-[10px] font-bold text-slate-400 uppercase">File Utilities</h4>
-                        <button onclick="exportClassAttendanceCSV()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl transition-all shadow-sm">📊 Export Attendance (.CSV)</button>
+                        <button onclick="exportClassAttendanceCSV()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl transition-all">📊 Export Attendance (.CSV)</button>
                     </div>
-
                     <div class="bg-rose-50 border border-rose-200 p-4 rounded-2xl space-y-2 admin-only">
-                        <h4 class="text-[10px] font-black text-rose-700 uppercase">⚠️ Data Purge System</h4>
-                        <button onclick="purgeClassProfiles()" class="w-full bg-white text-rose-700 border border-rose-200 font-bold text-[11px] py-2 rounded-lg hover:bg-rose-100">🗑️ Drop Selected Class Profiles</button>
-                        <button onclick="purgeClassAttendance()" class="w-full bg-white text-rose-700 border border-rose-200 font-bold text-[11px] py-2 rounded-lg hover:bg-rose-100">🛑 Clear Class Attendance Ledger</button>
+                        <button onclick="purgeClassProfiles()" class="w-full bg-white text-rose-700 border border-rose-200 font-bold text-[11px] py-2 rounded-lg hover:bg-rose-100">🗑️ Drop Student Profiles</button>
                     </div>
                 </div>
-
                 <div class="lg:col-span-3 bg-white rounded-2xl border shadow-sm overflow-hidden">
                     <div id="tab-pane-students" class="max-h-[70vh] overflow-y-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-50 sticky top-0 shadow-sm z-10">
-                                <tr>
-                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Roll</th>
-                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase">Student Name Meta</th>
-                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">System Access Password</th>
-                                    <th class="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">Academics</th>
-                                </tr>
-                            </thead>
-                            <tbody id="teacher-table-body"></tbody>
-                        </table>
+                        <table class="w-full text-left text-xs"><thead class="bg-slate-50 sticky top-0 shadow-sm z-10"><tr><th class="p-4">Roll</th><th class="p-4">Student Name Meta</th><th class="p-4 text-center">Password</th><th class="p-4 text-center">Academics</th></tr></thead><tbody id="teacher-table-body"></tbody></table>
                     </div>
-
                     <div id="tab-pane-attendance" class="hidden p-4 max-h-[70vh] overflow-y-auto">
-                        <table class="w-full text-left text-xs mb-4">
-                            <thead class="bg-slate-50">
-                                <tr><th class="p-4">Roll</th><th class="p-4">Student</th><th class="p-4 text-center">Status</th></tr>
-                            </thead>
-                            <tbody id="attendance-table-body"></tbody>
-                        </table>
+                        <table class="w-full text-left text-xs mb-4"><thead class="bg-slate-50"><tr><th class="p-4">Roll</th><th class="p-4">Student</th><th class="p-4 text-center">Status</th></tr></thead><tbody id="attendance-table-body"></tbody></table>
                         <button onclick="commitAttendanceSheet()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs">💾 Commit Attendance Sheet</button>
                     </div>
-
                     <div id="tab-pane-config" class="hidden p-6 max-h-[70vh] overflow-y-auto space-y-4">
                         <h3 class="font-black text-slate-700 text-base">Grading Configuration Deck</h3>
-                        <p class="text-xs text-slate-400">Map custom exams and specify their absolute maximum point thresholds below.</p>
                         <div id="exam-config-rows" class="space-y-2"></div>
                         <button onclick="saveExamConfiguration()" class="bg-indigo-600 text-white text-xs font-bold px-6 py-2 rounded-xl">Save Grading Matrix</button>
                     </div>
@@ -141,90 +207,33 @@
         </section>
 
         <section id="screen-auditor" class="screen w-full max-w-5xl">
-            <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl mb-6 flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-black tracking-tight text-indigo-400">Security Audit Infrastructure</h2>
-                    <p class="text-xs text-slate-400">Unalterable chronological stream tracking all school modifications.</p>
-                </div>
-                <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-3 py-1 rounded-full text-xs font-mono">Immutable Logs</span>
-            </div>
-            <div class="bg-white rounded-2xl border shadow-sm overflow-hidden max-h-[65vh] overflow-y-auto">
-                <table class="w-full text-left text-xs">
-                    <thead class="bg-slate-50 sticky top-0 shadow-sm border-b">
-                        <tr>
-                            <th class="p-4 font-bold text-slate-400 uppercase">Timestamp</th>
-                            <th class="p-4 font-bold text-slate-400 uppercase">Operator</th>
-                            <th class="p-4 font-bold text-slate-400 uppercase">Modification Type</th>
-                            <th class="p-4 font-bold text-slate-400 uppercase">Log Metadata Details</th>
-                        </tr>
-                    </thead>
-                    <tbody id="auditor-table-body" class="font-mono"></tbody>
-                </table>
+            <div class="bg-slate-900 text-white p-6 rounded-3xl mb-6 flex justify-between items-center"><div><h2 class="text-xl font-black text-indigo-400">Security Audit Logs</h2></div></div>
+            <div class="bg-white rounded-2xl border overflow-hidden max-h-[65vh] overflow-y-auto">
+                <table class="w-full text-left text-xs"><thead class="bg-slate-50 sticky top-0 border-b"><tr><th class="p-4">Timestamp</th><th class="p-4">Operator</th><th class="p-4">Modification</th><th class="p-4">Details</th></tr></thead><tbody id="auditor-table-body" class="font-mono"></tbody></table>
             </div>
         </section>
 
         <section id="screen-marks" class="screen w-full max-w-2xl">
             <div class="bg-white p-8 rounded-3xl border shadow-2xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 id="m-student-name" class="text-2xl font-bold text-slate-800">Academic Entry</h2>
-                    <select id="m-exam" onchange="loadExistingMarks()" class="border rounded-lg p-2 font-bold bg-slate-50 text-xs outline-none"></select>
-                </div>
+                <div class="flex justify-between items-center mb-6"><h2 id="m-student-name" class="text-xl font-bold">Academic Entry</h2><select id="m-exam" onchange="loadExistingMarks()" class="border rounded-lg p-2 font-bold bg-slate-50 text-xs"></select></div>
                 <div id="m-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
                 <div class="bg-slate-50 border p-4 rounded-2xl mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Behavioral Rating</label>
-                        <select id="m-cw-status" class="w-full border p-2 rounded-lg bg-white text-xs font-bold outline-none">
-                            <option>🟢 Active & Regular</option><option>🟡 Incomplete Submission</option><option>🔴 Highly Inactive</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Homework Rating</label>
-                        <select id="m-hw-status" class="w-full border p-2 rounded-lg bg-white text-xs font-bold outline-none">
-                            <option>🟢 On-Time & Excellent</option><option>🟡 Irregular Submissions</option><option>🔴 Neglected / Missing</option>
-                        </select>
-                    </div>
+                    <div><label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Behavioral Rating</label><select id="m-cw-status" class="w-full border p-2 rounded-lg bg-white text-xs font-bold"><option>🟢 Active & Regular</option><option>🟡 Incomplete</option><option>🔴 Inactive</option></select></div>
+                    <div><label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Homework Rating</label><select id="m-hw-status" class="w-full border p-2 rounded-lg bg-white text-xs font-bold"><option>🟢 On-Time</option><option>🟡 Irregular</option><option>🔴 Missing</option></select></div>
                 </div>
-                <textarea id="m-remarks" placeholder="Custom summary notes..." class="w-full border rounded-xl p-3 h-16 mb-4 text-xs outline-none"></textarea>
-                <div class="flex gap-2">
-                    <button onclick="saveMarks()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs shadow-md">Save Marks Record</button>
-                    <button onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold text-xs">Cancel</button>
-                </div>
+                <textarea id="m-remarks" placeholder="Custom summary notes..." class="w-full border rounded-xl p-3 h-16 mb-4 text-xs"></textarea>
+                <div class="flex gap-2"><button onclick="saveMarks()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs">Save Marks Record</button><button onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold text-xs">Cancel</button></div>
             </div>
         </section>
 
         <section id="screen-parent" class="screen w-full max-w-4xl">
             <div class="bg-indigo-600 p-6 rounded-3xl text-white shadow-xl mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h2 id="p-name" class="text-2xl font-bold">Student Name</h2>
-                    <p id="p-id" class="opacity-70 font-mono text-xs mt-1"></p>
-                </div>
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center min-w-[150px]">
-                    <span class="text-[9px] uppercase tracking-wider block opacity-75 font-bold">Attendance Score</span>
-                    <h3 id="p-attn-percent" class="text-xl font-black mt-0.5">100%</h3>
-                    <span id="p-attn-fraction" class="text-[9px] opacity-60 block font-mono">0 / 0 Days</span>
-                </div>
+                <div><h2 id="p-name" class="text-xl font-bold">Student Name</h2><p id="p-id" class="opacity-70 font-mono text-xs mt-1"></p></div>
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center min-w-[150px]"><span class="text-[9px] uppercase tracking-wider block opacity-75">Attendance</span><h3 id="p-attn-percent" class="text-xl font-black">100%</h3><p id="p-attn-fraction" class="text-[9px] opacity-60 font-mono"></p></div>
             </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                <div class="lg:col-span-3 space-y-4">
-                    <div class="bg-white p-6 rounded-2xl border shadow-sm">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold uppercase tracking-widest text-xs text-slate-400">Subject Performance Metric</h3>
-                            <select id="p-exam-view" onchange="renderParentReport()" class="border p-1 rounded-lg font-bold bg-slate-50 text-xs"></select>
-                        </div>
-                        <div id="p-marks-display" class="space-y-2"></div>
-                        <div id="p-remarks-display" class="mt-4 p-3 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-xl text-xs italic text-indigo-900"></div>
-                    </div>
-                </div>
-                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border shadow-sm flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold uppercase tracking-widest text-xs text-slate-400 mb-1">Performance Track</h3>
-                        <p class="text-[10px] text-slate-400 mb-4">Visual progression profile scaling against maximum exam thresholds.</p>
-                    </div>
-                    <div class="flex-1 flex items-center justify-center min-h-[220px]">
-                        <canvas id="performanceChart"></canvas>
-                    </div>
-                </div>
+                <div class="lg:col-span-3 space-y-4"><div class="bg-white p-6 rounded-2xl border"><div class="flex justify-between items-center mb-4"><h3>Subject Performance Metric</h3><select id="p-exam-view" onchange="renderParentReport()" class="border p-1 rounded-lg font-bold bg-slate-50 text-xs"></select></div><div id="p-marks-display" class="space-y-2"></div><div id="p-remarks-display" class="mt-4 p-3 bg-indigo-50 rounded-r-xl text-xs italic"></div></div></div>
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border flex flex-col justify-between"><div class="flex-1 flex items-center justify-center min-h-[220px]"><canvas id="performanceChart"></canvas></div></div>
             </div>
         </section>
 
@@ -232,7 +241,6 @@
 
     <script>
         const SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
-        
         let db = { students: {}, records: {}, attendance: {}, exams: {}, history: [] };
         let currentSchool = null;
         let currentUser = null;
@@ -241,6 +249,7 @@
         let currentTeacherTab = "students";
         let localAttendanceBuffer = {};
 
+        // Firebase Core Configurations
         const firebaseConfig = {
             apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
             authDomain: "eduflow-pro-f6d04.firebaseapp.com",
@@ -254,461 +263,259 @@
         const cloudStorage = firebase.firestore();
         let cloudUnsubscribeListener = null;
 
-        function initializeSchoolRealtimeSync(schoolId) {
-            if (cloudUnsubscribeListener) cloudUnsubscribeListener();
-            
-            cloudUnsubscribeListener = cloudStorage.collection("schools").doc(schoolId).onSnapshot((doc) => {
-                if (doc.exists) {
-                    db = doc.data();
-                    if (!db.students) db.students = {};
-                    if (!db.records) db.records = {};
-                    if (!db.attendance) db.attendance = {};
-                    if (!db.exams || Object.keys(db.exams).length === 0) db.exams = getDefaultExamsConfig();
-                    if (!db.history) db.history = [];
+        // Submit Registration Request to cloud pipeline
+        async function submitRegistrationRequest() {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            if (!name || !email || !phone) return alert("Please populate all institutional information parameters.");
+            try {
+                await cloudStorage.collection("registration_requests").add({
+                    schoolName: name, adminEmail: email, contactPhone: phone,
+                    status: "Pending Approval", timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("📩 Registration request broadcasted to Master Server successfully.");
+                document.getElementById('reg-name').value = ''; document.getElementById('reg-email').value = ''; document.getElementById('reg-phone').value = '';
+                showScreen('screen-gate');
+            } catch (err) { alert("Error: " + err.message); }
+        }
 
-                    document.getElementById('cloud-status').innerText = "☁️ Vault Isolated";
-                    document.getElementById('cloud-status').className = "text-[10px] bg-green-100 text-green-600 px-3 py-1 rounded-full font-bold uppercase";
+        // Initialize Realtime Listener for the Master Root Panel
+        function initSuperAdminListener() {
+            // Live-track registration notification pings
+            cloudStorage.collection("registration_requests")
+                .where("status", "==", "Pending Approval")
+                .onSnapshot((snapshot) => {
+                    const tbody = document.getElementById('superadmin-requests-table');
+                    document.getElementById('badge-request-count').innerText = `${snapshot.size} Applications`;
+                    document.getElementById('stat-requests').innerText = `${snapshot.size} Pending`;
                     
-                    if (currentUser) {
-                        if (currentUser.role === 'teacher' || currentUser.role === 'admin') refreshCurrentTeacherTab();
-                        if (currentUser.role === 'auditor') renderAuditorPanel();
-                        if (currentUser.role === 'parent') renderParentReport();
+                    if (snapshot.empty) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 font-sans">No pending approval queues inside the terminal context.</td></tr>`;
+                        return;
                     }
-                } else {
-                    // Auto-seed structure for completely new schools registering dynamically
-                    db = { students: {}, records: {}, attendance: {}, exams: getDefaultExamsConfig(), history: [] };
-                    syncToCloud();
-                }
+                    tbody.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const req = doc.data();
+                        tbody.innerHTML += `
+                            <tr class="border-b hover:bg-slate-50/80">
+                                <td class="p-4 font-bold text-slate-800">${req.schoolName}</td>
+                                <td class="p-4 font-mono text-slate-600">${req.adminEmail}</td>
+                                <td class="p-4 text-slate-600">${req.contactPhone}</td>
+                                <td class="p-4 text-center">
+                                    <button onclick="approveInstitutionVault('${doc.id}', '${req.schoolName.replace(/[^a-zA-Z0-9]/g, "").substring(0,6).toUpperCase()}')" class="bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-xl hover:bg-indigo-700 transition-all shadow-sm">Authorize & Deploy</button>
+                                </td>
+                            </tr>`;
+                    });
+                });
+
+            // Live-track structural cluster sizing statistics 
+            cloudStorage.collection("schools").onSnapshot(snap => {
+                document.getElementById('stat-schools').innerText = `${snap.size} System Nodes`;
             });
         }
 
-        function getDefaultExamsConfig() {
-            return { "PT-1": 50, "PT-2": 50, "PT-3": 50, "Half-Yearly": 100, "Annual": 100 };
-        }
+        // Execute dynamic cloud allocation and issue a randomized license code
+        async function approveInstitutionVault(requestId, codePrefix) {
+            const dynamicSuffix = Math.floor(1000 + Math.random() * 9000);
+            const assignedSchoolCode = `${codePrefix}-${dynamicSuffix}`;
+            
+            if(!confirm(`Deploy structural architecture code (${assignedSchoolCode}) for this facility?`)) return;
 
-        async function syncToCloud() {
-            if (!currentSchool) return;
             try {
-                // High-Security: Field verification prior to cloud write commitment
-                await cloudStorage.collection("schools").doc(currentSchool).set(db);
-            } catch (err) {
-                console.error("Cloud Security Isolation Breach Failure:", err);
+                // Initialize default metrics tree
+                await cloudStorage.collection("schools").doc(assignedSchoolCode).set({
+                    students: {}, records: {}, attendance: {},
+                    exams: { "PT-1": 50, "PT-2": 50, "Half-Yearly": 100, "Annual": 100 },
+                    history: [{ timestamp: new Date().toISOString(), operator: "MASTER_ROOT", actionType: "PROVISION", details: "Node deployed successfully." }]
+                });
+                // Clear out of incoming validation pipeline
+                await cloudStorage.collection("registration_requests").doc(requestId).update({ status: "Approved", assignedCode: assignedSchoolCode });
+                alert(`🚀 Success! Vault allocated. Assigned School Code: ${assignedSchoolCode}\nShare this code with the school management.`);
+            } catch (err) { alert("Deployment Error: " + err.message); }
+        }
+
+        // Modified Identity Validation Handler
+        async function handleSecureLogin() {
+            const school = document.getElementById('auth-school').value.trim().toUpperCase();
+            const role = document.getElementById('auth-role').value;
+            const id = document.getElementById('auth-id').value.trim();
+            const pass = document.getElementById('auth-pass').value.trim();
+
+            // 👑 Master Override Gate for your private management session
+            if (role === 'superadmin') {
+                if (pass === 'master999') {
+                    commitSession('MASTER_CORE_NODE', 'SUPER_ADMIN', 'superadmin');
+                    document.getElementById('nav-school-display').innerText = `👑 MASTER ROOT TERMINAL`;
+                    initSuperAdminListener();
+                    showScreen('screen-superadmin');
+                    return;
+                } else { return alert("❌ Security Breach: Invalid master signature keys."); }
             }
+
+            if (!school || !pass) return alert("School Code and Security Passkey are mandatory parameters.");
+            if (role === 'parent' && !id) return alert("Parent profiles require a valid Student ID.");
+
+            const docSnap = await cloudStorage.collection("schools").doc(school).get();
+            if (!docSnap.exists) return alert("❌ Error: School code unregistered or blocked from host network.");
+
+            currentSchool = school;
+            document.getElementById('nav-school-display').innerText = `🏢 Node: ${currentSchool}`;
+            initializeSchoolRealtimeSync(currentSchool);
+
+            setTimeout(() => {
+                if (role === 'admin' && pass === 'admin789') { commitSession(school, 'admin', 'admin'); initTeacherView(); return; }
+                if (role === 'teacher' && pass === 'teacher123') { commitSession(school, 'teacher', 'teacher'); initTeacherView(); return; }
+                if (role === 'auditor' && pass === 'audit123') { commitSession(school, 'auditor', 'auditor'); showScreen('screen-auditor'); return; }
+
+                if (role === 'parent') {
+                    const parts = id.split('-');
+                    if (parts.length === 2) {
+                        const rollNum = parseInt(parts[1]);
+                        if (db.students[id] && db.students[id].name) {
+                            if (pass === (db.students[id].pass || ("school" + rollNum))) {
+                                currentUser = { role: 'parent', id }; activeId = id;
+                                commitSession(school, id, 'parent'); initParentView(); return;
+                            }
+                        }
+                    }
+                }
+                alert("❌ Authentication Failure: Invalid identity mapping signatures.");
+            }, 500);
         }
 
-        async function writeAuditLog(operator, actionType, details) {
-            if (!db.history) db.history = [];
-            const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
-            db.history.unshift({ timestamp, operator, actionType, details });
-            await syncToCloud();
-        }
-
+        // Persistent Session Architecture Hook
         function checkPersistentSession() {
             const savedSchool = localStorage.getItem('session_school');
             const savedUser = localStorage.getItem('session_user');
             const savedRole = localStorage.getItem('session_role');
 
             if (savedSchool && savedUser && savedRole) {
-                currentSchool = savedSchool;
-                currentUser = { role: savedRole, id: savedUser };
+                currentSchool = savedSchool; currentUser = { role: savedRole, id: savedUser };
                 if (savedRole === 'parent') activeId = savedUser;
 
-                document.getElementById('nav-school-display').innerText = `🏢 Vault ID: ${currentSchool}`;
-                initializeSchoolRealtimeSync(currentSchool);
+                document.getElementById('nav-school-display').innerText = savedRole === 'superadmin' ? '👑 MASTER ROOT TERMINAL' : `🏢 Node: ${currentSchool}`;
                 
-                if (savedRole === 'teacher' || savedRole === 'admin') { initTeacherView(); }
-                else if (savedRole === 'auditor') { showScreen('screen-auditor'); document.getElementById('main-nav').classList.remove('hidden'); }
-                else if (savedRole === 'parent') { initParentView(); }
-            } else {
-                showScreen('screen-login');
-                document.getElementById('main-nav').classList.remove('hidden');
-            }
+                if(savedRole === 'superadmin') { initSuperAdminListener(); showScreen('screen-superadmin'); }
+                else {
+                    initializeSchoolRealtimeSync(currentSchool);
+                    if (savedRole === 'teacher' || savedRole === 'admin') initTeacherView();
+                    else if (savedRole === 'auditor') showScreen('screen-auditor');
+                    else if (savedRole === 'parent') initParentView();
+                }
+            } else { showScreen('screen-gate'); }
         }
 
-        function handleSecureLogin() {
-            const school = document.getElementById('auth-school').value.trim().toUpperCase();
-            const id = document.getElementById('auth-id').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
-
-            if (!school || !id || !pass) return alert("All access credentials must be verified.");
-
-            currentSchool = school;
-            document.getElementById('nav-school-display').innerText = `🏢 Vault ID: ${currentSchool}`;
-            
-            // Native initialization for dynamic school codes
-            initializeSchoolRealtimeSync(currentSchool);
-
-            setTimeout(() => {
-                // Rule-Based Authority Matrix
-                if (id === 'admin' && pass === 'admin789') { commitSession(school, id, 'admin'); initTeacherView(); return; }
-                if (id === 'teacher' && pass === 'teacher123') { commitSession(school, id, 'teacher'); initTeacherView(); return; }
-                if (id === 'auditor' && pass === 'audit123') { commitSession(school, id, 'auditor'); showScreen('screen-auditor'); return; }
-
-                const parts = id.split('-');
-                if (parts.length === 2) {
-                    const rollNum = parseInt(parts[1]);
-                    const fallbackPassword = "school" + rollNum;
-                    if (db.students[id] && db.students[id].name) {
-                        const actualPassword = db.students[id].pass || fallbackPassword;
-                        if (pass === actualPassword) {
-                            currentUser = { role: 'parent', id: id }; activeId = id;
-                            commitSession(school, id, 'parent');
-                            initParentView();
-                            return;
-                        }
+        function initializeSchoolRealtimeSync(schoolId) {
+            if (cloudUnsubscribeListener) cloudUnsubscribeListener();
+            cloudUnsubscribeListener = cloudStorage.collection("schools").doc(schoolId).onSnapshot((doc) => {
+                if (doc.exists) {
+                    db = doc.data();
+                    if (!db.students) db.students = {}; if (!db.records) db.records = {}; if (!db.attendance) db.attendance = {};
+                    if (!db.exams || Object.keys(db.exams).length === 0) db.exams = { "PT-1": 50, "PT-2": 50, "Half-Yearly": 100, "Annual": 100 };
+                    if (!db.history) db.history = [];
+                    if (currentUser) {
+                        if (currentUser.role === 'teacher' || currentUser.role === 'admin') refreshCurrentTeacherTab();
+                        if (currentUser.role === 'auditor') renderAuditorPanel();
+                        if (currentUser.role === 'parent') renderParentReport();
                     }
                 }
-                alert("❌ Critical: Access Denied. Security signatures do not match.");
-            }, 800); 
+            });
         }
 
-        function commitSession(school, user, role) {
-            currentUser = { role, id: user };
-            localStorage.setItem('session_school', school);
-            localStorage.setItem('session_user', user);
-            localStorage.setItem('session_role', role);
-        }
-
-        function triggerSessionLogout() {
-            localStorage.clear();
-            location.reload();
-        }
-
+        async function syncToCloud() { if (!currentSchool) return; await cloudStorage.collection("schools").doc(currentSchool).set(db); }
+        async function writeAuditLog(operator, actionType, details) { if (!db.history) db.history = []; const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19); db.history.unshift({ timestamp, operator, actionType, details }); await syncToCloud(); }
+        function commitSession(school, user, role) { currentUser = { role, id: user }; localStorage.setItem('session_school', school); localStorage.setItem('session_user', user); localStorage.setItem('session_role', role); }
+        function triggerSessionLogout() { localStorage.clear(); location.reload(); }
+        
         function initTeacherView() {
-            const select = document.getElementById('class-select');
-            let options = '';
+            const select = document.getElementById('class-select'); let options = '';
             for(let i=1; i<=10; i++) ['A', 'B'].forEach(s => options += `<option value="${i}${s}">Class ${i}${s}</option>`);
             select.innerHTML = options;
-
-            // Enforce hard view constraints across elements
-            document.querySelectorAll('.admin-only').forEach(el => {
-                el.style.display = (currentUser.role === 'admin') ? 'block' : 'none';
-            });
-
-            switchTeacherTab('students');
-            showScreen('screen-teacher');
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = (currentUser.role === 'admin') ? 'block' : 'none');
+            switchTeacherTab('students'); showScreen('screen-teacher');
         }
 
         function switchTeacherTab(targetTab) {
             currentTeacherTab = targetTab;
-            const panes = ['students', 'attendance', 'config'];
-            panes.forEach(p => {
+            ['students', 'attendance', 'config'].forEach(p => {
                 document.getElementById(`tab-pane-${p}`).classList.toggle('hidden', p !== targetTab);
                 const btn = document.getElementById(`tab-btn-${p}`);
-                if (btn) {
-                    btn.className = (p === targetTab) 
-                        ? "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white" 
-                        : "px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700";
-                }
+                if(btn) btn.className = (p === targetTab) ? "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white" : "px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700";
             });
-
             document.getElementById('search-container').classList.toggle('hidden', targetTab !== 'students');
             document.getElementById('date-picker-container').classList.toggle('hidden', targetTab !== 'attendance');
-
             if(targetTab === 'config') renderExamConfigPanel();
             refreshCurrentTeacherTab();
         }
 
-        function refreshCurrentTeacherTab() {
-            if (currentTeacherTab === 'students') renderTeacherList();
-            else if (currentTeacherTab === 'attendance') renderAttendancePanel();
-        }
-
+        function refreshCurrentTeacherTab() { if (currentTeacherTab === 'students') renderTeacherList(); else if (currentTeacherTab === 'attendance') renderAttendancePanel(); }
+        
         function renderTeacherList() {
-            const cls = document.getElementById('class-select').value;
-            const search = document.getElementById('search-input').value.toLowerCase();
-            const tbody = document.getElementById('teacher-table-body');
-            tbody.innerHTML = '';
-
+            const cls = document.getElementById('class-select').value; const search = document.getElementById('search-input').value.toLowerCase();
+            const tbody = document.getElementById('teacher-table-body'); tbody.innerHTML = '';
             for(let i=1; i<=45; i++) {
-                const sId = `${cls}-${i}`;
-                const data = db.students[sId] || { name: "", pass: "" };
+                const sId = `${cls}-${i}`; const data = db.students[sId] || { name: "", pass: "" };
                 if(search && !data.name.toLowerCase().includes(search) && !sId.toLowerCase().includes(search)) continue;
-                
-                const fallbackPass = "school" + i;
-                const activePass = data.pass || fallbackPass;
-                
-                tbody.innerHTML += `
-                    <tr class="border-b hover:bg-slate-50">
-                        <td class="p-4 font-mono text-slate-400">${i}</td>
-                        <td class="p-4">
-                            <input type="text" value="${data.name}" onchange="updateProfileFieldDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none font-bold text-slate-800">
-                            <span class="text-[10px] text-slate-400 block font-mono">ID: ${sId}</span>
-                        </td>
-                        <td class="p-4 text-center">
-                            <input type="text" value="${activePass}" onchange="updateProfileFieldDirect('${sId}','pass',this.value)" class="border rounded-lg px-2 py-1 text-xs font-mono font-bold text-indigo-600 text-center w-32 outline-none">
-                        </td>
-                        <td class="p-4 text-center">
-                            <button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all">Manage Academics</button>
-                        </td>
-                    </tr>`;
+                tbody.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4"><input type="text" value="${data.name}" onchange="updateProfileFieldDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none font-bold text-slate-800"><span class="text-[10px] text-slate-400 block font-mono">ID: ${sId}</span></td><td class="p-4 text-center"><input type="text" value="${data.pass || ("school" + i)}" onchange="updateProfileFieldDirect('${sId}','pass',this.value)" class="border rounded-lg px-2 py-1 text-xs font-mono font-bold text-indigo-600 text-center w-32 outline-none"></td><td class="p-4 text-center"><button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-indigo-600 hover:text-white">Manage Academics</button></td></tr>`;
             }
         }
 
-        function updateProfileFieldDirect(id, field, val) {
-            // Client-Side Security Filter
-            const sanitized = val.replace(/[<>/\\{}|[\]]/g, ""); 
-            const oldVal = db.students[id] ? db.students[id][field] : "Unset";
-            
-            if(!db.students[id]) db.students[id] = { name: "", pass: "" };
-            db.students[id][field] = sanitized;
-            
-            writeAuditLog(currentUser.id, "PROFILE_UPDATE", `Changed ${field} for ${id} from "${oldVal}" to "${sanitized}"`);
-        }
-
+        function updateProfileFieldDirect(id, field, val) { if(!db.students[id]) db.students[id] = { name: "", pass: "" }; const old = db.students[id][field]; db.students[id][field] = val.replace(/[<>/\\{}|[\]]/g, ""); writeAuditLog(currentUser.id, "PROFILE_UPDATE", `Changed ${field} for ${id} from "${old}" to "${val}"`); }
+        
         function renderAttendancePanel() {
-            const cls = document.getElementById('class-select').value;
-            const dt = document.getElementById('attendance-date').value;
-            const tbody = document.getElementById('attendance-table-body');
-            tbody.innerHTML = '';
-
-            if(!dt) return;
-            if(!db.attendance[cls]) db.attendance[cls] = {};
-            if(!db.attendance[cls][dt]) db.attendance[cls][dt] = {};
-            
+            const cls = document.getElementById('class-select').value; const dt = document.getElementById('attendance-date').value;
+            const tbody = document.getElementById('attendance-table-body'); tbody.innerHTML = ''; if(!dt) return;
+            if(!db.attendance[cls]) db.attendance[cls] = {}; if(!db.attendance[cls][dt]) db.attendance[cls][dt] = {};
             localAttendanceBuffer = JSON.parse(JSON.stringify(db.attendance[cls][dt]));
-
-            let found = 0;
             for(let i=1; i<=45; i++) {
-                const sId = `${cls}-${i}`;
-                if(!db.students[sId] || !db.students[sId].name) continue;
-                found++;
-
+                const sId = `${cls}-${i}`; if(!db.students[sId] || !db.students[sId].name) continue;
                 if(localAttendanceBuffer[sId] === undefined) localAttendanceBuffer[sId] = "Present";
                 const isPres = localAttendanceBuffer[sId] === "Present";
-
-                tbody.innerHTML += `
-                    <tr class="border-b">
-                        <td class="p-4 font-mono text-slate-400">${i}</td>
-                        <td class="p-4 font-bold text-slate-700">${db.students[sId].name}</td>
-                        <td class="p-4 text-center">
-                            <div class="inline-flex rounded-lg border p-0.5 bg-slate-100">
-                                <button type="button" onclick="setLocalAttendanceStatus('${sId}','Present')" id="btn-pres-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${isPres ? 'bg-emerald-500 text-white shadow-sm':'text-slate-500'}">✔️ Present</button>
-                                <button type="button" onclick="setLocalAttendanceStatus('${sId}','Absent')" id="btn-abs-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${!isPres ? 'bg-rose-500 text-white shadow-sm':'text-slate-500'}">❌ Absent</button>
-                            </div>
-                        </td>
-                    </tr>`;
+                tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4 font-bold text-slate-700">${db.students[sId].name}</td><td class="p-4 text-center"><div class="inline-flex rounded-lg border p-0.5 bg-slate-100"><button type="button" onclick="setLocalAttendanceStatus('${sId}','Present')" id="btn-pres-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${isPres ? 'bg-emerald-500 text-white':'text-slate-500'}">✔️ Present</button><button type="button" onclick="setLocalAttendanceStatus('${sId}','Absent')" id="btn-abs-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${!isPres ? 'bg-rose-500 text-white':'text-slate-500'}">❌ Absent</button></div></td></tr>`;
             }
-            if(found === 0) tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-400">Add names to the roster layout first.</td></tr>`;
         }
-
-        function setLocalAttendanceStatus(sId, status) {
-            localAttendanceBuffer[sId] = status;
-            document.getElementById(`btn-pres-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Present'?'bg-emerald-500 text-white':'text-slate-500'}`;
-            document.getElementById(`btn-abs-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Absent'?'bg-rose-500 text-white':'text-slate-500'}`;
-        }
-
-        function commitAttendanceSheet() {
-            const cls = document.getElementById('class-select').value;
-            const dt = document.getElementById('attendance-date').value;
-            if(!dt) return;
-
-            db.attendance[cls][dt] = localAttendanceBuffer;
-            writeAuditLog(currentUser.id, "ATTENDANCE_COMMIT", `Logged attendance ledger for Class ${cls} on ${dt}`);
-            alert("Attendance ledger successfully committed.");
-        }
-
-        function renderExamConfigPanel() {
-            const wrapper = document.getElementById('exam-config-rows');
-            wrapper.innerHTML = '';
-            Object.keys(db.exams).forEach(ex => {
-                wrapper.innerHTML += `
-                    <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-xl border">
-                        <span class="font-bold text-slate-700 text-xs w-28">${ex}</span>
-                        <div class="flex items-center gap-2">
-                            <label class="text-[10px] text-slate-400 uppercase">Max Points:</label>
-                            <input type="number" id="cfg-max-${ex}" value="${db.exams[ex]}" class="w-20 border rounded p-1 font-mono font-bold text-center text-xs">
-                        </div>
-                    </div>`;
-            });
-        }
-
-        function saveExamConfiguration() {
-            if(currentUser.role !== 'admin') return alert("Operation rejected.");
-            Object.keys(db.exams).forEach(ex => {
-                const val = parseInt(document.getElementById(`cfg-max-${ex}`).value);
-                if(val > 0) db.exams[ex] = val;
-            });
-            writeAuditLog(currentUser.id, "EXAM_MATRIX_CONFIG", "Modified max points configurations");
-            alert("Grading parameters successfully configured.");
-            switchTeacherTab('students');
-        }
-
-        function renderAuditorPanel() {
-            const tbody = document.getElementById('auditor-table-body');
-            tbody.innerHTML = '';
-            if(!db.history || db.history.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Zero log records found inside this school storage segment.</td></tr>`;
-                return;
-            }
-            db.history.forEach(log => {
-                tbody.innerHTML += `
-                    <tr class="border-b text-[11px] hover:bg-slate-50">
-                        <td class="p-4 text-slate-500">${log.timestamp}</td>
-                        <td class="p-4 font-bold text-indigo-600">${log.operator}</td>
-                        <td class="p-4"><span class="bg-slate-100 px-2 py-0.5 rounded text-slate-700 font-bold">${log.actionType}</span></td>
-                        <td class="p-4 text-slate-600 font-sans">${log.details}</td>
-                    </tr>`;
-            });
-        }
-
-        function openMarksModal(id) {
-            activeId = id; document.getElementById('m-student-name').innerText = db.students[id].name;
-            const sel = document.getElementById('m-exam');
-            sel.innerHTML = Object.keys(db.exams).map(ex => `<option>${ex}</option>`).join('');
-            
-            const grid = document.getElementById('m-grid');
-            grid.innerHTML = SUBJECTS.map(s => `
-                <div class="bg-slate-50 p-2.5 rounded-xl border">
-                    <label class="text-[9px] font-black uppercase text-slate-400">${s}</label>
-                    <input type="number" id="inp-${s}" class="w-full bg-transparent font-mono font-bold text-base outline-none">
-                </div>`).join('');
-            
-            loadExistingMarks(); showScreen('screen-marks');
-        }
-
-        function loadExistingMarks() {
-            const ex = document.getElementById('m-exam').value;
-            const record = db.records[`${activeId}_${ex}`] || { marks: {}, remarks: "", cw: "🟢 Active & Regular", hw: "🟢 On-Time & Excellent" };
-            SUBJECTS.forEach(s => document.getElementById(`inp-${s}`).value = record.marks[s] || "");
-            document.getElementById('m-remarks').value = record.remarks || "";
-            document.getElementById('m-cw-status').value = record.cw || "🟢 Active & Regular";
-            document.getElementById('m-hw-status').value = record.hw || "🟢 On-Time & Excellent";
-        }
-
-        function saveMarks() {
-            const ex = document.getElementById('m-exam').value;
-            const maxAllowed = db.exams[ex] || 100;
-            
-            const record = {
-                marks: {}, remarks: document.getElementById('m-remarks').value.replace(/[<>]/g, ""),
-                cw: document.getElementById('m-cw-status').value, hw: document.getElementById('m-hw-status').value
-            };
-
-            for(let s of SUBJECTS) {
-                const val = document.getElementById(`inp-${s}`).value;
-                if(val !== "") {
-                    const num = Number(val);
-                    if(num > maxAllowed || num < 0) return alert(`🚨 Security Error: Score for ${s} exceeds configured threshold of (${maxAllowed})`);
-                    record.marks[s] = num;
-                }
-            }
-
-            db.records[`${activeId}_${ex}`] = record;
-            writeAuditLog(currentUser.id, "MARKS_RECORD_COMMIT", `Saved exam metrics for ${activeId} (${ex})`);
-            alert("Academic file committed safely."); showScreen('screen-teacher');
-        }
-
-        function initParentView() {
-            document.getElementById('p-name').innerText = db.students[activeId].name;
-            document.getElementById('p-id').innerText = `TERMINAL ID: ${activeId}`;
-            document.getElementById('p-exam-view').innerHTML = Object.keys(db.exams).map(ex => `<option>${ex}</option>`).join('');
-            renderParentReport(); showScreen('screen-parent');
-        }
-
+        function setLocalAttendanceStatus(sId, status) { localAttendanceBuffer[sId] = status; document.getElementById(`btn-pres-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Present'?'bg-emerald-500 text-white':'text-slate-500'}`; document.getElementById(`btn-abs-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Absent'?'bg-rose-500 text-white':'text-slate-500'}`; }
+        function commitAttendanceSheet() { const cls = document.getElementById('class-select').value; const dt = document.getElementById('attendance-date').value; db.attendance[cls][dt] = localAttendanceBuffer; writeAuditLog(currentUser.id, "ATTENDANCE_COMMIT", `Logged attendance for ${cls} on ${dt}`); alert("Committed successfully."); }
+        
+        function renderExamConfigPanel() { const wrapper = document.getElementById('exam-config-rows'); wrapper.innerHTML = ''; Object.keys(db.exams).forEach(ex => { wrapper.innerHTML += `<div class="flex items-center gap-4 bg-slate-50 p-2 rounded-xl border"><span class="font-bold text-slate-700 text-xs w-28">${ex}</span><input type="number" id="cfg-max-${ex}" value="${db.exams[ex]}" class="w-20 border rounded p-1 text-center text-xs font-bold"></div>`; }); }
+        function saveExamConfiguration() { Object.keys(db.exams).forEach(ex => { const val = parseInt(document.getElementById(`cfg-max-${ex}`).value); if(val > 0) db.exams[ex] = val; }); writeAuditLog(currentUser.id, "EXAM_CONFIG", "Updated grading fields"); alert("Saved."); switchTeacherTab('students'); }
+        
+        function openMarksModal(id) { activeId = id; document.getElementById('m-student-name').innerText = db.students[id].name; document.getElementById('m-exam').innerHTML = Object.keys(db.exams).map(ex => `<option>${ex}</option>`).join(''); document.getElementById('m-grid').innerHTML = SUBJECTS.map(s => `<div class="bg-slate-50 p-2 rounded-xl border"><label class="text-[9px] font-bold text-slate-400 block uppercase">${s}</label><input type="number" id="inp-${s}" class="w-full bg-transparent font-bold text-sm outline-none"></div>`).join(''); loadExistingMarks(); showScreen('screen-marks'); }
+        function loadExistingMarks() { const ex = document.getElementById('m-exam').value; const record = db.records[`${activeId}_${ex}`] || { marks: {}, remarks: "", cw: "🟢 Active & Regular", hw: "🟢 On-Time & Excellent" }; SUBJECTS.forEach(s => document.getElementById(`inp-${s}`).value = record.marks[s] || ""); document.getElementById('m-remarks').value = record.remarks || ""; document.getElementById('m-cw-status').value = record.cw; document.getElementById('m-hw-status').value = record.hw; }
+        function saveMarks() { const ex = document.getElementById('m-exam').value; const maxAllowed = db.exams[ex] || 100; const record = { marks: {}, remarks: document.getElementById('m-remarks').value, cw: document.getElementById('m-cw-status').value, hw: document.getElementById('m-hw-status').value }; for(let s of SUBJECTS) { const val = document.getElementById(`inp-${s}`).value; if(val !== "") { const num = Number(val); if(num > maxAllowed || num < 0) return alert(`Exceeds maximum points limit of ${maxAllowed}`); record.marks[s] = num; } } db.records[`${activeId}_${ex}`] = record; writeAuditLog(currentUser.id, "MARKS_COMMIT", `Saved scores for ${activeId} (${ex})`); alert("Saved."); showScreen('screen-teacher'); }
+        
         function renderParentReport() {
-            const targetClass = activeId.split('-')[0];
-            let working = 0, present = 0;
-            
-            if(db.attendance[targetClass]) {
-                Object.keys(db.attendance[targetClass]).forEach(dt => {
-                    if(db.attendance[targetClass][dt][activeId] !== undefined) {
-                        working++; if(db.attendance[targetClass][dt][activeId] === "Present") present++;
-                    }
-                });
-            }
-            const pct = working > 0 ? Math.round((present/working)*100) : 100;
-            document.getElementById('p-attn-percent').innerText = `${pct}%`;
-            document.getElementById('p-attn-fraction').innerText = `Total Session Days: ${working} | Attended: ${present}`;
-
-            const selectedExam = document.getElementById('p-exam-view').value;
-            const maxPoints = db.exams[selectedExam] || 100;
-            const rec = db.records[`${activeId}_${selectedExam}`];
-            const disp = document.getElementById('p-marks-display');
-            const rem = document.getElementById('p-remarks-display');
-
-            if(!rec) {
-                disp.innerHTML = `<p class="text-slate-400 text-xs py-2">No analytical parameters published for ${selectedExam}.</p>`;
-                rem.innerText = "Awaiting institutional evaluation.";
-            } else {
-                disp.innerHTML = SUBJECTS.map(s => {
-                    const score = rec.marks[s] !== undefined ? rec.marks[s] : "—";
-                    return `
-                        <div class="flex justify-between items-center border-b py-2 text-xs">
-                            <span class="font-bold text-slate-500">${s}</span>
-                            <span class="font-mono font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">${score} / ${maxPoints}</span>
-                        </div>`;
-                }).join('');
-                rem.innerText = rec.remarks || "No evaluation remarks recorded.";
-            }
+            const targetClass = activeId.split('-')[0]; let working = 0, present = 0;
+            if(db.attendance[targetClass]) { Object.keys(db.attendance[targetClass]).forEach(dt => { if(db.attendance[targetClass][dt][activeId] !== undefined) { working++; if(db.attendance[targetClass][dt][activeId] === "Present") present++; } }); }
+            document.getElementById('p-attn-percent').innerText = `${working > 0 ? Math.round((present/working)*100) : 100}%`;
+            document.getElementById('p-attn-fraction').innerText = `Session Days: ${working} | Present: ${present}`;
+            const selectedExam = document.getElementById('p-exam-view').value; const maxPoints = db.exams[selectedExam] || 100; const rec = db.records[`${activeId}_${selectedExam}`];
+            const disp = document.getElementById('p-marks-display'); const rem = document.getElementById('p-remarks-display');
+            if(!rec) { disp.innerHTML = `<p class="text-slate-400 text-xs">No records found.</p>`; rem.innerText = "Awaiting institutional evaluation."; }
+            else { disp.innerHTML = SUBJECTS.map(s => `<div class="flex justify-between border-b py-1.5 text-xs"><span>${s}</span><span class="font-bold text-indigo-600">${rec.marks[s] !== undefined ? rec.marks[s] : "—"} / ${maxPoints}</span></div>`).join(''); rem.innerText = rec.remarks || ""; }
             renderAnalyticsChart();
         }
 
         function renderAnalyticsChart() {
-            const ctx = document.getElementById('performanceChart').getContext('2d');
-            const targetExams = Object.keys(db.exams);
-            
-            // Dynamic Calculation Matrix based on unique institutional parameters
-            let dataPoints = targetExams.map(ex => {
-                const rec = db.records[`${activeId}_${ex}`];
-                if(!rec || !rec.marks) return 0;
-                let sum = 0, count = 0;
-                SUBJECTS.forEach(s => {
-                    if(rec.marks[s] !== undefined && rec.marks[s] !== "") {
-                        sum += Number(rec.marks[s]); count++;
-                    }
-                });
-                const maxPoints = db.exams[ex] || 100;
-                return count > 0 ? Math.round(((sum / (count * maxPoints)) * 100)) : 0;
-            });
-
+            const ctx = document.getElementById('performanceChart').getContext('2d'); const targetExams = Object.keys(db.exams);
+            let dataPoints = targetExams.map(ex => { const rec = db.records[`${activeId}_${ex}`]; if(!rec || !rec.marks) return 0; let sum = 0, count = 0; SUBJECTS.forEach(s => { if(rec.marks[s] !== undefined && rec.marks[s] !== "") { sum += Number(rec.marks[s]); count++; } }); return count > 0 ? Math.round(((sum / (count * (db.exams[ex] || 100))) * 100)) : 0; });
             if (dynamicChartInstance) dynamicChartInstance.destroy();
-            dynamicChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: targetExams,
-                    datasets: [{
-                        data: dataPoints, borderColor: '#4f46e5', borderWidth: 2, tension: 0.2, fill: true, backgroundColor: 'rgba(79,70,229,0.02)'
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { min: 0, max: 100 }, x: { grid: { display: false } } }
-                }
-            });
+            dynamicChartInstance = new Chart(ctx, { type: 'line', data: { labels: targetExams, datasets: [{ data: dataPoints, borderColor: '#4f46e5', borderWidth: 2, tension: 0.1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } } });
         }
 
-        function purgeClassProfiles() {
-            if(currentUser.role !== 'admin') return;
-            const cls = document.getElementById('class-select').value;
-            if(!confirm("Permanently wipe selected class student roster metrics?")) return;
-            for(let i=1; i<=45; i++) delete db.students[`${cls}-${i}`];
-            writeAuditLog(currentUser.id, "CRITICAL_PURGE_ROSTER", `Dropped all profile matrices for Class ${cls}`);
-            refreshCurrentTeacherTab();
-        }
-
-        function purgeClassAttendance() {
-            if(currentUser.role !== 'admin') return;
-            const cls = document.getElementById('class-select').value;
-            if(!confirm("Wipe historical attendance logs for this class?")) return;
-            delete db.attendance[cls];
-            writeAuditLog(currentUser.id, "CRITICAL_PURGE_ATTENDANCE", `Dropped complete calendar attendance history for Class ${cls}`);
-            refreshCurrentTeacherTab();
-        }
-
+        function renderAuditorPanel() { const tbody = document.getElementById('auditor-table-body'); tbody.innerHTML = ''; (db.history || []).forEach(log => { tbody.innerHTML += `<tr class="border-b text-[10px]"><td class="p-3 text-slate-400">${log.timestamp}</td><td class="p-3 font-bold text-indigo-600">${log.operator}</td><td class="p-3"><span class="bg-slate-100 px-1.5 py-0.5 rounded font-bold">${log.actionType}</span></td><td class="p-3 text-slate-600">${log.details}</td></tr>`; }); }
+        function purgeClassProfiles() { if(currentUser.role !== 'admin' || !confirm("Wipe class profiles?")) return; const cls = document.getElementById('class-select').value; for(let i=1; i<=45; i++) delete db.students[`${cls}-${i}`]; writeAuditLog(currentUser.id, "PURGE", `Wiped ${cls}`); refreshCurrentTeacherTab(); }
+        
         function exportClassAttendanceCSV() {
-            const cls = document.getElementById('class-select').value;
-            if(!db.attendance[cls] || Object.keys(db.attendance[cls]).length === 0) return alert("Empty database mapping.");
+            const cls = document.getElementById('class-select').value; if(!db.attendance[cls]) return alert("Empty database mapping.");
             const sortedDates = Object.keys(db.attendance[cls]).sort((a,b)=>new Date(a)-new Date(b));
             let rows = [["Roll No", "ID", "Name", ...sortedDates].join(",")];
-            
             for(let i=1; i<=45; i++) {
                 const sId = `${cls}-${i}`;
                 if(db.students[sId] && db.students[sId].name) {
                     let line = [i, sId, `"${db.students[sId].name}"`];
-                    sortedDates.forEach(d => line.push(db.attendance[cls][d][sId] || "N/A"));
-                    rows.push(line.join(","));
+                    sortedDates.forEach(d => line.push(db.attendance[cls][d][sId] || "N/A")); rows.push(line.join(","));
                 }
             }
             const csvContent = "data:text/csv;charset=utf-8," + rows.join("\n");
@@ -716,13 +523,18 @@
             dl.setAttribute("download", `Attendance_Class_${cls}.csv`); dl.click();
         }
 
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.getElementById('logout-btn').classList.toggle('hidden', id==='screen-login' || id==='screen-credits');
-            const badge = document.getElementById('role-badge');
-            if(currentUser) { badge.innerText = currentUser.role; badge.classList.remove('hidden'); }
+        function showScreen(id) { 
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); 
+            document.getElementById(id).classList.add('active'); 
+            document.getElementById('logout-btn').classList.toggle('hidden', ['screen-gate','screen-login','screen-register'].includes(id)); 
+            const badge = document.getElementById('role-badge'); 
+            if(currentUser && !['screen-gate','screen-login','screen-register'].includes(id)) { 
+                badge.innerText = currentUser.role; badge.classList.remove('hidden'); 
+            } else { badge.classList.add('hidden'); } 
         }
+
+        // Initialize App Session Loop
+        checkPersistentSession();
     </script>
 </body>
 </html>
