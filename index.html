@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduFlow PRO | Enterprise School Management Ecosystem</title>
+    <title>AcademIQ Portal | Enterprise School Management Ecosystem</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -34,7 +34,7 @@
 
     <nav id="main-nav" class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div class="flex flex-col">
-            <h1 class="text-xl font-black text-indigo-600 tracking-tighter">EDUFLOW <span class="text-slate-400 font-light">PRO</span></h1>
+            <h1 class="text-xl font-black text-indigo-600 tracking-tighter">ACADEMIQ <span class="text-slate-400 font-light">PORTAL</span></h1>
             <span id="nav-school-display" class="text-[10px] text-slate-400 font-mono uppercase tracking-wider font-bold">Secure Network Workspace</span>
         </div>
         <div class="flex items-center gap-4">
@@ -54,7 +54,7 @@
                     </div>
                     <div class="space-y-2">
                         <h2 class="text-4xl font-black tracking-tight text-slate-900">Smart Education. Simplified Management.</h2>
-                        <p class="text-sm text-slate-500 leading-relaxed">EduFlow PRO provides dynamic, highly isolated cloud environments built to power modern academic institutions. Engineered to ensure bulletproof security, simplify grading schemas, and connect parent stakeholders directly with verified student learning trajectories.</p>
+                        <p class="text-sm text-slate-500 leading-relaxed">AcademIQ Portal provides dynamic, highly isolated cloud environments built to power modern academic institutions. Engineered to ensure bulletproof security, simplify grading schemas, and connect parent stakeholders directly with verified student learning trajectories.</p>
                     </div>
                     
                     <div class="flex flex-wrap gap-4">
@@ -79,13 +79,13 @@
                     <div class="space-y-1">
                         <span class="text-[10px] uppercase tracking-widest font-bold text-indigo-400 font-mono">Architect Profile</span>
                         <h3 class="text-2xl font-black tracking-tight">About the Founder</h3>
-                        <p class="text-sm font-bold text-slate-300">Shravan Dubey — <span class="text-indigo-300 font-light">Founder & Developer, EduFlow PRO</span></p>
+                        <p class="text-sm font-bold text-slate-300">Shravan Dubey — <span class="text-indigo-300 font-light">Founder & Developer, AcademIQ Portal</span></p>
                     </div>
                     <blockquote class="border-l-2 border-indigo-500 pl-4 text-xs italic text-slate-300 leading-relaxed">
                         "I believe education should be supported by technology that saves time, improves efficiency, and creates better learning environments for students and educators."
                     </blockquote>
                     <p class="text-xs text-slate-400 leading-relaxed">
-                        Through EduFlow PRO, my goal is to help schools embrace modern digital solutions while making management simpler, smarter, and more effective.
+                        Through AcademIQ Portal, my goal is to help schools embrace modern digital solutions while making management simpler, smarter, and more effective.
                     </p>
                 </div>
                 <div class="bg-slate-800/60 border border-slate-700 p-6 rounded-2xl space-y-3">
@@ -110,7 +110,7 @@
             <div class="bg-white p-6 rounded-3xl border shadow-xl space-y-4">
                 <div>
                     <h3 class="text-xl font-black text-slate-800">Institution Registration</h3>
-                    <p class="text-xs text-slate-400">Submit your facility criteria to request a dedicated infrastructure deployment code for EduFlow PRO.</p>
+                    <p class="text-xs text-slate-400">Submit your facility criteria to request a dedicated infrastructure deployment code for AcademIQ Portal.</p>
                 </div>
                 <hr>
                 <div class="space-y-3">
@@ -660,7 +660,7 @@
 
         function renderAnalyticsChart() {
             const ctx = document.getElementById('performanceChart').getContext('2d'); const targetExams = db.examOrder.filter(ex => db.exams[ex] !== undefined);
-            let dataPoints = targetExams.map(ex => { const rec = db.records[`${activeId}_${ex}`]; if(!rec || !rec.marks) return 0; let sum = 0, count = 0; SUBJECTS.forEach(s => { if(rec.marks[s] !== undefined) { sum += Number(rec.marks[s]); count++; } }); return count > 0 ? Math.round(((sum / (count * (db.exams[ex] || 100))) * 100)) : 0; });
+            let dataPoints = targetExams.map(ex => { const rec = db.records[`${activeId}_slate_${ex}`]; if(!rec || !rec.marks) return 0; let sum = 0, count = 0; SUBJECTS.forEach(s => { if(rec.marks[s] !== undefined) { sum += Number(rec.marks[s]); count++; } }); return count > 0 ? Math.round(((sum / (count * (db.exams[ex] || 100))) * 100)) : 0; });
             if (dynamicChartInstance) dynamicChartInstance.destroy();
             dynamicChartInstance = new Chart(ctx, { type: 'line', data: { labels: targetExams, datasets: [{ data: dataPoints, borderColor: '#4f46e5', borderWidth: 2, tension: 0.1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } } });
         }
