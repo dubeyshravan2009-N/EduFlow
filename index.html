@@ -18,9 +18,39 @@
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* Processing Indicator Styling */
+        #global-processing-loader {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-900 flex flex-col font-sans">
+
+    <div id="global-processing-loader">
+        <div class="spinner"></div>
+        <p class="text-white text-xs font-bold tracking-wider uppercase font-mono bg-slate-900/80 px-4 py-2 rounded-xl">Syncing Network Database...</p>
+    </div>
 
     <nav id="main-nav" class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div class="flex flex-col">
@@ -285,7 +315,12 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="text-[10px] uppercase font-bold text-slate-400">Target Subject</label>
-                                    <select id="bulletin-hw-subject" class="w-full border p-2 rounded-lg bg-white text-xs"></select>
+                                    <div class="flex gap-2">
+                                        <select id="bulletin-hw-subject-select" onchange="syncSubjectCustomField(this.value)" class="border p-2 rounded-lg bg-white text-xs w-1/2">
+                                            <option value="">-- Custom Input --</option>
+                                        </select>
+                                        <input id="bulletin-hw-subject" type="text" placeholder="Or type custom subject name..." class="border p-2 rounded-lg bg-white text-xs w-1/2 font-bold outline-none">
+                                    </div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
@@ -459,6 +494,18 @@
             window.cloudStorage = null;
         }
 
+        // Toggle Processing Circle Spinner Visibility
+        function showLoader(isVisible) {
+            const loader = document.getElementById('global-processing-loader');
+            if (loader) loader.style.display = isVisible ? 'flex' : 'none';
+        }
+
+        // Sync helper dropdown with custom manual text area
+        function syncSubjectCustomField(value) {
+            const inputField = document.getElementById('bulletin-hw-subject');
+            if(inputField) inputField.value = value;
+        }
+
         // Seeds default fallback classes if array is completely missing or empty
         function verifyAndSeedDefaultClasses() {
             if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
@@ -472,8 +519,9 @@
         }
 
         // Auto-sorting matrix algorithm
-        function triggerAutoSort() {
+        async function triggerAutoSort() {
             if (!db.allocatedClasses) return;
+            showLoader(true);
             db.allocatedClasses.sort((x, y) => {
                 const numX = parseInt(x);
                 const numY = parseInt(y);
@@ -481,8 +529,9 @@
                 return x.localeCompare(y);
             });
             buildClassSelectOptions();
-            syncToCloud();
+            await syncToCloud();
             refreshCurrentTeacherTab();
+            showLoader(false);
             alert("Classes reset to standardized automatic sequencing order.");
         }
 
@@ -510,7 +559,7 @@
             if(!targetVal) return alert("Please specify a valid Class Code label.");
             if(db.allocatedClasses.includes(targetVal)) return alert("This class allocation segment already exists.");
             
-            // Check if local array is blanked out somehow before pushing
+            showLoader(true);
             if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
                 verifyAndSeedDefaultClasses();
             }
@@ -518,11 +567,11 @@
             db.allocatedClasses.push(targetVal);
             buildClassSelectOptions(targetVal);
             
-            // Explicit await structure to secure data write operation
             await syncToCloud();
             
             input.value = '';
             refreshCurrentTeacherTab();
+            showLoader(false);
             
             triggerNotificationToast("Class Added", `Class stream ${targetVal} is now live.`);
             alert(`Class Code ${targetVal} successfully synced to cloud repository.`);
@@ -537,6 +586,7 @@
             const index = db.allocatedClasses.indexOf(currentSelected);
             if(index === -1) return;
 
+            showLoader(true);
             if (direction === 'up' && index > 0) {
                 let temp = db.allocatedClasses[index - 1];
                 db.allocatedClasses[index - 1] = db.allocatedClasses[index];
@@ -546,12 +596,14 @@
                 db.allocatedClasses[index + 1] = db.allocatedClasses[index];
                 db.allocatedClasses[index] = temp;
             } else {
+                showLoader(false);
                 return;
             }
 
             buildClassSelectOptions(currentSelected);
             await syncToCloud();
             refreshCurrentTeacherTab();
+            showLoader(false);
         }
 
         async function deleteSelectedClassStream() {
@@ -560,11 +612,13 @@
             
             if(!confirm(`Warning: Are you absolutely sure you want to drop Class ${currentSelected}?`)) return;
             
+            showLoader(true);
             db.allocatedClasses = db.allocatedClasses.filter(c => c !== currentSelected);
             buildClassSelectOptions();
             await syncToCloud();
             
             refreshCurrentTeacherTab();
+            showLoader(false);
             alert(`Class Code ${currentSelected} successfully pruned.`);
         }
 
@@ -594,46 +648,54 @@
                 return;
             }
             
+            showLoader(true);
             if (!window.cloudStorage) {
                 currentSchool = school || "DEMO-1234";
                 verifyAndSeedDefaultClasses();
                 db.students["10A-1"] = { name: "Test Student", pass: "school1" };
                 db.exams = { "PT-1": 50 }; db.examOrder = ["PT-1"];
+                showLoader(false);
                 if (role === 'parent') { activeId = "10A-1"; commitSession(currentSchool, "10A-1", 'parent'); initParentView(); }
                 else { commitSession(currentSchool, 'teacher', 'teacher'); initTeacherView(); }
                 return;
             }
 
-            const docSnap = await window.cloudStorage.collection("schools").doc(school).get();
-            if (!docSnap.exists) return alert("School node mapping not found.");
-            currentSchool = school;
-            
-            // Continuous listening synchronization process 
-            window.cloudStorage.collection("schools").doc(currentSchool).onSnapshot(doc => {
-                if(doc.exists) {
-                    const incomingData = doc.data();
-                    
-                    // State Protection: Only pull cloud classes if they actually contain items.
-                    if(incomingData.allocatedClasses && incomingData.allocatedClasses.length > 0) {
-                        db.allocatedClasses = incomingData.allocatedClasses;
-                    } else if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
-                        // Keep our local array intact if cloud array returned blank
-                        verifyAndSeedDefaultClasses();
-                    }
-                    
-                    db.students = incomingData.students || {};
-                    db.records = incomingData.records || {};
-                    db.attendance = incomingData.attendance || {};
-                    db.exams = incomingData.exams || {};
-                    db.examOrder = incomingData.examOrder || [];
-                    db.notices = incomingData.notices || [];
-                    
-                    buildClassSelectOptions();
-                    
-                    if (role === 'admin' || role === 'teacher') { commitSession(school, 'teacher', role); initTeacherView(); }
-                    else if (role === 'parent' && db.students[id]) { activeId = id; commitSession(school, id, 'parent'); initParentView(); }
+            try {
+                const docSnap = await window.cloudStorage.collection("schools").doc(school).get();
+                if (!docSnap.exists) {
+                    showLoader(false);
+                    return alert("School node mapping not found.");
                 }
-            });
+                currentSchool = school;
+                
+                window.cloudStorage.collection("schools").doc(currentSchool).onSnapshot(doc => {
+                    if(doc.exists) {
+                        const incomingData = doc.data();
+                        
+                        if(incomingData.allocatedClasses && incomingData.allocatedClasses.length > 0) {
+                            db.allocatedClasses = incomingData.allocatedClasses;
+                        } else if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
+                            verifyAndSeedDefaultClasses();
+                        }
+                        
+                        db.students = incomingData.students || {};
+                        db.records = incomingData.records || {};
+                        db.attendance = incomingData.attendance || {};
+                        db.exams = incomingData.exams || {};
+                        db.examOrder = incomingData.examOrder || [];
+                        db.notices = incomingData.notices || [];
+                        
+                        buildClassSelectOptions();
+                        
+                        if (role === 'admin' || role === 'teacher') { commitSession(school, 'teacher', role); initTeacherView(); }
+                        else if (role === 'parent' && db.students[id]) { activeId = id; commitSession(school, id, 'parent'); initParentView(); }
+                    }
+                    showLoader(false);
+                });
+            } catch (err) {
+                showLoader(false);
+                alert("Synchronization error occurred.");
+            }
         }
 
         async function syncToCloud() { 
@@ -667,7 +729,12 @@
 
         function initTeacherView() {
             buildClassSelectOptions();
-            document.getElementById('bulletin-hw-subject').innerHTML = SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
+            
+            // Populates editable subject drop options
+            const dropSel = document.getElementById('bulletin-hw-subject-select');
+            if(dropSel) {
+                dropSel.innerHTML = `<option value="">-- Manual/Custom --</option>` + SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
+            }
             switchTeacherTab('students'); showScreen('screen-teacher');
         }
 
@@ -703,9 +770,12 @@
             }
         }
         
-        function updateProfileFieldDirect(id, field, val) { 
+        async function updateProfileFieldDirect(id, field, val) { 
+            showLoader(true);
             if(!db.students[id]) db.students[id] = { name: "", pass: "" };
-            db.students[id][field] = val; syncToCloud(); 
+            db.students[id][field] = val; 
+            await syncToCloud(); 
+            showLoader(false);
         }
 
         function renderAttendancePanel() {
@@ -730,12 +800,14 @@
             document.getElementById(`btn-abs-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Absent'?'bg-rose-500 text-white':'text-slate-500'}`;
         }
         
-        function commitAttendanceSheet() { 
+        async function commitAttendanceSheet() { 
             const cls = document.getElementById('class-select').value; 
             const dt = document.getElementById('attendance-date').value;
             if(!dt || !cls) return alert("Please pick a valid calendar date first.");
+            showLoader(true);
             db.attendance[cls][dt] = localAttendanceBuffer; 
-            syncToCloud(); 
+            await syncToCloud(); 
+            showLoader(false);
             alert("Attendance sheet committed safely."); 
         }
 
@@ -758,21 +830,26 @@
             });
         }
         
-        function saveExamConfiguration() { 
+        async function saveExamConfiguration() { 
+            showLoader(true);
             db.examOrder.forEach(ex => { 
                 if(document.getElementById(`cfg-max-${ex}`)) db.exams[ex] = parseInt(document.getElementById(`cfg-max-${ex}`).value); 
             }); 
-            syncToCloud();
+            await syncToCloud();
+            showLoader(false);
             alert("Saved Exam Structures."); 
             switchTeacherTab('students'); 
         }
 
-        function publishNoticeItem(type) {
+        async function publishNoticeItem(type) {
             const cls = document.getElementById('class-select').value;
             if(!cls) return alert("Please allocate an institutional class focus target.");
+            
             let itemPayload = { type: type, classTarget: cls, timestamp: new Date().toISOString() };
             if (type === 'homework') {
-                itemPayload.subject = document.getElementById('bulletin-hw-subject').value;
+                const subInput = document.getElementById('bulletin-hw-subject').value.trim();
+                if(!subInput) return alert("Please specify or choose a valid subject name.");
+                itemPayload.subject = subInput;
                 itemPayload.content = document.getElementById('bulletin-hw-task').value.trim();
                 itemPayload.startDate = document.getElementById('bulletin-hw-start').value;
                 itemPayload.endDate = document.getElementById('bulletin-hw-end').value;
@@ -788,8 +865,11 @@
             }
 
             if(!itemPayload.startDate || !itemPayload.endDate) return alert("Please specify complete display start and expiration dates.");
+            
+            showLoader(true);
             db.notices.push(itemPayload); 
-            syncToCloud();
+            await syncToCloud();
+            showLoader(false);
             
             triggerNotificationToast("AcademIQ Notice Added", `New ${type.toUpperCase()} scheduled notice broadcast pushed.`);
             alert(`Notice item successfully published and enqueued!`);
@@ -813,7 +893,7 @@
             document.getElementById('m-hw-status').value = r.hw; 
         }
         
-        function saveMarks() {
+        async function saveMarks() {
             const ex = document.getElementById('m-exam').value;
             const maxAllowed = db.exams[ex] || 100;
             const r = { marks: {}, remarks: document.getElementById('m-remarks').value, cw: document.getElementById('m-cw-status').value, hw: document.getElementById('m-hw-status').value };
@@ -825,8 +905,10 @@
                     r.marks[s] = n;
                 } 
             }
+            showLoader(true);
             db.records[`${activeId}_${ex}`] = r; 
-            syncToCloud(); 
+            await syncToCloud(); 
+            showLoader(false);
             alert("Marks evaluated."); 
             showScreen('screen-teacher');
         }
