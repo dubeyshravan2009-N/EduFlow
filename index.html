@@ -88,6 +88,7 @@
                         Through AcademIQ Portal, my goal is to help schools embrace modern digital solutions while making management simpler, smarter, and more effective.
                     </p>
                 </div>
+                
                 <div class="bg-slate-800/60 border border-slate-700 p-6 rounded-2xl space-y-3">
                     <h4 class="font-bold text-xs uppercase text-indigo-400 font-mono tracking-wider">Connect With Me</h4>
                     <div class="space-y-2 text-xs">
@@ -130,7 +131,7 @@
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Contact Phone Number</label>
-                        <input id="reg-phone" type="text" placeholder="+1 555-0144" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
+                        <input id="reg-phone" type="text" placeholder="+91 98765-43210" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
                     </div>
                     <button id="btn-submit-request" onclick="submitRegistrationRequest()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold hover:bg-emerald-700 text-xs shadow-md flex justify-center items-center gap-2">
                         <span>Submit Registration Application</span>
@@ -181,8 +182,8 @@
             </div>
         </section>
 
-        <section id="screen-superadmin" class="screen w-full max-w-6xl">
-            <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl mb-6 flex justify-between items-center">
+        <section id="screen-superadmin" class="screen w-full max-w-6xl space-y-6">
+            <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between items-center">
                 <div>
                     <h2 class="text-2xl font-black tracking-tight text-indigo-400">Network Operations Dashboard</h2>
                     <p class="text-xs text-slate-400">Real-time macro-metrics monitoring system and inbound cluster allocation validation pools.</p>
@@ -190,7 +191,7 @@
                 <div class="bg-indigo-600 text-white px-4 py-1.5 rounded-full text-xs font-bold font-mono">Master Root Console</div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active Deployments</span>
                     <h3 id="stat-schools" class="text-2xl font-black text-indigo-600 mt-1">Loading...</h3>
@@ -200,7 +201,7 @@
                     <h3 id="stat-requests" class="text-2xl font-black text-amber-600 mt-1">0 Pending</h3>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Platform Visitors</span>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Platform Actions</span>
                     <h3 id="stat-visitors" class="text-2xl font-black text-blue-600 mt-1">0 Hits</h3>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
@@ -229,6 +230,28 @@
                         </thead>
                         <tbody id="superadmin-requests-table">
                             <tr><td colspan="4" class="p-6 text-center text-slate-400">No operations records are currently pending in the system pipeline.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border shadow-sm p-6 space-y-4">
+                <div>
+                    <h3 class="font-black text-slate-800 text-base">Approved Institutions Network Directory</h3>
+                    <p class="text-xs text-slate-400">Live operational ledger displaying deployment nodes, administrative metadata, and connection channels.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-indigo-50 text-indigo-900 font-bold uppercase border-b text-[10px]">
+                            <tr>
+                                <th class="p-4">Institutional Code</th>
+                                <th class="p-4">School System Designation</th>
+                                <th class="p-4">Admin Email Address</th>
+                                <th class="p-4">Contact Protocol Line</th>
+                            </tr>
+                        </thead>
+                        <tbody id="superadmin-approved-table">
+                            <tr><td colspan="4" class="p-6 text-center text-slate-400">Loading authorized node networks...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -344,7 +367,10 @@
                         <div id="p-remarks-display" class="mt-4 p-3 bg-indigo-50 rounded-r-xl text-xs italic"></div>
                     </div>
                 </div>
-                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border flex flex-col justify-between"><div class="flex-1 flex items-center justify-center min-h-[220px]"><canvas id="performanceChart"></canvas></div></div>
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border flex flex-col justify-between">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Subject Performance Analysis Graph</div>
+                    <div class="flex-1 flex items-center justify-center min-h-[220px]"><canvas id="performanceChart"></canvas></div>
+                </div>
             </div>
         </section>
 
@@ -372,15 +398,26 @@
         function togglePasswordVisibility(id) { const input = document.getElementById(id); input.type = input.type === "password" ? "text" : "password"; }
         function setBtnLoading(id, isLoading) { const btn = document.getElementById(id); if(!btn) return; if(isLoading) { btn.disabled = true; btn.insertAdjacentHTML('beforeend', '<span class="spinner" id="spin-'+id+'"></span>'); } else { btn.disabled = false; const sp = document.getElementById('spin-'+id); if(sp) sp.remove(); } }
 
+        function triggerNotificationToast(title, body) {
+            if (!("Notification" in window)) return;
+            if (Notification.permission === "granted") {
+                new Notification(title, { body: body, icon: "🚀" });
+            }
+        }
+
         async function logVisitorMetricHit() {
             const visitorDocRef = cloudStorage.collection("system_analytics").doc("telemetry");
             try {
                 await cloudStorage.runTransaction(async (transaction) => {
                     const sfDoc = await transaction.get(visitorDocRef);
-                    if (!sfDoc.exists) { transaction.set(visitorDocRef, { totalHits: 1 }); } 
-                    else { const newHits = (sfDoc.data().totalHits || 0) + 1; transaction.update(visitorDocRef, { totalHits: newHits }); }
+                    if (!sfDoc.exists) { 
+                        transaction.set(visitorDocRef, { totalHits: 1 }); 
+                    } else { 
+                        const currentHits = sfDoc.data().totalHits || 0;
+                        transaction.update(visitorDocRef, { totalHits: currentHits + 1 }); 
+                    }
                 });
-            } catch (e) { console.error("Analytics transaction skipped."); }
+            } catch (e) { console.error("Analytics transaction failed: ", e); }
         }
 
         async function submitRegistrationRequest() {
@@ -395,6 +432,7 @@
                     schoolName: name, adminEmail: email, contactPhone: phone,
                     status: "Pending Approval", timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
+                triggerNotificationToast("New Application Enqueued", `Institution ${name} has filed an infrastructure request.`);
                 alert("📩 Registration request committed to the infrastructure queue successfully.");
                 document.getElementById('reg-name').value = ''; document.getElementById('reg-email').value = ''; document.getElementById('reg-phone').value = '';
                 showScreen('screen-gate');
@@ -403,6 +441,7 @@
         }
 
         function initSuperAdminListener() {
+            // Pending requests listener
             cloudStorage.collection("registration_requests").where("status", "==", "Pending Approval").onSnapshot((snapshot) => {
                 const tbody = document.getElementById('superadmin-requests-table');
                 document.getElementById('badge-request-count').innerText = `${snapshot.size} Submissions`;
@@ -420,31 +459,58 @@
                             <td class="p-4 font-mono text-slate-600">${req.adminEmail}</td>
                             <td class="p-4 text-slate-600">${req.contactPhone}</td>
                             <td class="p-4 flex gap-2 justify-center">
-                                <button onclick="approveInstitutionVault('${doc.id}', '${req.schoolName.replace(/[^a-zA-Z0-9]/g, "").substring(0,6).toUpperCase()}')" class="bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-xl hover:bg-indigo-700 transition-all shadow-sm">Authorize</button>
+                                <button onclick="approveInstitutionVault('${doc.id}', '${req.schoolName.replace(/[^a-zA-Z0-9]/g, "").substring(0,6).toUpperCase()}', '${req.adminEmail}', '${req.contactPhone}', '${req.schoolName.replace(/'/g, "\\'")}')" class="bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-xl hover:bg-indigo-700 transition-all shadow-sm">Authorize</button>
                                 <button onclick="deletePendingRequest('${doc.id}')" class="bg-rose-100 text-rose-700 font-bold px-3 py-1.5 rounded-xl hover:bg-rose-200 transition-all shadow-sm">🗑️ Delete</button>
                             </td>
                         </tr>`;
                 });
             });
-            cloudStorage.collection("schools").onSnapshot(snap => { document.getElementById('stat-schools').innerText = `${snap.size} Clusters`; });
+
+            // Approved schools real-time dictionary listener (FIXED & LOGGED)
+            cloudStorage.collection("schools").onSnapshot(snap => { 
+                document.getElementById('stat-schools').innerText = `${snap.size} Clusters`; 
+                const directoryTbody = document.getElementById('superadmin-approved-table');
+                if(snap.empty) {
+                    directoryTbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">No approved schools found inside database registry.</td></tr>`;
+                    return;
+                }
+                directoryTbody.innerHTML = '';
+                snap.forEach(doc => {
+                    const schoolData = doc.data();
+                    directoryTbody.innerHTML += `
+                        <tr class="border-b hover:bg-slate-50 font-mono text-xs">
+                            <td class="p-4 font-bold text-indigo-600">${doc.id}</td>
+                            <td class="p-4 font-sans text-slate-800 font-bold">${schoolData.institutionName || 'Legacy Workspace Node'}</td>
+                            <td class="p-4 text-slate-600">${schoolData.adminEmail || 'N/A'}</td>
+                            <td class="p-4 text-slate-600">${schoolData.contactPhone || 'N/A'}</td>
+                        </tr>`;
+                });
+            });
+
+            // Analytics visitor telemetry listener (FIXED)
             cloudStorage.collection("system_analytics").doc("telemetry").onSnapshot(doc => {
-                document.getElementById('stat-visitors').innerText = `${doc.exists ? (doc.data().totalHits || 0) : 0} Session Actions`;
+                document.getElementById('stat-visitors').innerText = `${doc.exists ? (doc.data().totalHits || 0) : 0} Session Hits`;
             });
         }
 
         async function deletePendingRequest(id) { if(confirm("Terminate this system setup pipeline entry permanently?")) { await cloudStorage.collection("registration_requests").doc(id).delete(); alert("Record dropped."); } }
 
-        async function approveInstitutionVault(requestId, codePrefix) {
-            const dynamicSuffix = Math.floor(1000 + Math.random() * 9000); const assignedSchoolCode = `${codePrefix}-${dynamicSuffix}`;
+        async function approveInstitutionVault(requestId, codePrefix, email, phone, schoolName) {
+            const dynamicSuffix = Math.floor(1000 + Math.random() * 9000); 
+            const assignedSchoolCode = `${codePrefix}-${dynamicSuffix}`;
             if(!confirm(`Allocate independent cloud storage node partitioning code (${assignedSchoolCode})?`)) return;
             try {
                 await cloudStorage.collection("schools").doc(assignedSchoolCode).set({
+                    institutionName: schoolName,
+                    adminEmail: email,
+                    contactPhone: phone,
                     students: {}, records: {}, attendance: {},
                     exams: { "PT-1": 50, "PT-2": 50, "Half-Yearly": 100, "Annual": 100 },
                     examOrder: ["PT-1", "PT-2", "Half-Yearly", "Annual"],
-                    history: [{ timestamp: new Date().toISOString(), operator: "MASTER_ROOT", actionType: "PROVISION", details: "Ecosystem node allocated." }]
+                    history: [{ timestamp: new Date().toISOString(), operator: "MASTER_ROOT", actionType: "PROVISION", details: `Ecosystem workspace mapped for ${schoolName}.` }]
                 });
                 await cloudStorage.collection("registration_requests").doc(requestId).update({ status: "Approved", assignedCode: assignedSchoolCode });
+                triggerNotificationToast("Workspace Active", `Deployment cluster node ${assignedSchoolCode} initialized.`);
                 alert(`🚀 Verification Deployment complete. Operational school token mapped: ${assignedSchoolCode}`);
             } catch (err) { alert("Operational Failure: " + err.message); }
         }
@@ -454,8 +520,13 @@
             const id = document.getElementById('auth-id').value.trim(); const pass = document.getElementById('auth-pass').value.trim();
 
             if (role === 'superadmin') {
-                if (pass === 'master999') { commitSession('MASTER_CORE_NODE', 'SUPER_ADMIN', 'superadmin'); initSuperAdminListener(); showScreen('screen-superadmin'); return; }
-                else { return alert("❌ Network Security Alert: Incorrect encryption signature keys provided."); }
+                if (pass === 'master999') { 
+                    if (Notification.permission !== "granted") Notification.requestPermission();
+                    commitSession('MASTER_CORE_NODE', 'SUPER_ADMIN', 'superadmin'); 
+                    initSuperAdminListener(); 
+                    showScreen('screen-superadmin'); 
+                    return; 
+                } else { return alert("❌ Network Security Alert: Incorrect encryption signature keys provided."); }
             }
             if (!school || !pass) return alert("Institutional identifier and operational passkeys must be declared.");
             if (role === 'parent' && !id) return alert("Roster identifier ID is required for verification mapping.");
@@ -654,19 +725,70 @@
             if(db.attendance[targetClass]) { Object.keys(db.attendance[targetClass]).forEach(dt => { if(db.attendance[targetClass][dt][activeId] !== undefined) { working++; if(db.attendance[targetClass][dt][activeId] === "Present") present++; } }); }
             document.getElementById('p-attn-percent').innerText = `${working > 0 ? Math.round((present/working)*100) : 100}%`;
             document.getElementById('p-attn-fraction').innerText = `Session Logs Total: ${working} | Validated Attendances: ${present}`;
+            
             const selectedExam = document.getElementById('p-exam-view').value || db.examOrder[0]; if(!selectedExam) return;
             const maxPoints = db.exams[selectedExam] || 100; const rec = db.records[`${activeId}_${selectedExam}`];
             const disp = document.getElementById('p-marks-display'); const rem = document.getElementById('p-remarks-display');
-            if(!rec) { disp.innerHTML = `<p class="text-slate-400 text-xs">No analytics indices verified or posted under element ${selectedExam}.</p>`; rem.innerText = "Awaiting pedagogical log entry."; }
-            else { disp.innerHTML = SUBJECTS.map(s => `<div class="flex justify-between border-b py-1.5 text-xs"><span>${s}</span><span class="font-bold text-indigo-600">${rec.marks[s] !== undefined ? rec.marks[s] : "—"} / ${maxPoints}</span></div>`).join(''); rem.innerText = rec.remarks || ""; }
-            renderAnalyticsChart();
+            
+            if(!rec) { 
+                disp.innerHTML = `<p class="text-slate-400 text-xs">No analytics indices verified or posted under element ${selectedExam}.</p>`; 
+                rem.innerText = "Awaiting pedagogical log entry."; 
+            } else { 
+                disp.innerHTML = SUBJECTS.map(s => `<div class="flex justify-between border-b py-1.5 text-xs"><span>${s}</span><span class="font-bold text-indigo-600">${rec.marks[s] !== undefined ? rec.marks[s] : "—"} / ${maxPoints}</span></div>`).join(''); 
+                rem.innerText = rec.remarks || ""; 
+            }
+            
+            // Re-render graph using subject-wise metrics for the chosen exam (CRITICAL CORRECTION)
+            renderAnalyticsChart(selectedExam);
         }
 
-        function renderAnalyticsChart() {
-            const ctx = document.getElementById('performanceChart').getContext('2d'); const targetExams = db.examOrder.filter(ex => db.exams[ex] !== undefined);
-            let dataPoints = targetExams.map(ex => { const rec = db.records[`${activeId}_slate_${ex}`]; if(!rec || !rec.marks) return 0; let sum = 0, count = 0; SUBJECTS.forEach(s => { if(rec.marks[s] !== undefined) { sum += Number(rec.marks[s]); count++; } }); return count > 0 ? Math.round(((sum / (count * (db.exams[ex] || 100))) * 100)) : 0; });
+        // FIXED: Now accurately charts subject scores for a single selected exam serially
+        function renderAnalyticsChart(selectedExam) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const maxPoints = db.exams[selectedExam] || 100;
+            const rec = db.records[`${activeId}_${selectedExam}`];
+            
+            // Map scored marks for each individual subject or fallback to 0 if not yet evaluated
+            const subjectScores = SUBJECTS.map(s => {
+                if (rec && rec.marks && rec.marks[s] !== undefined) {
+                    return rec.marks[s];
+                }
+                return 0;
+            });
+
             if (dynamicChartInstance) dynamicChartInstance.destroy();
-            dynamicChartInstance = new Chart(ctx, { type: 'line', data: { labels: targetExams, datasets: [{ data: dataPoints, borderColor: '#4f46e5', borderWidth: 2, tension: 0.1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } } });
+            
+            dynamicChartInstance = new Chart(ctx, { 
+                type: 'bar', // Changed to bar for perfect serial representation of items 
+                data: { 
+                    labels: SUBJECTS, 
+                    datasets: [{ 
+                        label: `${selectedExam} Performance Metric`,
+                        data: subjectScores, 
+                        backgroundColor: 'rgba(79, 70, 229, 0.85)',
+                        borderColor: '#4f46e5', 
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: true, labels: { boxWidth: 12, font: { size: 10, weight: 'bold' } } } 
+                    }, 
+                    scales: { 
+                        y: { 
+                            min: 0, 
+                            max: maxPoints,
+                            title: { display: true, text: 'Points Scored', font: { size: 10, weight: 'bold' } }
+                        },
+                        x: {
+                            title: { display: true, text: 'Academic Disciplines', font: { size: 10, weight: 'bold' } }
+                        }
+                    } 
+                } 
+            });
         }
 
         function renderAuditorPanel() { 
