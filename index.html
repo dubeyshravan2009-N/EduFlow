@@ -8,6 +8,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -318,8 +319,7 @@
                                             <th class="p-3">Visibility Window</th>
                                             <th class="p-3 text-center">Actions</th>
                                         </tr>
-                                    </table>
-                                    <table class="w-full text-left text-xs border border-slate-100 rounded-lg overflow-hidden">
+                                    </thead>
                                     <tbody id="live-notices-monitor-table-body" class="divide-y divide-slate-100"></tbody>
                                 </table>
                             </div>
@@ -421,9 +421,11 @@
         try {
             firebase.initializeApp(firebaseConfig);
             window.cloudStorage = firebase.firestore();
+            window.fcmMessaging = firebase.messaging();
         } catch (e) {
-            console.warn("Database bypassed. Working in isolated client layout mode.");
+            console.warn("Database bypassed. Working in isolated local simulation framework engine mode.");
             window.cloudStorage = null;
+            window.fcmMessaging = null;
         }
 
         function showScreen(screenId) {
@@ -457,7 +459,7 @@
             
             if (!window.cloudStorage) {
                 currentSchool = school || "DEMO-1234";
-                db.students["10A-1"] = { name: "Test Student", pass: "school1" };
+                db.students["10A-1"] = { name: "Test Student", pass: "school1", deviceTokens: [] };
                 db.exams = { "PT-1": { "Maths": 50, "Science": 50 } }; db.examOrder = ["PT-1"];
                 if (role === 'parent') { activeId = "10A-1"; commitSession(currentSchool, "10A-1", 'parent'); initParentView(); }
                 else { commitSession(currentSchool, 'teacher', 'teacher'); initTeacherView(); }
@@ -501,8 +503,37 @@
             document.getElementById('p-name').innerText = db.students[activeId]?.name || "Student Portfolio";
             document.getElementById('p-id').innerText = `Roster Verification Trace: ${activeId}`;
             document.getElementById('p-exam-view').innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join('');
+            
+            // Capture automated device configuration registration parameters for families
+            requestAndSaveParentNotificationToken();
+            
             renderParentReport(); 
             showScreen('screen-parent');
+        }
+
+        function requestAndSaveParentNotificationToken() {
+            if (!window.fcmMessaging) return;
+            Notification.requestPermission().then((permission) => {
+                if (permission === 'granted') {
+                    window.fcmMessaging.getToken({ 
+                        vapidKey: 'YOUR_PUBLIC_VAPID_KEY_FROM_FIREBASE_CONSOLE' 
+                    }).then((currentToken) => {
+                        if (currentToken) {
+                            if (!db.students[activeId].deviceTokens) db.students[activeId].deviceTokens = [];
+                            if (!db.students[activeId].deviceTokens.includes(currentToken)) {
+                                db.students[activeId].deviceTokens.push(currentToken);
+                                syncToCloud();
+                                console.log("Parent physical notification node enqueued securely.");
+                            }
+                        }
+                    }).catch((err) => { console.error("FCM integration tracer failed: ", err); });
+                }
+            });
+
+            window.fcmMessaging.onMessage((payload) => {
+                triggerNotificationToast(payload.notification.title, payload.notification.body);
+                if (activeId) renderParentReport();
+            });
         }
 
         function initTeacherView() {
@@ -549,7 +580,7 @@
         }
         
         function updateProfileFieldDirect(id, field, val) { 
-            if(!db.students[id]) db.students[id] = { name: "", pass: "" };
+            if(!db.students[id]) db.students[id] = { name: "", pass: "", deviceTokens: [] };
             db.students[id][field] = val; 
             syncToCloud(); 
         }
