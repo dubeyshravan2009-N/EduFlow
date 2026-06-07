@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AcademIQ Portal | Enterprise School Management Ecosystem</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
         .screen { display: none; }
         .active { display: block; animation: smoothReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -40,16 +43,22 @@
                     </div>
                     <div class="space-y-2">
                         <h2 class="text-4xl font-black tracking-tight text-slate-900">Smart Education. Simplified Management.</h2>
-                        <p class="text-sm text-slate-500 leading-relaxed">AcademIQ Portal provides dynamic, highly isolated cloud environments built to power modern academic institutions.</p>
+                        <p class="text-sm text-slate-500 leading-relaxed">AcademIQ Portal provides dynamic, highly isolated cloud environments built to power modern academic institutions. Engineered to ensure bulletproof security, simplify grading schemas, and connect parent stakeholders directly with verified student learning trajectories.</p>
                     </div>
                     <div class="flex flex-wrap gap-4">
                         <button onclick="showScreen('screen-login')" class="bg-indigo-600 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-md text-xs tracking-wide">Get Started</button>
                         <button onclick="showScreen('screen-register')" class="bg-white text-slate-700 border border-slate-200 px-6 py-3.5 rounded-xl font-bold hover:bg-slate-50 transition-all text-xs tracking-wide shadow-sm">Contact Us / Register</button>
                     </div>
                 </div>
+
                 <div class="bg-white border rounded-3xl p-6 shadow-sm space-y-4">
                     <h3 class="font-black text-xs uppercase tracking-wider text-indigo-600">Our Vision</h3>
-                    <p class="text-xs text-slate-600 leading-relaxed">To become one of India's leading educational technology platforms, helping schools operate smarter, faster, and more efficiently.</p>
+                    <p class="text-xs text-slate-600 leading-relaxed">To become one of India's leading educational technology platforms, helping schools operate smarter, faster, and more efficiently through innovation and artificial intelligence.</p>
+                    <hr>
+                    <div class="flex gap-3 items-center text-xs text-slate-500">
+                        <span class="text-base">🛡️</span>
+                        <div><strong>Granular Security:</strong> Structurally isolated data layers built over global Firebase storage systems.</div>
+                    </div>
                 </div>
             </div>
 
@@ -59,15 +68,26 @@
                         <div class="space-y-1">
                             <span class="text-[10px] uppercase tracking-widest font-bold text-indigo-400 font-mono">Architect Profile</span>
                             <h3 class="text-2xl font-black tracking-tight">About the Founder</h3>
-                            <p class="text-sm font-bold text-slate-300">Shravan Dubey — <span class="text-indigo-300 font-light">Founder & Developer</span></p>
+                            <p class="text-sm font-bold text-slate-300">Shravan Dubey — <span class="text-indigo-300 font-light">Founder & Developer, AcademIQ Portal</span></p>
                         </div>
+                        <blockquote class="border-l-2 border-indigo-500 pl-4 text-xs italic text-slate-300 leading-relaxed">
+                            "I believe education should be supported by technology that saves time, improves efficiency, and creates better learning environments for students and educators."
+                        </blockquote>
                     </div>
                     <div class="bg-slate-800/60 border border-slate-700 p-6 rounded-2xl space-y-3">
                         <h4 class="font-bold text-xs uppercase text-indigo-400 font-mono tracking-wider">Connect With Me</h4>
                         <div class="space-y-3 text-xs">
                             <div class="flex items-center gap-2 text-slate-300">
+                                <span>📧</span> 
+                                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=dubeyshravan2009@gmail.com" target="_blank" class="hover:text-white transition-all underline font-mono text-[11px]">
+                                    dubeyshravan2009@gmail.com
+                                </a>
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-300">
                                 <span>📸</span> 
-                                <a href="https://instagram.com/shravandubey.2807" target="_blank" class="hover:text-indigo-400 transition-all font-bold text-indigo-300 underline">@shravandubey.2807</a>
+                                <a href="https://instagram.com/shravandubey.2807" target="_blank" class="hover:text-indigo-400 transition-all font-bold tracking-wide text-indigo-300 underline">
+                                    @shravandubey.2807
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -77,42 +97,104 @@
 
         <section id="screen-register" class="screen w-full max-w-md mx-auto">
             <div class="bg-white p-6 rounded-3xl border shadow-xl space-y-4">
-                <h3 class="text-xl font-black text-slate-800">Institution Registration</h3>
+                <div>
+                    <h3 class="text-xl font-black text-slate-800">Institution Registration</h3>
+                    <p class="text-xs text-slate-400">Submit your facility criteria to request a dedicated infrastructure deployment code.</p>
+                </div>
+                <hr>
                 <div class="space-y-3">
-                    <input id="reg-name" type="text" placeholder="Official Institution Name" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
-                    <input id="reg-email" type="email" placeholder="Administrative Email Address" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
-                    <input id="reg-phone" type="text" placeholder="Contact Phone Number" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
-                    <button onclick="submitRegistrationRequest()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold text-xs">Submit Application</button>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Official Institution Name</label>
+                        <input id="reg-name" type="text" placeholder="e.g., Maplewood Academy" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Administrative Email Address</label>
+                        <input id="reg-email" type="email" placeholder="principal@school.com" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Contact Phone Number</label>
+                        <input id="reg-phone" type="text" placeholder="+91 98765-43210" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
+                    </div>
+                    <button id="btn-submit-request" onclick="submitRegistrationRequest()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold hover:bg-emerald-700 text-xs shadow-md">
+                        Submit Registration Application
+                    </button>
                     <button onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Cancel</button>
                 </div>
             </div>
         </section>
 
         <section id="screen-login" class="screen w-full max-w-md mx-auto">
-            <div class="bg-white p-6 rounded-3xl shadow-xl border space-y-4">
-                <h2 class="text-xl font-black text-slate-800">Identity Verification</h2>
+            <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200 space-y-4">
+                <div>
+                    <h2 class="text-xl font-black text-slate-800">Identity Verification</h2>
+                </div>
+                <hr>
                 <div class="space-y-3">
-                    <input id="auth-school" type="text" placeholder="Enter School Code" class="w-full border rounded-xl p-3 text-xs font-mono uppercase bg-slate-50 outline-none">
-                    <select id="auth-role" class="w-full border rounded-xl p-3 text-xs bg-slate-50 font-bold outline-none">
-                        <option value="admin">Principal / School Admin</option>
-                        <option value="teacher">Classroom Teacher</option>
-                        <option value="parent">Parent / Student Viewer</option>
-                        <option value="superadmin">👑 Super Administrator</option>
-                    </select>
-                    <input id="auth-id" type="text" placeholder="Student Roll Identifier (Parents Only)" class="w-full border rounded-xl p-3 text-xs outline-none">
-                    <input id="auth-pass" type="password" placeholder="Secure Passkey" class="w-full border rounded-xl p-3 text-xs outline-none">
-                    <button onclick="handleSecureLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold text-xs">Authenticate Credentials</button>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">School Code</label>
+                        <input id="auth-school" type="text" placeholder="Enter School Code" class="w-full border rounded-xl p-3 text-xs font-mono uppercase bg-slate-50 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Access Authorization Profile</label>
+                        <select id="auth-role" class="w-full border rounded-xl p-3 text-xs bg-slate-50 font-bold outline-none">
+                            <option value="admin">Principal / School Admin</option>
+                            <option value="teacher">Classroom Teacher</option>
+                            <option value="parent">Parent / Student Viewer</option>
+                            <option value="superadmin">👑 Network Super Administrator</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Student Roll Identifier (Parents Only)</label>
+                        <input id="auth-id" type="text" placeholder="e.g., 10A-5" class="w-full border rounded-xl p-3 text-xs outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Secure Passkey</label>
+                        <input id="auth-pass" type="password" placeholder="••••••••" class="w-full border rounded-xl p-3 text-xs outline-none">
+                    </div>
+                    <button id="btn-login-submit" onclick="handleSecureLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 shadow-md text-xs">
+                        Authenticate Credentials
+                    </button>
                     <button onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Return</button>
                 </div>
             </div>
         </section>
 
         <section id="screen-superadmin" class="screen w-full max-w-6xl space-y-6">
-            <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl"><h2 class="text-2xl font-black text-indigo-400">Network Operations</h2></div>
-            <div class="bg-white rounded-2xl border shadow-sm p-6">
-                <table class="w-full text-left text-xs">
-                    <tbody id="superadmin-requests-table"></tbody>
-                </table>
+            <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-black tracking-tight text-indigo-400">Network Operations Dashboard</h2>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active Deployments</span>
+                    <h3 id="stat-schools" class="text-2xl font-black text-indigo-600 mt-1">Loading...</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Inbound Requests</span>
+                    <h3 id="stat-requests" class="text-2xl font-black text-amber-600 mt-1">0 Pending</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Platform Actions</span>
+                    <h3 id="stat-visitors" class="text-2xl font-black text-blue-600 mt-1">0 Hits</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border shadow-sm p-6 space-y-4">
+                <h3 class="font-black text-slate-800 text-base">Pending Institutional Requests</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 text-slate-400 font-bold uppercase border-b text-[10px]">
+                            <tr>
+                                <th class="p-4">Requested Entity Name</th>
+                                <th class="p-4">Contact Email</th>
+                                <th class="p-4">Phone Point</th>
+                                <th class="p-4 text-center">Operational Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="superadmin-requests-table"></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -121,7 +203,7 @@
                 <button id="tab-btn-students" onclick="switchTeacherTab('students')" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white">👤 Student Roster</button>
                 <button id="tab-btn-attendance" onclick="switchTeacherTab('attendance')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📅 Attendance</button>
                 <button id="tab-btn-config" onclick="switchTeacherTab('config')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">⚙️ Assessment Control</button>
-                <button id="tab-btn-bulletin" onclick="switchTeacherTab('bulletin')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📣 Precise Scheduling Board</button>
+                <button id="tab-btn-bulletin" onclick="switchTeacherTab('bulletin')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📣 Notice Board Scheduler</button>
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -129,8 +211,12 @@
                     <div class="bg-white p-5 rounded-2xl border shadow-sm">
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Target Class Allocation</label>
                         <select id="class-select" onchange="refreshCurrentTeacherTab()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold mb-4 text-xs"></select>
-                        <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Search student name..." class="w-full border p-2 rounded-lg text-xs">
-                        <div id="date-picker-container" class="hidden mt-2"><input id="attendance-date" type="date" onchange="renderAttendancePanel()" class="w-full border p-2 rounded-lg text-xs bg-indigo-50/50 font-bold"></div>
+                        <div id="search-container">
+                            <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Search student name..." class="w-full border p-2 rounded-lg text-xs">
+                        </div>
+                        <div id="date-picker-container" class="hidden mt-2">
+                            <input id="attendance-date" type="date" onchange="renderAttendancePanel()" class="w-full border p-2 rounded-lg text-xs bg-indigo-50/50 font-bold">
+                        </div>
                     </div>
                 </div>
 
@@ -143,23 +229,43 @@
                     </div>
                     
                     <div id="tab-pane-attendance" class="hidden p-4 max-h-[70vh] overflow-y-auto">
-                        <table class="w-full text-left text-xs mb-4"><tbody id="attendance-table-body"></tbody></table>
+                        <table class="w-full text-left text-xs mb-4">
+                            <thead class="bg-slate-50"><tr><th class="p-4">Roll</th><th class="p-4">Student Name</th><th class="p-4 text-center">Status</th></tr></thead>
+                            <tbody id="attendance-table-body"></tbody>
+                        </table>
                         <button onclick="commitAttendanceSheet()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs">💾 Save Checked Attendance Tracking Data</button>
                     </div>
                     
                     <div id="tab-pane-config" class="hidden p-6 max-h-[70vh] overflow-y-auto space-y-6">
+                        <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl space-y-3">
+                            <h4 class="font-black text-indigo-900 text-xs uppercase tracking-wider">Deploy New Examination Module</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <input id="new-exam-name" type="text" placeholder="e.g., Mid-Term" class="border p-2 rounded-lg bg-white text-xs font-bold outline-none">
+                                <input id="new-exam-max" type="number" placeholder="Max Points" class="border p-2 rounded-lg bg-white text-xs font-bold text-center outline-none">
+                                <button onclick="createNewExamModule()" class="bg-indigo-600 text-white text-xs font-bold rounded-lg py-2">Inject Assessment Module</button>
+                            </div>
+                        </div>
                         <div id="exam-config-rows" class="space-y-2"></div>
-                        <button onclick="saveExamConfiguration()" class="bg-indigo-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl">Save Assessment Configuration</button>
+                        <button onclick="saveExamConfiguration()" class="bg-indigo-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-md">Save Assessment Configuration</button>
                     </div>
 
                     <div id="tab-pane-bulletin" class="hidden p-6 max-h-[70vh] overflow-y-auto space-y-6">
                         <div class="border p-4 rounded-xl space-y-3 bg-slate-50">
                             <h4 class="font-bold text-xs uppercase text-slate-700 tracking-wider">📚 Broadcast Subject Homework Task</h4>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <select id="bulletin-hw-subject" class="w-full border p-2 rounded-lg bg-white text-xs"></select>
+                                <div>
+                                    <label class="text-[10px] uppercase font-bold text-slate-400">Target Subject</label>
+                                    <select id="bulletin-hw-subject" class="w-full border p-2 rounded-lg bg-white text-xs"></select>
+                                </div>
                                 <div class="grid grid-cols-2 gap-2">
-                                    <div><label class="text-[9px] uppercase font-bold text-slate-400 block">Start Date/Time</label><input id="bulletin-hw-start" type="datetime-local" class="w-full border p-1 rounded-lg text-[11px] bg-white"></div>
-                                    <div><label class="text-[9px] uppercase font-bold text-slate-400 block">End Date/Time</label><input id="bulletin-hw-end" type="datetime-local" class="w-full border p-1 rounded-lg text-[11px] bg-white"></div>
+                                    <div>
+                                        <label class="text-[10px] uppercase font-bold text-slate-400">Display From</label>
+                                        <input id="bulletin-hw-start" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] uppercase font-bold text-slate-400">Display Until</label>
+                                        <input id="bulletin-hw-end" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
+                                    </div>
                                 </div>
                             </div>
                             <textarea id="bulletin-hw-task" placeholder="Enter assignment guidelines..." class="w-full border p-2 h-16 rounded-lg text-xs bg-white outline-none"></textarea>
@@ -169,10 +275,19 @@
                         <div class="border p-4 rounded-xl space-y-3 bg-slate-50">
                             <h4 class="font-bold text-xs uppercase text-slate-700 tracking-wider">🎉 Schedule Institutional Activity or Event</h4>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <input id="bulletin-evt-title" type="text" placeholder="Event Notice Heading" class="w-full border p-2 rounded-lg text-xs bg-white sm:col-span-1">
-                                <div class="sm:col-span-2 grid grid-cols-2 gap-2">
-                                    <div><label class="text-[9px] uppercase font-bold text-slate-400 block">Starts At</label><input id="bulletin-evt-start" type="datetime-local" class="w-full border p-1 rounded-lg text-[11px] bg-white"></div>
-                                    <div><label class="text-[9px] uppercase font-bold text-slate-400 block">Expires At</label><input id="bulletin-evt-end" type="datetime-local" class="w-full border p-1 rounded-lg text-[11px] bg-white"></div>
+                                <div class="sm:col-span-2">
+                                    <label class="text-[10px] uppercase font-bold text-slate-400">Event Notice Heading</label>
+                                    <input id="bulletin-evt-title" type="text" placeholder="e.g., Annual Sports Meet" class="w-full border p-2 rounded-lg text-xs bg-white">
+                                </div>
+                                <div class="grid grid-cols-2 gap-1">
+                                    <div>
+                                        <label class="text-[10px] uppercase font-bold text-slate-400">Show From</label>
+                                        <input id="bulletin-evt-start" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] uppercase font-bold text-slate-400">Show Until</label>
+                                        <input id="bulletin-evt-end" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
+                                    </div>
                                 </div>
                             </div>
                             <button onclick="publishNoticeItem('events')" class="bg-amber-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Event Broadcast</button>
@@ -180,14 +295,21 @@
 
                         <div class="border p-4 rounded-xl space-y-3 bg-slate-50">
                             <h4 class="font-bold text-xs uppercase text-slate-700 tracking-wider">📅 Schedule Examination Timetable Matrix</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <input id="bulletin-tt-title" type="text" placeholder="Exam Title Focus" class="w-full border p-2 rounded-lg text-xs bg-white">
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div><label class="text-[9px] uppercase font-bold text-slate-400 block">Visible From</label><input id="bulletin-tt-start" type="datetime-local" class="w-full border p-1 rounded-lg text-[11px] bg-white"></div>
-                                    <div><label class="text-[9px] uppercase font-bold text-slate-400 block">Visible Until</label><input id="bulletin-tt-end" type="datetime-local" class="w-full border p-1 rounded-lg text-[11px] bg-white"></div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div>
+                                    <label class="text-[10px] uppercase font-bold text-slate-400">Exam Title Focus</label>
+                                    <input id="bulletin-tt-title" type="text" placeholder="e.g., PT-2 Schedule" class="w-full border p-2 rounded-lg text-xs bg-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase font-bold text-slate-400">Show From</label>
+                                    <input id="bulletin-tt-start" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase font-bold text-slate-400">Show Until</label>
+                                    <input id="bulletin-tt-end" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
                                 </div>
                             </div>
-                            <textarea id="bulletin-tt-matrix" placeholder="June 22: Maths..." class="w-full border p-2 h-16 rounded-lg text-xs bg-white outline-none"></textarea>
+                            <textarea id="bulletin-tt-matrix" placeholder="June 22: Maths |\nJune 24: Science..." class="w-full border p-2 h-16 rounded-lg text-xs bg-white outline-none"></textarea>
                             <button onclick="publishNoticeItem('timetables')" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Timetable Matrix</button>
                         </div>
                     </div>
@@ -199,13 +321,15 @@
             <div class="bg-white p-8 rounded-3xl border shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
                     <h2 id="m-student-name" class="text-xl font-bold">Evaluation Record</h2>
-                    <select id="m-exam" onchange="loadExistingMarks()" class="border rounded-lg p-2 font-bold text-xs bg-slate-50"></select>
+                    <select id="m-exam" onchange="loadExistingMarks()" class="border rounded-lg p-2 font-bold bg-slate-50 text-xs"></select>
                 </div>
                 <div id="m-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
-                <div class="flex gap-2">
-                    <button onclick="saveMarks()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs">Commit Evaluation Profile</button>
-                    <button onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold text-xs">Cancel</button>
+                <div class="bg-slate-50 border p-4 rounded-2xl mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Behavioral Rating Grade</label><select id="m-cw-status" class="w-full border p-2 rounded-lg bg-white text-xs font-bold"><option>🟢 Active & Regular</option><option>🟡 Incomplete</option><option>🔴 Inactive</option></select></div>
+                    <div><label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Homework Delivery Standing</label><select id="m-hw-status" class="w-full border p-2 rounded-lg bg-white text-xs font-bold"><option>🟢 On-Time & Good</option><option>🟡 Irregular</option><option>🔴 Missing</option></select></div>
                 </div>
+                <textarea id="m-remarks" placeholder="Provide evaluation feedback details..." class="w-full border rounded-xl p-3 h-16 mb-4 text-xs"></textarea>
+                <div class="flex gap-2"><button onclick="saveMarks()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs">Commit Evaluation Profile</button><button onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold text-xs">Cancel</button></div>
             </div>
         </section>
 
@@ -215,20 +339,54 @@
                     <h2 id="p-name" class="text-2xl font-black">Loading Portfolio Name...</h2>
                     <p id="p-id" class="opacity-70 font-mono text-xs mt-1"></p>
                 </div>
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center min-w-[180px]">
+                    <span class="text-[9px] uppercase tracking-wider block opacity-75 font-bold">Attendance Tracking State</span>
+                    <h3 id="p-attn-percent" class="text-2xl font-black">100%</h3>
+                    <p id="p-attn-fraction" class="text-[9px] opacity-60 font-mono mt-0.5"></p>
+                </div>
             </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
-                    <h3 class="font-black text-slate-800 text-sm tracking-tight">🎉 Active Institutional Activities & Events</h3>
-                    <div id="p-events-deck" class="space-y-2 text-xs"></div>
+                    <h3 class="font-black text-slate-800 text-sm tracking-tight flex items-center gap-2"><span>🎉</span> Active Institutional Activities & Events</h3>
+                    <div id="p-events-deck" class="space-y-2 min-h-[100px] text-xs"></div>
                 </div>
                 <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
-                    <h3 class="font-black text-slate-800 text-sm tracking-tight">📅 Upcoming Examination Schedules</h3>
-                    <div id="p-timetable-deck" class="space-y-2 text-xs"></div>
+                    <h3 class="font-black text-slate-800 text-sm tracking-tight flex items-center gap-2"><span>📅</span> Upcoming Examination Schedules</h3>
+                    <div id="p-timetable-deck" class="space-y-2 min-h-[100px] text-xs"></div>
                 </div>
             </div>
+
             <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
-                <h3 class="font-black text-slate-800 text-sm tracking-tight">📚 Daily Homework Feed</h3>
-                <div id="p-homework-deck" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs"></div>
+                <h3 class="font-black text-slate-800 text-sm tracking-tight flex items-center gap-2"><span>📚</span> Daily Core Assignments & Homework Feed</h3>
+                <div id="p-homework-deck" class="grid grid-cols-1 sm:grid-cols-2 gap-4 min-h-[100px] text-xs"></div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-6">
+                <div class="flex justify-between items-center border-b pb-4">
+                    <div>
+                        <h3 class="font-black text-slate-900 text-base">Comprehensive Academic Diagnostics Report</h3>
+                        <p class="text-xs text-slate-400">Select an examination sequence module to view details.</p>
+                    </div>
+                    <select id="p-exam-view" onchange="renderParentReport()" class="border p-2 rounded-xl font-bold bg-slate-50 text-xs shadow-sm"></select>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                    <div class="lg:col-span-3 space-y-4 bg-slate-50 p-4 rounded-2xl border">
+                        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Subject Performance Matrix</h4>
+                        <div id="p-marks-display" class="space-y-2"></div>
+                        <hr>
+                        <div class="grid grid-cols-2 gap-4 text-xs">
+                            <div><label class="block text-[10px] text-slate-400 uppercase font-bold">Behavioral Rating</label><span id="p-card-cw" class="font-bold"></span></div>
+                            <div><label class="block text-[10px] text-slate-400 uppercase font-bold">Homework Delivery</label><span id="p-card-hw" class="font-bold"></span></div>
+                        </div>
+                        <div class="p-3 bg-white border rounded-xl text-xs"><label class="block text-[9px] text-indigo-500 uppercase font-bold mb-1">Strategic Educator Remarks</label><p id="p-remarks-display" class="italic text-slate-600"></p></div>
+                    </div>
+                    <div class="lg:col-span-2 border p-4 rounded-2xl flex flex-col justify-between bg-white min-h-[300px]">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-2">Subject Performance Analysis Graph</div>
+                        <div class="flex-1 relative w-full h-full min-h-[240px]"><canvas id="performanceChart"></canvas></div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -240,19 +398,21 @@
         let dynamicChartInstance = null; let currentTeacherTab = "students";
         let localAttendanceBuffer = {};
 
+        // PASTE YOUR FIREBASE OBJECT CONFIGURATION DIRECTLY HERE:
         const firebaseConfig = {
-          apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
-          authDomain: "eduflow-pro-f6d04.firebaseapp.com",
-          projectId: "eduflow-pro-f6d04",
-          storageBucket: "eduflow-pro-f6d04.firebasestorage.app",
-          messagingSenderId: "961305546473",
-          appId: "1:961305546473:web:71db6c4d8da6c4950a6a78"
+            apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
+            authDomain: "eduflow-pro-f6d04.firebaseapp.com",
+            projectId: "eduflow-pro-f6d04",
+            storageBucket: "eduflow-pro-f6d04.firebasestorage.app",
+            messagingSenderId: "961305546473",
+            appId: "1:961305546473:web:71db6c4d8da6c4950a6a78"
         };
 
         try {
             firebase.initializeApp(firebaseConfig);
             window.cloudStorage = firebase.firestore();
         } catch (e) {
+            console.warn("Database bypassed. Working in isolated client layout mode.");
             window.cloudStorage = null;
         }
 
@@ -262,25 +422,38 @@
             if(target) target.classList.add('active');
         }
 
-        // MOBILE COMPATIBLE NOTIFICATION ENGINE
+        // UPGRADED HYBRID NOTIFICATION CONTROLLER (MOBILE READY)
         function triggerNotificationToast(title, body) {
+            const FallbackIndicator = () => {
+                alert(`📢 ${title.toUpperCase()}\n------------------------\n${body}`);
+            };
+
             if (!("Notification" in window)) {
-                alert(`📢 ${title}\n${body}`);
+                FallbackIndicator();
                 return;
             }
-            
+
             if (Notification.permission === "granted") {
-                new Notification(title, { body: body, icon: "🚀" });
+                try {
+                    new Notification(title, { body: body, icon: "🚀" });
+                } catch (mobileError) {
+                    // Mobile browsers often reject new Notification inside foreground active documents without worker endpoints
+                    FallbackIndicator();
+                }
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        new Notification(title, { body: body, icon: "🚀" });
+                        try {
+                            new Notification(title, { body: body, icon: "🚀" });
+                        } catch (err) {
+                            FallbackIndicator();
+                        }
                     } else {
-                        alert(`📢 ${title}\n${body}`);
+                        FallbackIndicator();
                     }
                 });
             } else {
-                alert(`📢 ${title}\n${body}`);
+                FallbackIndicator();
             }
         }
 
@@ -292,12 +465,15 @@
 
             if (role === 'superadmin' && pass === 'master999') {
                 commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin');
+                initSuperAdminListener();
                 showScreen('screen-superadmin');
                 return;
             }
             
             if (!window.cloudStorage) {
                 currentSchool = school || "DEMO-1234";
+                db.students["10A-1"] = { name: "Test Student", pass: "school1" };
+                db.exams = { "PT-1": 50 }; db.examOrder = ["PT-1"];
                 if (role === 'parent') { activeId = "10A-1"; commitSession(currentSchool, "10A-1", 'parent'); initParentView(); }
                 else { commitSession(currentSchool, 'teacher', 'teacher'); initTeacherView(); }
                 return;
@@ -306,6 +482,12 @@
             const docSnap = await window.cloudStorage.collection("schools").doc(school).get();
             if (!docSnap.exists) return alert("School node mapping not found.");
             currentSchool = school;
+            
+            // Explicit configuration validation requesting notification pipeline tracking immediately
+            if ("Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission();
+            }
+
             window.cloudStorage.collection("schools").doc(currentSchool).onSnapshot(doc => {
                 if(doc.exists) {
                     db = doc.data(); if(!db.notices) db.notices = [];
@@ -315,45 +497,102 @@
             });
         }
 
-        // SECURITY VALIDATION ON SAVES
-        async function syncToCloud() { 
-            if (window.cloudStorage && currentSchool && currentUser) {
-                // Blocks browser tampering if session tags don't match administrative ranks
-                if(currentUser.role === 'parent') {
-                    alert("Security Exception: Access Denied for Modification Actions.");
-                    return;
-                }
-                await window.cloudStorage.collection("schools").doc(currentSchool).set(db); 
-            } 
+        // SUPERADMIN DATABASE MATRIX CAPTURE
+        function initSuperAdminListener() {
+            if (!window.cloudStorage) return;
+            window.cloudStorage.collection("schools").onSnapshot(snapshot => {
+                document.getElementById('stat-schools').innerText = `${snapshot.size} Active Nodes`;
+                const tbody = document.getElementById('superadmin-requests-table');
+                tbody.innerHTML = '';
+                let requestCounter = 0;
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.registrationRequest) {
+                        requestCounter++;
+                        const req = data.registrationRequest;
+                        tbody.innerHTML += `
+                            <tr class="border-b">
+                                <td class="p-4 font-bold text-slate-800">${req.name}</td>
+                                <td class="p-4 font-mono">${req.email}</td>
+                                <td class="p-4">${req.phone}</td>
+                                <td class="p-4 text-center">
+                                    <button onclick="approveSchoolDeployment('${doc.id}')" class="bg-emerald-600 text-white px-3 py-1 rounded-lg font-bold text-[11px] mr-2">Approve & Activate</button>
+                                    <button onclick="rejectSchoolDeployment('${doc.id}')" class="bg-rose-600 text-white px-3 py-1 rounded-lg font-bold text-[11px]">Reject</button>
+                                </td>
+                            </tr>`;
+                    }
+                });
+                document.getElementById('stat-requests').innerText = `${requestCounter} Pending`;
+            });
         }
-        
+
+        async function submitRegistrationRequest() {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+
+            if (!name || !email || !phone) return alert("All profile allocation variables are required.");
+            if (!window.cloudStorage) return alert("Cloud storage bypassed. Request cannot be transmitted.");
+
+            const generatedCode = "ACAD-" + Math.floor(100000 + Math.random() * 900000);
+            const payload = {
+                registrationRequest: { name, email, phone, timestamp: new Date().toISOString() },
+                students: {}, records: {}, attendance: {}, exams: {}, examOrder: [], notices: []
+            };
+
+            await window.cloudStorage.collection("schools").doc(generatedCode).set(payload);
+            alert(`Application recorded securely. Please supply verification ID: ${generatedCode} to your Operations Engineer.`);
+            showScreen('screen-gate');
+        }
+
+        async function approveSchoolDeployment(schoolId) {
+            if (!window.cloudStorage) return;
+            const docRef = window.cloudStorage.collection("schools").doc(schoolId);
+            const doc = await docRef.get();
+            if (doc.exists) {
+                let data = doc.data();
+                delete data.registrationRequest;
+                await docRef.set(data);
+                alert(`Infrastructure Node ${schoolId} deployed successfully.`);
+            }
+        }
+
+        async function rejectSchoolDeployment(schoolId) {
+            if (!window.cloudStorage || !confirm("Permanently drop request blueprint?")) return;
+            await window.cloudStorage.collection("schools").doc(schoolId).delete();
+            alert("Application dropped from structural log buffers.");
+        }
+
+        async function syncToCloud() { 
+            if (window.cloudStorage && currentSchool) {
+                await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
+            }
+        }
+
         function commitSession(school, user, role) { 
             currentUser = { role, id: user };
             localStorage.setItem('session_school', school); 
+            localStorage.setItem('session_user', user); 
             localStorage.setItem('session_role', role); 
             document.getElementById('logout-btn').classList.remove('hidden'); 
             const rb = document.getElementById('role-badge'); 
             rb.innerText = role; rb.classList.remove('hidden');
-            
-            // Auto-request mobile permission when a staff/admin user logs in
-            if (role === 'admin' || role === 'teacher') {
-                if ("Notification" in window && Notification.permission === "default") {
-                    Notification.requestPermission();
-                }
-            }
         }
-        
+
         function triggerSessionLogout() { localStorage.clear(); location.reload(); }
 
         function initParentView() {
             document.getElementById('p-name').innerText = db.students[activeId]?.name || "Student Portfolio";
-            document.getElementById('p-id').innerText = `Roster ID: ${activeId}`;
+            document.getElementById('p-id').innerText = `Roster Verification Trace: ${activeId}`;
+            document.getElementById('p-exam-view').innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join('');
             renderParentReport(); showScreen('screen-parent');
         }
 
         function initTeacherView() {
-            const select = document.getElementById('class-select'); let options = '';
-            for(let i=1; i<=10; i++) ['A', 'B'].forEach(s => options += `<option value="${i}${s}">Class ${i}${s}</option>`);
+            const select = document.getElementById('class-select');
+            let options = '';
+            for(let i=1; i<=10; i++) ['A', 'B'].forEach(s => options += `<option value="${i}${s}">Class Code ${i}${s}</option>`);
             select.innerHTML = options;
             document.getElementById('bulletin-hw-subject').innerHTML = SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
             switchTeacherTab('students'); showScreen('screen-teacher');
@@ -363,7 +602,12 @@
             currentTeacherTab = targetTab;
             ['students', 'attendance', 'config', 'bulletin'].forEach(p => {
                 document.getElementById(`tab-pane-${p}`).classList.toggle('hidden', p !== targetTab);
+                const btn = document.getElementById(`tab-btn-${p}`); 
+                if(btn) btn.className = (p === targetTab) ? "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white" : "px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700";
             });
+            document.getElementById('search-container').classList.toggle('hidden', targetTab !== 'students');
+            document.getElementById('date-picker-container').classList.toggle('hidden', targetTab !== 'attendance');
+            if(targetTab === 'config') renderExamConfigPanel();
             refreshCurrentTeacherTab();
         }
 
@@ -374,10 +618,13 @@
         
         function renderTeacherList() {
             const cls = document.getElementById('class-select').value;
+            const search = document.getElementById('search-input').value.toLowerCase();
             const tbody = document.getElementById('teacher-table-body'); tbody.innerHTML = '';
             for(let i=1; i<=45; i++) {
-                const sId = `${cls}-${i}`; const data = db.students[sId] || { name: "", pass: "" };
-                tbody.innerHTML += `<tr class="border-b"><td class="p-4">${i}</td><td class="p-4"><input type="text" value="${data.name}" onchange="updateProfileFieldDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent font-bold outline-none"></td><td class="p-4"><input type="text" value="${data.pass || ('school'+i)}" onchange="updateProfileFieldDirect('${sId}','pass',this.value)" class="border text-center w-32 outline-none"></td><td class="p-4 text-center"><button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold">Evaluate</button></td></tr>`;
+                const sId = `${cls}-${i}`;
+                const data = db.students[sId] || { name: "", pass: "" };
+                if(search && !data.name.toLowerCase().includes(search) && !sId.toLowerCase().includes(search)) continue;
+                tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4"><input type="text" value="${data.name}" onchange="updateProfileFieldDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none font-bold text-slate-800"><span class="text-[10px] text-slate-400 block">ID: ${sId}</span></td><td class="p-4 text-center"><input type="text" value="${data.pass || ("school" + i)}" onchange="updateProfileFieldDirect('${sId}','pass',this.value)" class="border rounded-lg px-2 text-xs font-mono text-indigo-600 text-center w-32 outline-none"></td><td class="p-4 text-center"><button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold">Evaluate</button></td></tr>`;
             }
         }
 
@@ -386,57 +633,178 @@
             db.students[id][field] = val; syncToCloud(); 
         }
 
+        function renderAttendancePanel() {
+            const cls = document.getElementById('class-select').value;
+            const dt = document.getElementById('attendance-date').value;
+            const tbody = document.getElementById('attendance-table-body'); tbody.innerHTML = ''; if(!dt) return;
+            if(!db.attendance[cls]) db.attendance[cls] = {};
+            if(!db.attendance[cls][dt]) db.attendance[cls][dt] = {};
+            localAttendanceBuffer = JSON.parse(JSON.stringify(db.attendance[cls][dt]));
+            for(let i=1; i<=45; i++) {
+                const sId = `${cls}-${i}`;
+                if(!db.students[sId] || !db.students[sId].name) continue;
+                if(localAttendanceBuffer[sId] === undefined) localAttendanceBuffer[sId] = "Present";
+                const isPres = localAttendanceBuffer[sId] === "Present";
+                tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4 font-bold">${db.students[sId].name}</td><td class="p-4 text-center"><div class="inline-flex rounded-lg border p-0.5 bg-slate-100"><button type="button" onclick="setLocalAttendanceStatus('${sId}','Present')" id="btn-pres-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${isPres ? 'bg-emerald-500 text-white':'text-slate-500'}">✔️ Present</button><button type="button" onclick="setLocalAttendanceStatus('${sId}','Absent')" id="btn-abs-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${!isPres ? 'bg-rose-500 text-white':'text-slate-500'}">❌ Absent</button></div></td></tr>`;
+            }
+        }
+
+        function setLocalAttendanceStatus(sId, status) { 
+            localAttendanceBuffer[sId] = status;
+            document.getElementById(`btn-pres-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Present'?'bg-emerald-500 text-white':'text-slate-500'}`; 
+            document.getElementById(`btn-abs-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Absent'?'bg-rose-500 text-white':'text-slate-500'}`;
+        }
+
+        function commitAttendanceSheet() { 
+            const cls = document.getElementById('class-select').value; 
+            const dt = document.getElementById('attendance-date').value;
+            db.attendance[cls][dt] = localAttendanceBuffer; syncToCloud(); 
+            alert("Attendance sheet committed safely."); 
+        }
+
+        function createNewExamModule() {
+            const name = document.getElementById('new-exam-name').value.trim();
+            const maxVal = parseInt(document.getElementById('new-exam-max').value);
+            if(!name || isNaN(maxVal)) return alert("Declare parameters."); 
+            db.exams[name] = maxVal; 
+            if(!db.examOrder.includes(name)) db.examOrder.push(name);
+            document.getElementById('new-exam-name').value = '';
+            document.getElementById('new-exam-max').value = ''; 
+            renderExamConfigPanel();
+        }
+
+        function renderExamConfigPanel() {
+            const wrapper = document.getElementById('exam-config-rows');
+            wrapper.innerHTML = '';
+            db.examOrder.forEach((ex) => { 
+                wrapper.innerHTML += `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border-b"><span class="text-xs font-bold">${ex}</span><input type="number" id="cfg-max-${ex}" value="${db.exams[ex]}" class="border w-16 p-1 text-center text-xs rounded-lg"></div>`; 
+            });
+        }
+
+        function saveExamConfiguration() { 
+            db.examOrder.forEach(ex => { 
+                if(document.getElementById(`cfg-max-${ex}`)) db.exams[ex] = parseInt(document.getElementById(`cfg-max-${ex}`).value); 
+            }); 
+            syncToCloud();
+            alert("Saved Exam Structures."); 
+            switchTeacherTab('students'); 
+        }
+
         function publishNoticeItem(type) {
             const cls = document.getElementById('class-select').value;
             let itemPayload = { type: type, classTarget: cls, timestamp: new Date().toISOString() };
-            let rawStart, rawEnd;
-
             if (type === 'homework') {
                 itemPayload.subject = document.getElementById('bulletin-hw-subject').value;
                 itemPayload.content = document.getElementById('bulletin-hw-task').value.trim();
-                rawStart = document.getElementById('bulletin-hw-start').value;
-                rawEnd = document.getElementById('bulletin-hw-end').value;
+                itemPayload.startDate = document.getElementById('bulletin-hw-start').value;
+                itemPayload.endDate = document.getElementById('bulletin-hw-end').value;
             } else if (type === 'events') {
                 itemPayload.title = document.getElementById('bulletin-evt-title').value.trim();
-                rawStart = document.getElementById('bulletin-evt-start').value;
-                rawEnd = document.getElementById('bulletin-evt-end').value;
+                itemPayload.startDate = document.getElementById('bulletin-evt-start').value;
+                itemPayload.endDate = document.getElementById('bulletin-evt-end').value;
             } else if (type === 'timetables') {
                 itemPayload.title = document.getElementById('bulletin-tt-title').value.trim();
                 itemPayload.content = document.getElementById('bulletin-tt-matrix').value.trim();
-                rawStart = document.getElementById('bulletin-tt-start').value;
-                rawEnd = document.getElementById('bulletin-tt-end').value;
+                itemPayload.startDate = document.getElementById('bulletin-tt-start').value;
+                itemPayload.endDate = document.getElementById('bulletin-tt-end').value;
             }
 
-            if(!rawStart || !rawEnd) return alert("Error: Please select exact structural hours and calendar dates.");
-
-            itemPayload.startMs = new Date(rawStart).getTime();
-            itemPayload.endMs = new Date(rawEnd).getTime();
-
+            if(!itemPayload.startDate || !itemPayload.endDate) return alert("Please specify complete display start and expiration dates.");
             db.notices.push(itemPayload); syncToCloud();
             
-            // Fixed mobile notification trigger link
-            triggerNotificationToast("Notice Published", `New ${type} successfully scheduled for Class ${cls}!`);
+            triggerNotificationToast("AcademIQ Notice Added", `New ${type.toUpperCase()} scheduled notice broadcast pushed.`);
+            alert(`Notice item successfully published and enqueued!`);
+        }
+
+        function openMarksModal(id) { 
+            activeId = id; 
+            document.getElementById('m-student-name').innerText = db.students[id].name;
+            document.getElementById('m-exam').innerHTML = db.examOrder.map(ex => `<option>${ex}</option>`).join(''); 
+            document.getElementById('m-grid').innerHTML = SUBJECTS.map(s => `<div class='bg-slate-50 p-2 border rounded-xl'><label class='text-[10px] text-slate-400 block font-bold'>${s}</label><input type='number' id='inp-${s}' class='w-full outline-none font-bold text-sm bg-transparent'></div>`).join('');
+            loadExistingMarks(); 
+            showScreen('screen-marks'); 
+        }
+
+        function loadExistingMarks() { 
+            const ex = document.getElementById('m-exam').value;
+            const r = db.records[`${activeId}_${ex}`] || { marks: {}, remarks: "", cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good" };
+            SUBJECTS.forEach(s => document.getElementById(`inp-${s}`).value = r.marks[s] !== undefined ? r.marks[s] : ""); 
+            document.getElementById('m-remarks').value = r.remarks || ""; 
+            document.getElementById('m-cw-status').value = r.cw;
+            document.getElementById('m-hw-status').value = r.hw; 
+        }
+
+        function saveMarks() {
+            const ex = document.getElementById('m-exam').value;
+            const maxAllowed = db.exams[ex] || 100;
+            const r = { marks: {}, remarks: document.getElementById('m-remarks').value, cw: document.getElementById('m-cw-status').value, hw: document.getElementById('m-hw-status').value };
+            for(let s of SUBJECTS) { 
+                const val = document.getElementById(`inp-${s}`).value; 
+                if(val !== "") { 
+                    const n = Number(val);
+                    if(n > maxAllowed || n < 0) return alert("Value limits validation failed."); 
+                    r.marks[s] = n;
+                } 
+            }
+            db.records[`${activeId}_${ex}`] = r; syncToCloud(); alert("Marks evaluated."); showScreen('screen-teacher');
         }
 
         function renderParentReport() {
             const targetClass = activeId.split('-')[0];
-            const nowMs = new Date().getTime();
+            const isoToday = new Date().toISOString().substring(0, 10); 
 
-            const activeNotices = (db.notices || []).filter(n => {
-                return n.classTarget === targetClass && nowMs >= n.startMs && nowMs <= n.endMs;
-            });
-
+            let working = 0, present = 0;
+            if(db.attendance[targetClass]) { 
+                Object.keys(db.attendance[targetClass]).forEach(dt => { 
+                    if(db.attendance[targetClass][dt][activeId] !== undefined) { 
+                        working++; if(db.attendance[targetClass][dt][activeId] === "Present") present++; 
+                    } 
+                });
+            }
+            document.getElementById('p-attn-percent').innerText = `${working > 0 ? Math.round((present/working)*100) : 100}%`;
+            document.getElementById('p-attn-fraction').innerText = `Logged Days: ${working} | Present Trackings: ${present}`;
+            
+            const activeNotices = (db.notices || []).filter(n => n.classTarget === targetClass && isoToday >= n.startDate && isoToday <= n.endDate);
+            
             const evts = activeNotices.filter(n => n.type === 'events');
-            document.getElementById('p-events-deck').innerHTML = evts.length === 0 ? `<div class='text-slate-400 italic'>No activities scheduled at this time.</div>` : evts.map(e => `<div class='p-2 bg-amber-50 text-amber-900 font-bold border rounded-lg'>• ${e.title}</div>`).join('');
+            document.getElementById('p-events-deck').innerHTML = evts.length === 0 ? `<div class='text-slate-400 italic py-2'>Welcome back!\nNo scheduled activities for this window.</div>` : evts.map(e => `<div class='p-2 bg-amber-50 border rounded-lg font-bold text-amber-900'>• ${e.title}</div>`).join('');
+
+            const tts = activeNotices.filter(n => n.type === 'timetables');
+            document.getElementById('p-timetable-deck').innerHTML = tts.length === 0 ? `<div class='text-slate-400 italic py-2'>Welcome back!\nNo upcoming examination timelines scheduled.</div>` : tts.map(t => `<div class='p-2.5 bg-emerald-50 border rounded-lg'><span class='font-black text-emerald-900 block'>🏆 ${t.title}</span><p class='whitespace-pre-line text-xs font-mono text-slate-700 mt-1'>${t.content}</p></div>`).join('');
 
             const hws = activeNotices.filter(n => n.type === 'homework');
-            document.getElementById('p-homework-deck').innerHTML = hws.length === 0 ? `<div class='text-slate-400 italic'>No assignments assigned for this block.</div>` : hws.map(h => `<div class='p-3 bg-slate-50 border rounded-xl'><span class='bg-indigo-100 text-indigo-700 font-bold text-[10px] px-1.5 py-0.5 rounded'>${h.subject}</span><p class='mt-1 text-slate-800'>${h.content}</p></div>`).join('');
+            document.getElementById('p-homework-deck').innerHTML = hws.length === 0 ? `<div class='text-slate-400 italic py-2 col-span-2'>Welcome back!\nNo active assignments found.</div>` : hws.map(h => `<div class='p-3 bg-slate-50 border rounded-xl'><span class='bg-indigo-100 text-indigo-700 font-bold text-[10px] px-1.5 py-0.5 rounded'>${h.subject}</span><p class='mt-1 font-medium text-slate-800'>${h.content}</p></div>`).join('');
+
+            const selectedExam = document.getElementById('p-exam-view').value || db.examOrder[0];
+            if(!selectedExam) return;
+            const maxPoints = db.exams[selectedExam] || 100; const rec = db.records[`${activeId}_${selectedExam}`];
+            const disp = document.getElementById('p-marks-display');
+            if(!rec) {
+                disp.innerHTML = `<p class='text-slate-400 italic text-xs py-2'>Awaiting metric generation.</p>`;
+                document.getElementById('p-card-cw').innerText = "—"; document.getElementById('p-card-hw').innerText = "—"; document.getElementById('p-remarks-display').innerText = "—";
+                if(dynamicChartInstance) dynamicChartInstance.destroy();
+            } else {
+                disp.innerHTML = SUBJECTS.map(s => `<div class='flex justify-between border-b py-1 text-xs'><span>${s}</span><span class='font-bold text-indigo-600'>${rec.marks[s] !== undefined ? rec.marks[s] : "—"} / ${maxPoints}</span></div>`).join('');
+                document.getElementById('p-card-cw').innerText = rec.cw || "🟢 Active"; document.getElementById('p-card-hw').innerText = rec.hw || "🟢 Good";
+                document.getElementById('p-remarks-display').innerText = rec.remarks || "No evaluation remarks available.";
+                
+                const ctx = document.getElementById('performanceChart').getContext('2d');
+                const scores = SUBJECTS.map(s => (rec.marks && rec.marks[s] !== undefined) ? rec.marks[s] : 0);
+                if (dynamicChartInstance) dynamicChartInstance.destroy();
+                dynamicChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels: SUBJECTS, datasets: [{ label: 'Marks Scaled Portfolio', data: scores, backgroundColor: '#4f46e5' }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: maxPoints } } }
+                });
+            }
         }
 
         function checkPersistentSession() {
-            const sch = localStorage.getItem('session_school'); const r = localStorage.getItem('session_role'); const u = localStorage.getItem('session_user');
+            const sch = localStorage.getItem('session_school');
+            const r = localStorage.getItem('session_role'); const u = localStorage.getItem('session_user');
             if(sch && r && u) { handleSecureLogin(); } else { showScreen('screen-gate'); }
         }
+        
         document.addEventListener("DOMContentLoaded", checkPersistentSession);
     </script>
 </body>
