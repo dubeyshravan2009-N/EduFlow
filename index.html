@@ -459,7 +459,7 @@
             window.cloudStorage = null;
         }
 
-        // Seeds default classes array if empty or missing
+        // Seeds default fallback classes if array is completely missing or empty
         function verifyAndSeedDefaultClasses() {
             if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
                 db.allocatedClasses = [];
@@ -502,29 +502,34 @@
             }
         }
 
-        // Inserts new dynamic streams and instantly mirrors them to cloud storage
-        function addNewClassStream() {
+        // Inserts new dynamic streams and instantly mirrors them to cloud storage with async lock
+        async function addNewClassStream() {
             const input = document.getElementById('new-class-input');
             const targetVal = input.value.trim().toUpperCase();
             
             if(!targetVal) return alert("Please specify a valid Class Code label.");
             if(db.allocatedClasses.includes(targetVal)) return alert("This class allocation segment already exists.");
             
+            // Check if local array is blanked out somehow before pushing
+            if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
+                verifyAndSeedDefaultClasses();
+            }
+            
             db.allocatedClasses.push(targetVal);
             buildClassSelectOptions(targetVal);
             
-            // Critical fix: sync to cloud instantly to lock state changes
-            syncToCloud();
+            // Explicit await structure to secure data write operation
+            await syncToCloud();
             
             input.value = '';
             refreshCurrentTeacherTab();
             
             triggerNotificationToast("Class Added", `Class stream ${targetVal} is now live.`);
-            alert(`Class Code ${targetVal} added successfully.`);
+            alert(`Class Code ${targetVal} successfully synced to cloud repository.`);
         }
 
         // Manual sorting configuration framework
-        function moveSelectedClass(direction) {
+        async function moveSelectedClass(direction) {
             const select = document.getElementById('class-select');
             const currentSelected = select.value;
             if(!currentSelected) return;
@@ -545,11 +550,11 @@
             }
 
             buildClassSelectOptions(currentSelected);
-            syncToCloud();
+            await syncToCloud();
             refreshCurrentTeacherTab();
         }
 
-        function deleteSelectedClassStream() {
+        async function deleteSelectedClassStream() {
             const currentSelected = document.getElementById('class-select').value;
             if(!currentSelected) return;
             
@@ -557,7 +562,7 @@
             
             db.allocatedClasses = db.allocatedClasses.filter(c => c !== currentSelected);
             buildClassSelectOptions();
-            syncToCloud();
+            await syncToCloud();
             
             refreshCurrentTeacherTab();
             alert(`Class Code ${currentSelected} successfully pruned.`);
@@ -603,15 +608,19 @@
             if (!docSnap.exists) return alert("School node mapping not found.");
             currentSchool = school;
             
-            // Sets continuous pipeline integration
+            // Continuous listening synchronization process 
             window.cloudStorage.collection("schools").doc(currentSchool).onSnapshot(doc => {
                 if(doc.exists) {
                     const incomingData = doc.data();
                     
-                    // Retain safely local dynamic values if cloud is empty/uninitialized
+                    // State Protection: Only pull cloud classes if they actually contain items.
                     if(incomingData.allocatedClasses && incomingData.allocatedClasses.length > 0) {
                         db.allocatedClasses = incomingData.allocatedClasses;
+                    } else if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
+                        // Keep our local array intact if cloud array returned blank
+                        verifyAndSeedDefaultClasses();
                     }
+                    
                     db.students = incomingData.students || {};
                     db.records = incomingData.records || {};
                     db.attendance = incomingData.attendance || {};
@@ -619,7 +628,7 @@
                     db.examOrder = incomingData.examOrder || [];
                     db.notices = incomingData.notices || [];
                     
-                    verifyAndSeedDefaultClasses();
+                    buildClassSelectOptions();
                     
                     if (role === 'admin' || role === 'teacher') { commitSession(school, 'teacher', role); initTeacherView(); }
                     else if (role === 'parent' && db.students[id]) { activeId = id; commitSession(school, id, 'parent'); initParentView(); }
@@ -628,7 +637,9 @@
         }
 
         async function syncToCloud() { 
-            if (window.cloudStorage && currentSchool) await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
+            if (window.cloudStorage && currentSchool) {
+                await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
+            }
         }
         
         function commitSession(school, user, role) { 
