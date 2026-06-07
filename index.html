@@ -459,7 +459,7 @@
             window.cloudStorage = null;
         }
 
-        // Verifies database array data state explicitly to prevent empty states
+        // Seeds default classes array if empty or missing
         function verifyAndSeedDefaultClasses() {
             if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
                 db.allocatedClasses = [];
@@ -471,7 +471,7 @@
             buildClassSelectOptions();
         }
 
-        // Handles standard default natural alphabetical array sorting when requested manually
+        // Auto-sorting matrix algorithm
         function triggerAutoSort() {
             if (!db.allocatedClasses) return;
             db.allocatedClasses.sort((x, y) => {
@@ -486,7 +486,7 @@
             alert("Classes reset to standardized automatic sequencing order.");
         }
 
-        // Renders options completely into selection dropdowns
+        // Renders options into selection components smoothly
         function buildClassSelectOptions(preserveSelectedValue = null) {
             const select = document.getElementById('class-select');
             if(!select) return;
@@ -502,7 +502,7 @@
             }
         }
 
-        // Allows adding class and appends directly where you choose without disrupting order
+        // Inserts new dynamic streams and instantly mirrors them to cloud storage
         function addNewClassStream() {
             const input = document.getElementById('new-class-input');
             const targetVal = input.value.trim().toUpperCase();
@@ -510,8 +510,10 @@
             if(!targetVal) return alert("Please specify a valid Class Code label.");
             if(db.allocatedClasses.includes(targetVal)) return alert("This class allocation segment already exists.");
             
-            db.allocatedClasses.push(targetVal); // Appends cleanly at the base loop
+            db.allocatedClasses.push(targetVal);
             buildClassSelectOptions(targetVal);
+            
+            // Critical fix: sync to cloud instantly to lock state changes
             syncToCloud();
             
             input.value = '';
@@ -521,7 +523,7 @@
             alert(`Class Code ${targetVal} added successfully.`);
         }
 
-        // Manual sorting sequence permissions handler
+        // Manual sorting configuration framework
         function moveSelectedClass(direction) {
             const select = document.getElementById('class-select');
             const currentSelected = select.value;
@@ -531,17 +533,15 @@
             if(index === -1) return;
 
             if (direction === 'up' && index > 0) {
-                // Swap array position with item above
                 let temp = db.allocatedClasses[index - 1];
                 db.allocatedClasses[index - 1] = db.allocatedClasses[index];
                 db.allocatedClasses[index] = temp;
             } else if (direction === 'down' && index < db.allocatedClasses.length - 1) {
-                // Swap array position with item below
                 let temp = db.allocatedClasses[index + 1];
                 db.allocatedClasses[index + 1] = db.allocatedClasses[index];
                 db.allocatedClasses[index] = temp;
             } else {
-                return; // Boundaries hit
+                return;
             }
 
             buildClassSelectOptions(currentSelected);
@@ -602,10 +602,23 @@
             const docSnap = await window.cloudStorage.collection("schools").doc(school).get();
             if (!docSnap.exists) return alert("School node mapping not found.");
             currentSchool = school;
+            
+            // Sets continuous pipeline integration
             window.cloudStorage.collection("schools").doc(currentSchool).onSnapshot(doc => {
                 if(doc.exists) {
-                    db = doc.data(); 
-                    if(!db.notices) db.notices = [];
+                    const incomingData = doc.data();
+                    
+                    // Retain safely local dynamic values if cloud is empty/uninitialized
+                    if(incomingData.allocatedClasses && incomingData.allocatedClasses.length > 0) {
+                        db.allocatedClasses = incomingData.allocatedClasses;
+                    }
+                    db.students = incomingData.students || {};
+                    db.records = incomingData.records || {};
+                    db.attendance = incomingData.attendance || {};
+                    db.exams = incomingData.exams || {};
+                    db.examOrder = incomingData.examOrder || [];
+                    db.notices = incomingData.notices || [];
+                    
                     verifyAndSeedDefaultClasses();
                     
                     if (role === 'admin' || role === 'teacher') { commitSession(school, 'teacher', role); initTeacherView(); }
