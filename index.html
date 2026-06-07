@@ -27,6 +27,7 @@
             <h1 class="text-xl font-black text-indigo-600 tracking-tighter">ACADEMIQ <span class="text-slate-400 font-light">PORTAL</span></h1>
             <span id="nav-school-display" class="text-[10px] text-slate-400 font-mono uppercase tracking-wider font-bold">Secure Network Workspace</span>
         </div>
+        
         <div class="flex items-center gap-4">
             <span id="role-badge" class="hidden px-3 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-600 uppercase"></span>
             <button id="logout-btn" onclick="triggerSessionLogout()" class="hidden text-red-500 text-xs font-bold border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50">Logout</button>
@@ -199,13 +200,16 @@
         </section>
 
         <section id="screen-teacher" class="screen w-full max-w-7xl">
-            <div class="flex flex-wrap gap-2 mb-4 border-b pb-2">
-                <button id="tab-btn-students" onclick="switchTeacherTab('students')" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white">👤 Student Roster</button>
-                <button id="tab-btn-attendance" onclick="switchTeacherTab('attendance')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📅 Attendance</button>
-                <button id="tab-btn-config" onclick="switchTeacherTab('config')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">⚙️ Assessment Control</button>
-                <button id="tab-btn-bulletin" onclick="switchTeacherTab('bulletin')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📣 Notice Board Scheduler</button>
+            <div class="flex flex-wrap justify-between items-center mb-4 border-b pb-2 gap-2">
+                <div class="flex flex-wrap gap-2">
+                    <button id="tab-btn-students" onclick="switchTeacherTab('students')" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white">👤 Student Roster</button>
+                    <button id="tab-btn-attendance" onclick="switchTeacherTab('attendance')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📅 Attendance</button>
+                    <button id="tab-btn-config" onclick="switchTeacherTab('config')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">⚙️ Assessment Control</button>
+                    <button id="tab-btn-bulletin" onclick="switchTeacherTab('bulletin')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📣 Notice Board Scheduler</button>
+                </div>
+                <button onclick="requestNotificationSystemPermission()" class="bg-slate-800 text-white px-3 py-1.5 rounded-xl font-bold text-[11px] hover:bg-slate-700 shadow-sm transition-all">🔔 Enable Notifications Permission</button>
             </div>
-            
+           
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-1 space-y-4">
                     <div class="bg-white p-5 rounded-2xl border shadow-sm">
@@ -239,13 +243,12 @@
                     <div id="tab-pane-config" class="hidden p-6 max-h-[70vh] overflow-y-auto space-y-6">
                         <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl space-y-3">
                             <h4 class="font-black text-indigo-900 text-xs uppercase tracking-wider">Deploy New Examination Module</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <input id="new-exam-name" type="text" placeholder="e.g., Mid-Term" class="border p-2 rounded-lg bg-white text-xs font-bold outline-none">
-                                <input id="new-exam-max" type="number" placeholder="Max Points" class="border p-2 rounded-lg bg-white text-xs font-bold text-center outline-none">
                                 <button onclick="createNewExamModule()" class="bg-indigo-600 text-white text-xs font-bold rounded-lg py-2">Inject Assessment Module</button>
                             </div>
                         </div>
-                        <div id="exam-config-rows" class="space-y-2"></div>
+                        <div id="exam-config-rows" class="space-y-4"></div>
                         <button onclick="saveExamConfiguration()" class="bg-indigo-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-md">Save Assessment Configuration</button>
                     </div>
 
@@ -255,7 +258,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="text-[10px] uppercase font-bold text-slate-400">Target Subject</label>
-                                    <select id="bulletin-hw-subject" class="w-full border p-2 rounded-lg bg-white text-xs"></select>
+                                    <input id="bulletin-hw-subject" type="text" placeholder="e.g., Maths, Hindi, French" class="w-full border p-2 rounded-lg bg-white text-xs outline-none">
                                 </div>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
@@ -309,8 +312,27 @@
                                     <input id="bulletin-tt-end" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
                                 </div>
                             </div>
-                            <textarea id="bulletin-tt-matrix" placeholder="June 22: Maths |\nJune 24: Science..." class="w-full border p-2 h-16 rounded-lg text-xs bg-white outline-none"></textarea>
+                            <textarea id="bulletin-tt-matrix" placeholder="June 22: Maths | June 24: Science..." class="w-full border p-2 h-16 rounded-lg text-xs bg-white outline-none"></textarea>
                             <button onclick="publishNoticeItem('timetables')" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Timetable Matrix</button>
+                        </div>
+
+                        <div class="border p-6 rounded-2xl space-y-4 bg-white shadow-inner">
+                            <h3 class="font-black text-slate-800 text-sm tracking-tight border-b pb-2">📋 Live Tracking Control Feed (Active Notices)</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-slate-100 uppercase tracking-wider text-[10px] text-slate-500 font-bold font-mono">
+                                        <tr>
+                                            <th class="p-3">Notice Type</th>
+                                            <th class="p-3">Topic/Details</th>
+                                            <th class="p-3">Timeline Run Range</th>
+                                            <th class="p-3 text-center">Action Options</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="teacher-notices-feed-table">
+                                        <tr><td colspan="4" class="p-4 text-center text-slate-400 italic">No notices populated for this class environment.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -392,22 +414,19 @@
     </main>
 
     <script>
-        const SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
         let db = { students: {}, records: {}, attendance: {}, exams: {}, history: [], examOrder: [], notices: [] };
         let currentSchool = null; let currentUser = null; let activeId = null;
         let dynamicChartInstance = null; let currentTeacherTab = "students";
         let localAttendanceBuffer = {};
 
-        // PASTE YOUR FIREBASE OBJECT CONFIGURATION DIRECTLY HERE:
         const firebaseConfig = {
-            apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
-            authDomain: "eduflow-pro-f6d04.firebaseapp.com",
-            projectId: "eduflow-pro-f6d04",
-            storageBucket: "eduflow-pro-f6d04.firebasestorage.app",
-            messagingSenderId: "961305546473",
-            appId: "1:961305546473:web:71db6c4d8da6c4950a6a78"
+          apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
+          authDomain: "eduflow-pro-f6d04.firebaseapp.com",
+          projectId: "eduflow-pro-f6d04",
+          storageBucket: "eduflow-pro-f6d04.firebasestorage.app",
+          messagingSenderId: "961305546473",
+          appId: "1:961305546473:web:71db6c4d8da6c4950a6a78"
         };
-
         try {
             firebase.initializeApp(firebaseConfig);
             window.cloudStorage = firebase.firestore();
@@ -422,38 +441,17 @@
             if(target) target.classList.add('active');
         }
 
-        // UPGRADED HYBRID NOTIFICATION CONTROLLER (MOBILE READY)
+        function requestNotificationSystemPermission() {
+            if (!("Notification" in window)) return alert("This device browser layout context does not accept standard push alerts.");
+            Notification.requestPermission().then(permission => {
+                alert(`Notification access profile alignment response: ${permission.toUpperCase()}`);
+            });
+        }
+
         function triggerNotificationToast(title, body) {
-            const FallbackIndicator = () => {
-                alert(`📢 ${title.toUpperCase()}\n------------------------\n${body}`);
-            };
-
-            if (!("Notification" in window)) {
-                FallbackIndicator();
-                return;
-            }
-
-            if (Notification.permission === "granted") {
-                try {
-                    new Notification(title, { body: body, icon: "🚀" });
-                } catch (mobileError) {
-                    // Mobile browsers often reject new Notification inside foreground active documents without worker endpoints
-                    FallbackIndicator();
-                }
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        try {
-                            new Notification(title, { body: body, icon: "🚀" });
-                        } catch (err) {
-                            FallbackIndicator();
-                        }
-                    } else {
-                        FallbackIndicator();
-                    }
-                });
-            } else {
-                FallbackIndicator();
+            if (!("Notification" in window)) return;
+            if (Notification.permission === "granted") { 
+                new Notification(title, { body: body });
             }
         }
 
@@ -462,7 +460,6 @@
             const role = document.getElementById('auth-role').value;
             const id = document.getElementById('auth-id').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
-
             if (role === 'superadmin' && pass === 'master999') {
                 commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin');
                 initSuperAdminListener();
@@ -473,7 +470,10 @@
             if (!window.cloudStorage) {
                 currentSchool = school || "DEMO-1234";
                 db.students["10A-1"] = { name: "Test Student", pass: "school1" };
-                db.exams = { "PT-1": 50 }; db.examOrder = ["PT-1"];
+                if (Object.keys(db.exams).length === 0) {
+                    db.exams = { "PT-1": { "Maths": 50, "Science": 50, "English": 100 } }; 
+                    db.examOrder = ["PT-1"];
+                }
                 if (role === 'parent') { activeId = "10A-1"; commitSession(currentSchool, "10A-1", 'parent'); initParentView(); }
                 else { commitSession(currentSchool, 'teacher', 'teacher'); initTeacherView(); }
                 return;
@@ -482,104 +482,25 @@
             const docSnap = await window.cloudStorage.collection("schools").doc(school).get();
             if (!docSnap.exists) return alert("School node mapping not found.");
             currentSchool = school;
-            
-            // Explicit configuration validation requesting notification pipeline tracking immediately
-            if ("Notification" in window && Notification.permission === "default") {
-                Notification.requestPermission();
-            }
-
             window.cloudStorage.collection("schools").doc(currentSchool).onSnapshot(doc => {
                 if(doc.exists) {
-                    db = doc.data(); if(!db.notices) db.notices = [];
+                    db = doc.data(); 
+                    if(!db.notices) db.notices = [];
+                    if(!db.exams) db.exams = {};
+                    if(!db.examOrder) db.examOrder = [];
                     if (role === 'admin' || role === 'teacher') { commitSession(school, 'teacher', role); initTeacherView(); }
                     else if (role === 'parent' && db.students[id]) { activeId = id; commitSession(school, id, 'parent'); initParentView(); }
                 }
             });
         }
 
-        // SUPERADMIN DATABASE MATRIX CAPTURE
-        function initSuperAdminListener() {
-            if (!window.cloudStorage) return;
-            window.cloudStorage.collection("schools").onSnapshot(snapshot => {
-                document.getElementById('stat-schools').innerText = `${snapshot.size} Active Nodes`;
-                const tbody = document.getElementById('superadmin-requests-table');
-                tbody.innerHTML = '';
-                let requestCounter = 0;
-                
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    if (data.registrationRequest) {
-                        requestCounter++;
-                        const req = data.registrationRequest;
-                        tbody.innerHTML += `
-                            <tr class="border-b">
-                                <td class="p-4 font-bold text-slate-800">${req.name}</td>
-                                <td class="p-4 font-mono">${req.email}</td>
-                                <td class="p-4">${req.phone}</td>
-                                <td class="p-4 text-center">
-                                    <button onclick="approveSchoolDeployment('${doc.id}')" class="bg-emerald-600 text-white px-3 py-1 rounded-lg font-bold text-[11px] mr-2">Approve & Activate</button>
-                                    <button onclick="rejectSchoolDeployment('${doc.id}')" class="bg-rose-600 text-white px-3 py-1 rounded-lg font-bold text-[11px]">Reject</button>
-                                </td>
-                            </tr>`;
-                    }
-                });
-                document.getElementById('stat-requests').innerText = `${requestCounter} Pending`;
-            });
-        }
-
-        async function submitRegistrationRequest() {
-            const name = document.getElementById('reg-name').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
-            const phone = document.getElementById('reg-phone').value.trim();
-
-            if (!name || !email || !phone) return alert("All profile allocation variables are required.");
-            if (!window.cloudStorage) return alert("Cloud storage bypassed. Request cannot be transmitted.");
-
-            const generatedCode = "ACAD-" + Math.floor(100000 + Math.random() * 900000);
-            const payload = {
-                registrationRequest: { name, email, phone, timestamp: new Date().toISOString() },
-                students: {}, records: {}, attendance: {}, exams: {}, examOrder: [], notices: []
-            };
-
-            await window.cloudStorage.collection("schools").doc(generatedCode).set(payload);
-            alert(`Application recorded securely. Please supply verification ID: ${generatedCode} to your Operations Engineer.`);
-            showScreen('screen-gate');
-        }
-
-        async function approveSchoolDeployment(schoolId) {
-            if (!window.cloudStorage) return;
-            const docRef = window.cloudStorage.collection("schools").doc(schoolId);
-            const doc = await docRef.get();
-            if (doc.exists) {
-                let data = doc.data();
-                delete data.registrationRequest;
-                await docRef.set(data);
-                alert(`Infrastructure Node ${schoolId} deployed successfully.`);
-            }
-        }
-
-        async function rejectSchoolDeployment(schoolId) {
-            if (!window.cloudStorage || !confirm("Permanently drop request blueprint?")) return;
-            await window.cloudStorage.collection("schools").doc(schoolId).delete();
-            alert("Application dropped from structural log buffers.");
-        }
-
         async function syncToCloud() { 
-            if (window.cloudStorage && currentSchool) {
-                await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
-            }
+            if (window.cloudStorage && currentSchool) await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
         }
-
         function commitSession(school, user, role) { 
             currentUser = { role, id: user };
-            localStorage.setItem('session_school', school); 
-            localStorage.setItem('session_user', user); 
-            localStorage.setItem('session_role', role); 
-            document.getElementById('logout-btn').classList.remove('hidden'); 
-            const rb = document.getElementById('role-badge'); 
-            rb.innerText = role; rb.classList.remove('hidden');
+            localStorage.setItem('session_school', school); localStorage.setItem('session_user', user); localStorage.setItem('session_role', role); document.getElementById('logout-btn').classList.remove('hidden'); const rb = document.getElementById('role-badge'); rb.innerText = role; rb.classList.remove('hidden');
         }
-
         function triggerSessionLogout() { localStorage.clear(); location.reload(); }
 
         function initParentView() {
@@ -594,7 +515,6 @@
             let options = '';
             for(let i=1; i<=10; i++) ['A', 'B'].forEach(s => options += `<option value="${i}${s}">Class Code ${i}${s}</option>`);
             select.innerHTML = options;
-            document.getElementById('bulletin-hw-subject').innerHTML = SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
             switchTeacherTab('students'); showScreen('screen-teacher');
         }
 
@@ -602,18 +522,19 @@
             currentTeacherTab = targetTab;
             ['students', 'attendance', 'config', 'bulletin'].forEach(p => {
                 document.getElementById(`tab-pane-${p}`).classList.toggle('hidden', p !== targetTab);
-                const btn = document.getElementById(`tab-btn-${p}`); 
-                if(btn) btn.className = (p === targetTab) ? "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white" : "px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700";
+                const btn = document.getElementById(`tab-btn-${p}`); if(btn) btn.className = (p === targetTab) ? "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white" : "px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700";
             });
             document.getElementById('search-container').classList.toggle('hidden', targetTab !== 'students');
             document.getElementById('date-picker-container').classList.toggle('hidden', targetTab !== 'attendance');
             if(targetTab === 'config') renderExamConfigPanel();
+            if(targetTab === 'bulletin') renderTeacherNoticesFeed();
             refreshCurrentTeacherTab();
         }
 
         function refreshCurrentTeacherTab() { 
             if (currentTeacherTab === 'students') renderTeacherList();
             else if (currentTeacherTab === 'attendance') renderAttendancePanel(); 
+            else if (currentTeacherTab === 'bulletin') renderTeacherNoticesFeed();
         }
         
         function renderTeacherList() {
@@ -627,7 +548,6 @@
                 tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4"><input type="text" value="${data.name}" onchange="updateProfileFieldDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none font-bold text-slate-800"><span class="text-[10px] text-slate-400 block">ID: ${sId}</span></td><td class="p-4 text-center"><input type="text" value="${data.pass || ("school" + i)}" onchange="updateProfileFieldDirect('${sId}','pass',this.value)" class="border rounded-lg px-2 text-xs font-mono text-indigo-600 text-center w-32 outline-none"></td><td class="p-4 text-center"><button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold">Evaluate</button></td></tr>`;
             }
         }
-
         function updateProfileFieldDirect(id, field, val) { 
             if(!db.students[id]) db.students[id] = { name: "", pass: "" };
             db.students[id][field] = val; syncToCloud(); 
@@ -648,56 +568,114 @@
                 tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4 font-bold">${db.students[sId].name}</td><td class="p-4 text-center"><div class="inline-flex rounded-lg border p-0.5 bg-slate-100"><button type="button" onclick="setLocalAttendanceStatus('${sId}','Present')" id="btn-pres-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${isPres ? 'bg-emerald-500 text-white':'text-slate-500'}">✔️ Present</button><button type="button" onclick="setLocalAttendanceStatus('${sId}','Absent')" id="btn-abs-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${!isPres ? 'bg-rose-500 text-white':'text-slate-500'}">❌ Absent</button></div></td></tr>`;
             }
         }
-
         function setLocalAttendanceStatus(sId, status) { 
             localAttendanceBuffer[sId] = status;
-            document.getElementById(`btn-pres-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Present'?'bg-emerald-500 text-white':'text-slate-500'}`; 
-            document.getElementById(`btn-abs-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Absent'?'bg-rose-500 text-white':'text-slate-500'}`;
+            document.getElementById(`btn-pres-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Present'?'bg-emerald-500 text-white':'text-slate-500'}`; document.getElementById(`btn-abs-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Absent'?'bg-rose-500 text-white':'text-slate-500'}`;
         }
-
         function commitAttendanceSheet() { 
-            const cls = document.getElementById('class-select').value; 
-            const dt = document.getElementById('attendance-date').value;
-            db.attendance[cls][dt] = localAttendanceBuffer; syncToCloud(); 
-            alert("Attendance sheet committed safely."); 
+            const cls = document.getElementById('class-select').value; const dt = document.getElementById('attendance-date').value;
+            db.attendance[cls][dt] = localAttendanceBuffer; syncToCloud(); alert("Attendance sheet committed safely."); 
         }
 
         function createNewExamModule() {
             const name = document.getElementById('new-exam-name').value.trim();
-            const maxVal = parseInt(document.getElementById('new-exam-max').value);
-            if(!name || isNaN(maxVal)) return alert("Declare parameters."); 
-            db.exams[name] = maxVal; 
+            if(!name) return alert("Declare an exam title module string."); 
+            if(!db.exams[name]) db.exams[name] = {}; 
             if(!db.examOrder.includes(name)) db.examOrder.push(name);
             document.getElementById('new-exam-name').value = '';
-            document.getElementById('new-exam-max').value = ''; 
             renderExamConfigPanel();
         }
 
         function renderExamConfigPanel() {
             const wrapper = document.getElementById('exam-config-rows');
             wrapper.innerHTML = '';
-            db.examOrder.forEach((ex) => { 
-                wrapper.innerHTML += `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border-b"><span class="text-xs font-bold">${ex}</span><input type="number" id="cfg-max-${ex}" value="${db.exams[ex]}" class="border w-16 p-1 text-center text-xs rounded-lg"></div>`; 
+            if(db.examOrder.length === 0) {
+                wrapper.innerHTML = `<p class="text-xs text-slate-400 italic">No exams configured yet.</p>`;
+                return;
+            }
+            db.examOrder.forEach((ex) => {
+                let examSubjectsObj = db.exams[ex];
+                if(typeof examSubjectsObj !== 'object' || examSubjectsObj === null) {
+                    db.exams[ex] = {}; examSubjectsObj = {};
+                }
+                
+                let subjectsHTML = '';
+                Object.keys(examSubjectsObj).forEach(sub => {
+                    subjectsHTML += `
+                    <div class="flex items-center gap-2 bg-white p-2 rounded-lg border text-xs">
+                        <span class="font-bold text-slate-700 flex-1">${sub}</span>
+                        <span class="text-[10px] uppercase font-bold text-slate-400">Max:</span>
+                        <input type="number" id="cfg-max-${ex}-${sub}" value="${examSubjectsObj[sub]}" class="border w-16 p-1 text-center font-bold text-indigo-600 rounded-md">
+                        <button onclick="deleteSubjectFromExam('${ex}','${sub}')" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button>
+                    </div>`;
+                });
+
+                wrapper.innerHTML += `
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <div class="flex items-center justify-between border-b pb-2">
+                        <span class="text-xs font-black text-indigo-700 tracking-wide uppercase">${ex} Assessment Strategy</span>
+                        <button onclick="removeExamEntirely('${ex}')" class="text-[10px] text-red-500 font-bold hover:underline">Remove Module</button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                        <input id="add-sub-name-${ex}" type="text" placeholder="Subject Name (e.g. Hindi)" class="border p-2 text-xs bg-white rounded-lg outline-none font-medium">
+                        <div class="flex gap-1">
+                            <input id="add-sub-max-${ex}" type="number" placeholder="Max Points" class="border p-2 text-xs bg-white rounded-lg text-center outline-none w-24 font-medium">
+                            <button onclick="addSubjectToExam('${ex}')" class="bg-emerald-600 text-white text-[11px] font-bold px-3 rounded-lg flex-1">Add Subject</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1">
+                        ${subjectsHTML || '<p class="text-[11px] text-slate-400 italic col-span-3">No custom subjects added yet.</p>'}
+                    </div>
+                </div>`;
             });
         }
 
+        function addSubjectToExam(examName) {
+            const subInput = document.getElementById(`add-sub-name-${examName}`);
+            const maxInput = document.getElementById(`add-sub-max-${examName}`);
+            const subName = subInput.value.trim();
+            const maxVal = parseInt(maxInput.value);
+            if(!subName || isNaN(maxVal)) return alert("Declare both subject key title and max score bound mapping parameters.");
+            db.exams[examName][subName] = maxVal;
+            subInput.value = ''; maxInput.value = '';
+            renderExamConfigPanel();
+        }
+
+        function deleteSubjectFromExam(examName, subName) {
+            delete db.exams[examName][subName];
+            renderExamConfigPanel();
+        }
+
+        function removeExamEntirely(examName) {
+            if(!confirm(`Confirm destruction delete execution sequence onto exam pattern: ${examName}?`)) return;
+            delete db.exams[examName];
+            db.examOrder = db.examOrder.filter(e => e !== examName);
+            renderExamConfigPanel();
+        }
+
         function saveExamConfiguration() { 
-            db.examOrder.forEach(ex => { 
-                if(document.getElementById(`cfg-max-${ex}`)) db.exams[ex] = parseInt(document.getElementById(`cfg-max-${ex}`).value); 
-            }); 
+            db.examOrder.forEach(ex => {
+                if(db.exams[ex] && typeof db.exams[ex] === 'object') {
+                    Object.keys(db.exams[ex]).forEach(sub => {
+                        const el = document.getElementById(`cfg-max-${ex}-${sub}`);
+                        if(el) db.exams[ex][sub] = parseInt(el.value) || 100;
+                    });
+                }
+            });
             syncToCloud();
-            alert("Saved Exam Structures."); 
+            alert("Saved Custom Exam Configurations."); 
             switchTeacherTab('students'); 
         }
 
         function publishNoticeItem(type) {
             const cls = document.getElementById('class-select').value;
-            let itemPayload = { type: type, classTarget: cls, timestamp: new Date().toISOString() };
+            let itemPayload = { id: 'nt-' + Date.now() + '-' + Math.floor(Math.random()*1000), type: type, classTarget: cls, timestamp: new Date().toISOString() };
             if (type === 'homework') {
-                itemPayload.subject = document.getElementById('bulletin-hw-subject').value;
+                itemPayload.subject = document.getElementById('bulletin-hw-subject').value.trim();
                 itemPayload.content = document.getElementById('bulletin-hw-task').value.trim();
                 itemPayload.startDate = document.getElementById('bulletin-hw-start').value;
                 itemPayload.endDate = document.getElementById('bulletin-hw-end').value;
+                if(!itemPayload.subject) return alert("Please specify target subject code value.");
             } else if (type === 'events') {
                 itemPayload.title = document.getElementById('bulletin-evt-title').value.trim();
                 itemPayload.startDate = document.getElementById('bulletin-evt-start').value;
@@ -710,54 +688,123 @@
             }
 
             if(!itemPayload.startDate || !itemPayload.endDate) return alert("Please specify complete display start and expiration dates.");
-            db.notices.push(itemPayload); syncToCloud();
+            db.notices.push(itemPayload); 
+            syncToCloud();
             
             triggerNotificationToast("AcademIQ Notice Added", `New ${type.toUpperCase()} scheduled notice broadcast pushed.`);
             alert(`Notice item successfully published and enqueued!`);
+            
+            if(type === 'homework') { document.getElementById('bulletin-hw-subject').value = ''; document.getElementById('bulletin-hw-task').value = ''; }
+            else if(type === 'events') { document.getElementById('bulletin-evt-title').value = ''; }
+            else if(type === 'timetables') { document.getElementById('bulletin-tt-title').value = ''; document.getElementById('bulletin-tt-matrix').value = ''; }
+            
+            renderTeacherNoticesFeed();
+        }
+
+        function renderTeacherNoticesFeed() {
+            const cls = document.getElementById('class-select').value;
+            const tbody = document.getElementById('teacher-notices-feed-table');
+            tbody.innerHTML = '';
+            const classNotices = (db.notices || []).filter(n => n.classTarget === cls);
+            if(classNotices.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">No notices tracking populated inside class allocation window ${cls}.</td></tr>`;
+                return;
+            }
+            classNotices.reverse().forEach(n => {
+                let displayDetails = '';
+                if(n.type === 'homework') displayDetails = `<strong>[${n.subject || 'Core'}]</strong> ${n.content || ''}`;
+                else if(n.type === 'events') displayDetails = `🏆 ${n.title || ''}`;
+                else if(n.type === 'timetables') displayDetails = `📅 <strong>${n.title || ''}</strong>: <span class="font-mono text-[11px] block whitespace-pre-line">${n.content || ''}</span>`;
+                
+                tbody.innerHTML += `
+                <tr class="border-b hover:bg-slate-50">
+                    <td class="p-3"><span class="px-2 py-0.5 font-bold font-mono text-[10px] rounded uppercase ${n.type==='homework'?'bg-indigo-100 text-indigo-700':n.type==='events'?'bg-amber-100 text-amber-700':'bg-emerald-100 text-emerald-700'}">${n.type}</span></td>
+                    <td class="p-3 text-slate-700 font-medium">${displayDetails}</td>
+                    <td class="p-3 text-slate-400 font-mono text-[11px]">${n.startDate} ➔ ${n.endDate}</td>
+                    <td class="p-3 text-center"><button onclick="deleteNoticeByTeacher('${n.id || ''}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold px-3 py-1 rounded-xl text-xs transition-all">Delete</button></td>
+                </tr>`;
+            });
+        }
+
+        function deleteNoticeByTeacher(noticeId) {
+            if(!noticeId) return;
+            db.notices = (db.notices || []).filter(n => n.id !== noticeId);
+            syncToCloud();
+            renderTeacherNoticesFeed();
         }
 
         function openMarksModal(id) { 
             activeId = id; 
             document.getElementById('m-student-name').innerText = db.students[id].name;
-            document.getElementById('m-exam').innerHTML = db.examOrder.map(ex => `<option>${ex}</option>`).join(''); 
-            document.getElementById('m-grid').innerHTML = SUBJECTS.map(s => `<div class='bg-slate-50 p-2 border rounded-xl'><label class='text-[10px] text-slate-400 block font-bold'>${s}</label><input type='number' id='inp-${s}' class='w-full outline-none font-bold text-sm bg-transparent'></div>`).join('');
+            document.getElementById('m-exam').innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join(''); 
             loadExistingMarks(); 
             showScreen('screen-marks'); 
         }
 
         function loadExistingMarks() { 
             const ex = document.getElementById('m-exam').value;
+            if(!ex) {
+                document.getElementById('m-grid').innerHTML = `<p class="text-xs italic text-slate-400 col-span-4">Please build subjects under this exam profile configuration first.</p>`;
+                return;
+            }
+            const examSubjectsObj = db.exams[ex] || {};
+            const subjectsList = Object.keys(examSubjectsObj);
             const r = db.records[`${activeId}_${ex}`] || { marks: {}, remarks: "", cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good" };
-            SUBJECTS.forEach(s => document.getElementById(`inp-${s}`).value = r.marks[s] !== undefined ? r.marks[s] : ""); 
+            
+            if(subjectsList.length === 0) {
+                document.getElementById('m-grid').innerHTML = `<p class="text-xs italic text-slate-400 col-span-4">No subjects registered for this exam layout.</p>`;
+            } else {
+                document.getElementById('m-grid').innerHTML = subjectsList.map(s => `
+                    <div class='bg-slate-50 p-2 border rounded-xl'>
+                        <label class='text-[10px] text-slate-400 block font-bold'>${s} (Max ${examSubjectsObj[s]})</label>
+                        <input type='number' id='inp-${s}' class='w-full outline-none font-bold text-sm bg-transparent'>
+                    </div>`).join('');
+                
+                subjectsList.forEach(s => {
+                    document.getElementById(`inp-${s}`).value = r.marks[s] !== undefined ? r.marks[s] : "";
+                });
+            }
             document.getElementById('m-remarks').value = r.remarks || ""; 
-            document.getElementById('m-cw-status').value = r.cw;
-            document.getElementById('m-hw-status').value = r.hw; 
+            document.getElementById('m-cw-status').value = r.cw || "🟢 Active & Regular";
+            document.getElementById('m-hw-status').value = r.hw || "🟢 On-Time & Good"; 
         }
 
         function saveMarks() {
             const ex = document.getElementById('m-exam').value;
-            const maxAllowed = db.exams[ex] || 100;
+            if(!ex) return alert("No valid evaluation target layout module open.");
+            const examSubjectsObj = db.exams[ex] || {};
+            const subjectsList = Object.keys(examSubjectsObj);
+            
             const r = { marks: {}, remarks: document.getElementById('m-remarks').value, cw: document.getElementById('m-cw-status').value, hw: document.getElementById('m-hw-status').value };
-            for(let s of SUBJECTS) { 
-                const val = document.getElementById(`inp-${s}`).value; 
-                if(val !== "") { 
-                    const n = Number(val);
-                    if(n > maxAllowed || n < 0) return alert("Value limits validation failed."); 
-                    r.marks[s] = n;
-                } 
+            
+            for(let s of subjectsList) { 
+                const el = document.getElementById(`inp-${s}`);
+                if(el) {
+                    const val = el.value; 
+                    if(val !== "") { 
+                        const n = Number(val);
+                        const maxAllowed = examSubjectsObj[s] || 100;
+                        if(n > maxAllowed || n < 0) return alert(`Value validation limits mapping tracking crash on ${s}. Max allowed: ${maxAllowed}`); 
+                        r.marks[s] = n;
+                    } 
+                }
             }
-            db.records[`${activeId}_${ex}`] = r; syncToCloud(); alert("Marks evaluated."); showScreen('screen-teacher');
+            db.records[`${activeId}_${ex}`] = r; 
+            syncToCloud(); 
+            alert("Marks evaluated safely."); 
+            showScreen('screen-teacher');
         }
 
         function renderParentReport() {
             const targetClass = activeId.split('-')[0];
-            const isoToday = new Date().toISOString().substring(0, 10); 
+            const isoToday = new Date().toISOString().substring(0, 10);
 
             let working = 0, present = 0;
             if(db.attendance[targetClass]) { 
                 Object.keys(db.attendance[targetClass]).forEach(dt => { 
                     if(db.attendance[targetClass][dt][activeId] !== undefined) { 
-                        working++; if(db.attendance[targetClass][dt][activeId] === "Present") present++; 
+                        working++; 
+                        if(db.attendance[targetClass][dt][activeId] === "Present") present++; 
                     } 
                 });
             }
@@ -767,34 +814,47 @@
             const activeNotices = (db.notices || []).filter(n => n.classTarget === targetClass && isoToday >= n.startDate && isoToday <= n.endDate);
             
             const evts = activeNotices.filter(n => n.type === 'events');
-            document.getElementById('p-events-deck').innerHTML = evts.length === 0 ? `<div class='text-slate-400 italic py-2'>Welcome back!\nNo scheduled activities for this window.</div>` : evts.map(e => `<div class='p-2 bg-amber-50 border rounded-lg font-bold text-amber-900'>• ${e.title}</div>`).join('');
-
+            document.getElementById('p-events-deck').innerHTML = evts.length === 0 ? `<div class='text-slate-400 italic py-2'>Welcome back! No scheduled activities for this window.</div>` : evts.map(e => `<div class='p-2 bg-amber-50 border rounded-lg font-bold text-amber-900'>• ${e.title}</div>`).join('');
+            
             const tts = activeNotices.filter(n => n.type === 'timetables');
-            document.getElementById('p-timetable-deck').innerHTML = tts.length === 0 ? `<div class='text-slate-400 italic py-2'>Welcome back!\nNo upcoming examination timelines scheduled.</div>` : tts.map(t => `<div class='p-2.5 bg-emerald-50 border rounded-lg'><span class='font-black text-emerald-900 block'>🏆 ${t.title}</span><p class='whitespace-pre-line text-xs font-mono text-slate-700 mt-1'>${t.content}</p></div>`).join('');
-
+            document.getElementById('p-timetable-deck').innerHTML = tts.length === 0 ? `<div class='text-slate-400 italic py-2'>Welcome back! No upcoming examination timelines scheduled.</div>` : tts.map(t => `<div class='p-2.5 bg-emerald-50 border rounded-lg'><span class='font-black text-emerald-900 block'>🏆 ${t.title}</span><p class='whitespace-pre-line text-xs font-mono text-slate-700 mt-1'>${t.content}</p></div>`).join('');
+            
             const hws = activeNotices.filter(n => n.type === 'homework');
-            document.getElementById('p-homework-deck').innerHTML = hws.length === 0 ? `<div class='text-slate-400 italic py-2 col-span-2'>Welcome back!\nNo active assignments found.</div>` : hws.map(h => `<div class='p-3 bg-slate-50 border rounded-xl'><span class='bg-indigo-100 text-indigo-700 font-bold text-[10px] px-1.5 py-0.5 rounded'>${h.subject}</span><p class='mt-1 font-medium text-slate-800'>${h.content}</p></div>`).join('');
-
+            document.getElementById('p-homework-deck').innerHTML = hws.length === 0 ? `<div class='text-slate-400 italic py-2 col-span-2'>Welcome back! No active assignments found.</div>` : hws.map(h => `<div class='p-3 bg-slate-50 border rounded-xl'><span class='bg-indigo-100 text-indigo-700 font-bold text-[10px] px-1.5 py-0.5 rounded w-max block mb-1'>${h.subject}</span><p class='font-medium text-slate-800 text-xs'>${h.content}</p></div>`).join('');
+            
             const selectedExam = document.getElementById('p-exam-view').value || db.examOrder[0];
-            if(!selectedExam) return;
-            const maxPoints = db.exams[selectedExam] || 100; const rec = db.records[`${activeId}_${selectedExam}`];
+            if(!selectedExam) {
+                document.getElementById('p-marks-display').innerHTML = `<p class='text-slate-400 italic text-xs py-2'>No active exams established yet.</p>`;
+                return;
+            }
+            
+            const examSubjectsObj = db.exams[selectedExam] || {};
+            const subjectsList = Object.keys(examSubjectsObj);
+            const rec = db.records[`${activeId}_${selectedExam}`];
             const disp = document.getElementById('p-marks-display');
+            
+            if(subjectsList.length === 0) {
+                disp.innerHTML = `<p class='text-slate-400 italic text-xs py-2'>No metrics tracked for this configured matrix yet.</p>`;
+                if(dynamicChartInstance) dynamicChartInstance.destroy();
+                return;
+            }
+
             if(!rec) {
-                disp.innerHTML = `<p class='text-slate-400 italic text-xs py-2'>Awaiting metric generation.</p>`;
+                disp.innerHTML = subjectsList.map(s => `<div class='flex justify-between border-b py-1 text-xs'><span>${s}</span><span class='font-bold text-slate-400'>— / ${examSubjectsObj[s]}</span></div>`).join('');
                 document.getElementById('p-card-cw').innerText = "—"; document.getElementById('p-card-hw').innerText = "—"; document.getElementById('p-remarks-display').innerText = "—";
                 if(dynamicChartInstance) dynamicChartInstance.destroy();
             } else {
-                disp.innerHTML = SUBJECTS.map(s => `<div class='flex justify-between border-b py-1 text-xs'><span>${s}</span><span class='font-bold text-indigo-600'>${rec.marks[s] !== undefined ? rec.marks[s] : "—"} / ${maxPoints}</span></div>`).join('');
+                disp.innerHTML = subjectsList.map(s => `<div class='flex justify-between border-b py-1 text-xs'><span>${s}</span><span class='font-bold text-indigo-600'>${rec.marks[s] !== undefined ? rec.marks[s] : "—"} / ${examSubjectsObj[s]}</span></div>`).join('');
                 document.getElementById('p-card-cw').innerText = rec.cw || "🟢 Active"; document.getElementById('p-card-hw').innerText = rec.hw || "🟢 Good";
                 document.getElementById('p-remarks-display').innerText = rec.remarks || "No evaluation remarks available.";
                 
                 const ctx = document.getElementById('performanceChart').getContext('2d');
-                const scores = SUBJECTS.map(s => (rec.marks && rec.marks[s] !== undefined) ? rec.marks[s] : 0);
+                const scores = subjectsList.map(s => (rec.marks && rec.marks[s] !== undefined) ? rec.marks[s] : 0);
                 if (dynamicChartInstance) dynamicChartInstance.destroy();
                 dynamicChartInstance = new Chart(ctx, {
                     type: 'bar',
-                    data: { labels: SUBJECTS, datasets: [{ label: 'Marks Scaled Portfolio', data: scores, backgroundColor: '#4f46e5' }] },
-                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: maxPoints } } }
+                    data: { labels: subjectsList, datasets: [{ label: 'Marks Scaled Portfolio', data: scores, backgroundColor: '#4f46e5' }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: Math.max(...Object.values(examSubjectsObj), 100) } } }
                 });
             }
         }
