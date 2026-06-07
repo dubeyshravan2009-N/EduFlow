@@ -30,13 +30,14 @@
         
         <div class="flex items-center gap-4">
             <span id="role-badge" class="hidden px-3 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-600 uppercase"></span>
-            <button id="logout-btn" onclick="triggerSessionLogout()" class="hidden text-red-500 text-xs font-bold border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50">Logout</button>
+            <button id="logout-btn" type="button" onclick="triggerSessionLogout()" class="hidden text-red-500 text-xs font-bold border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50">Logout</button>
         </div>
     </nav>
 
     <main class="flex-1 flex items-center justify-center p-4 md:p-8 w-full">
 
         <section id="screen-gate" class="screen active w-full max-w-6xl mx-auto space-y-12">
+            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                 <div class="md:col-span-2 space-y-6">
                     <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-100">
@@ -47,8 +48,8 @@
                         <p class="text-sm text-slate-500 leading-relaxed">AcademIQ Portal provides dynamic, highly isolated cloud environments built to power modern academic institutions. Engineered to ensure bulletproof security, simplify grading schemas, and connect parent stakeholders directly with verified student learning trajectories.</p>
                     </div>
                     <div class="flex flex-wrap gap-4">
-                        <button onclick="showScreen('screen-login')" class="bg-indigo-600 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-md text-xs tracking-wide">Get Started</button>
-                        <button onclick="showScreen('screen-register')" class="bg-white text-slate-700 border border-slate-200 px-6 py-3.5 rounded-xl font-bold hover:bg-slate-50 transition-all text-xs tracking-wide shadow-sm">Contact Us / Register</button>
+                        <button type="button" onclick="showScreen('screen-login')" class="bg-indigo-600 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-md text-xs tracking-wide">Get Started</button>
+                        <button type="button" onclick="showScreen('screen-register')" class="bg-white text-slate-700 border border-slate-200 px-6 py-3.5 rounded-xl font-bold hover:bg-slate-50 transition-all text-xs tracking-wide shadow-sm">Contact Us / Register</button>
                     </div>
                 </div>
 
@@ -94,6 +95,7 @@
                     </div>
                 </div>
             </div>
+
         </section>
 
         <section id="screen-register" class="screen w-full max-w-md mx-auto">
@@ -116,10 +118,10 @@
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Contact Phone Number</label>
                         <input id="reg-phone" type="text" placeholder="+91 98765-43210" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
                     </div>
-                    <button id="btn-submit-request" onclick="submitRegistrationRequest()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold hover:bg-emerald-700 text-xs shadow-md">
+                    <button id="btn-submit-request" type="button" onclick="submitRegistrationRequest()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold hover:bg-emerald-700 text-xs shadow-md">
                         Submit Registration Application
                     </button>
-                    <button onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Cancel</button>
+                    <button type="button" onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Cancel</button>
                 </div>
             </div>
         </section>
@@ -152,53 +154,10 @@
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Secure Passkey</label>
                         <input id="auth-pass" type="password" placeholder="••••••••" class="w-full border rounded-xl p-3 text-xs outline-none">
                     </div>
-                    <button id="btn-login-submit" onclick="handleSecureLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 shadow-md text-xs">
+                    <button id="btn-login-submit" type="button" onclick="handleSecureLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 shadow-md text-xs">
                         Authenticate Credentials
                     </button>
-                    <button onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Return</button>
-                </div>
-            </div>
-        </section>
-
-        <section id="screen-admin" class="screen w-full max-w-5xl space-y-6">
-            <div class="bg-indigo-700 text-white p-6 rounded-3xl shadow-xl flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-black tracking-tight">Institutional Workspace Configuration</h2>
-                    <p class="text-xs text-indigo-200">Create, name, and maintain operational classrooms</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-5 rounded-2xl border shadow-sm space-y-4 h-fit">
-                    <h3 class="font-black text-xs uppercase tracking-wider text-indigo-600">Provision New Class</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Classroom Code ID</label>
-                            <input id="admin-class-id" type="text" placeholder="e.g., 9A or 11-COMM" class="w-full border rounded-xl p-3 text-xs bg-slate-50 font-mono uppercase outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Friendly Display Name</label>
-                            <input id="admin-class-name" type="text" placeholder="e.g., Grade 9 Alpha" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
-                        </div>
-                        <button onclick="addNewClassroom()" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700 text-xs shadow-sm">
-                            Deploy Classroom Entity
-                        </button>
-                    </div>
-                </div>
-                <div class="md:col-span-2 bg-white rounded-2xl border shadow-sm p-6 space-y-4">
-                    <h3 class="font-black text-slate-800 text-sm">Active Sequence-Controlled Classrooms</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-50 text-slate-400 font-bold uppercase text-[10px] border-b">
-                                <tr>
-                                    <th class="p-4">Index Sequence</th>
-                                    <th class="p-4">Class Code ID</th>
-                                    <th class="p-4">Display Label Name</th>
-                                    <th class="p-4 text-center">Destructive Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-class-table-body"></tbody>
-                        </table>
-                    </div>
+                    <button type="button" onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Return</button>
                 </div>
             </div>
         </section>
@@ -244,21 +203,38 @@
 
         <section id="screen-teacher" class="screen w-full max-w-7xl">
             <div class="flex flex-wrap gap-2 mb-4 border-b pb-2">
-                <button id="tab-btn-students" onclick="switchTeacherTab('students')" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white">👤 Student Roster</button>
-                <button id="tab-btn-attendance" onclick="switchTeacherTab('attendance')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📅 Attendance</button>
-                <button id="tab-btn-config" onclick="switchTeacherTab('config')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">⚙️ Assessment Control</button>
-                <button id="tab-btn-bulletin" onclick="switchTeacherTab('bulletin')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📣 Notice Board Scheduler</button>
+                <button id="tab-btn-students" type="button" onclick="switchTeacherTab('students')" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white">👤 Student Roster</button>
+                <button id="tab-btn-attendance" type="button" onclick="switchTeacherTab('attendance')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📅 Attendance</button>
+                <button id="tab-btn-config" type="button" onclick="switchTeacherTab('config')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">⚙️ Assessment Control</button>
+                <button id="tab-btn-bulletin" type="button" onclick="switchTeacherTab('bulletin')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📣 Notice Board Scheduler</button>
             </div>
            
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-1 space-y-4">
-                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Target Class Allocation</label>
-                        <select id="class-select" onchange="refreshCurrentTeacherTab()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold mb-4 text-xs"></select>
-                        <div id="search-container">
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Target Class Allocation</label>
+                            <select id="class-select" onchange="refreshCurrentTeacherTab()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold text-xs"></select>
+                        </div>
+                        
+                        <div id="class-management-deck" class="border-t pt-3 space-y-2">
+                            <span class="block text-[9px] font-bold text-indigo-500 uppercase tracking-wider">Dynamic Stream Manager</span>
+                            <div class="flex gap-1">
+                                <input id="new-class-input" type="text" placeholder="e.g. 11A or 5C" class="border p-1.5 rounded-lg text-xs w-full bg-white outline-none uppercase font-mono">
+                                <button type="button" onclick="addNewClassStream()" class="bg-indigo-600 text-white text-[10px] font-bold px-2.5 rounded-lg hover:bg-indigo-700">Add</button>
+                            </div>
+                            <button type="button" onclick="deleteSelectedClassStream()" class="w-full bg-red-50 text-red-600 border border-red-100 font-bold py-1 rounded-lg text-[10px] hover:bg-red-100 transition-colors">
+                                🗑️ Delete Selected Class
+                            </button>
+                        </div>
+
+                        <div id="search-container" class="border-t pt-3">
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Live Filter</label>
                             <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Search student name..." class="w-full border p-2 rounded-lg text-xs">
                         </div>
-                        <div id="date-picker-container" class="hidden mt-2">
+
+                        <div id="date-picker-container" class="hidden border-t pt-3">
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Attendance Timeline</label>
                             <input id="attendance-date" type="date" onchange="renderAttendancePanel()" class="w-full border p-2 rounded-lg text-xs bg-indigo-50/50 font-bold">
                         </div>
                     </div>
@@ -277,7 +253,7 @@
                             <thead class="bg-slate-50"><tr><th class="p-4">Roll</th><th class="p-4">Student Name</th><th class="p-4 text-center">Status</th></tr></thead>
                             <tbody id="attendance-table-body"></tbody>
                         </table>
-                        <button onclick="commitAttendanceSheet()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs">💾 Save Checked Attendance Tracking Data</button>
+                        <button type="button" onclick="commitAttendanceSheet()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs shadow-md">💾 Save Checked Attendance Tracking Data</button>
                     </div>
                     
                     <div id="tab-pane-config" class="hidden p-6 max-h-[70vh] overflow-y-auto space-y-6">
@@ -286,11 +262,11 @@
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <input id="new-exam-name" type="text" placeholder="e.g., Mid-Term" class="border p-2 rounded-lg bg-white text-xs font-bold outline-none">
                                 <input id="new-exam-max" type="number" placeholder="Max Points" class="border p-2 rounded-lg bg-white text-xs font-bold text-center outline-none">
-                                <button onclick="createNewExamModule()" class="bg-indigo-600 text-white text-xs font-bold rounded-lg py-2">Inject Assessment Module</button>
+                                <button type="button" onclick="createNewExamModule()" class="bg-indigo-600 text-white text-xs font-bold rounded-lg py-2">Inject Assessment Module</button>
                             </div>
                         </div>
                         <div id="exam-config-rows" class="space-y-2"></div>
-                        <button onclick="saveExamConfiguration()" class="bg-indigo-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-md">Save Assessment Configuration</button>
+                        <button type="button" onclick="saveExamConfiguration()" class="bg-indigo-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-md">Save Assessment Configuration</button>
                     </div>
 
                     <div id="tab-pane-bulletin" class="hidden p-6 max-h-[70vh] overflow-y-auto space-y-6">
@@ -313,7 +289,7 @@
                                 </div>
                             </div>
                             <textarea id="bulletin-hw-task" placeholder="Enter assignment guidelines..." class="w-full border p-2 h-16 rounded-lg text-xs bg-white outline-none"></textarea>
-                            <button onclick="publishNoticeItem('homework')" class="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Homework Assignment</button>
+                            <button type="button" onclick="publishNoticeItem('homework')" class="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Homework Assignment</button>
                         </div>
 
                         <div class="border p-4 rounded-xl space-y-3 bg-slate-50">
@@ -334,7 +310,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button onclick="publishNoticeItem('events')" class="bg-amber-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Event Broadcast</button>
+                            <button type="button" onclick="publishNoticeItem('events')" class="bg-amber-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Event Broadcast</button>
                         </div>
 
                         <div class="border p-4 rounded-xl space-y-3 bg-slate-50">
@@ -354,7 +330,7 @@
                                 </div>
                             </div>
                             <textarea id="bulletin-tt-matrix" placeholder="June 22: Maths |\nJune 24: Science..." class="w-full border p-2 h-16 rounded-lg text-xs bg-white outline-none"></textarea>
-                            <button onclick="publishNoticeItem('timetables')" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Timetable Matrix</button>
+                            <button type="button" onclick="publishNoticeItem('timetables')" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Timetable Matrix</button>
                         </div>
                     </div>
                 </div>
@@ -373,7 +349,10 @@
                     <div><label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Homework Delivery Standing</label><select id="m-hw-status" class="w-full border p-2 rounded-lg bg-white text-xs font-bold"><option>🟢 On-Time & Good</option><option>🟡 Irregular</option><option>🔴 Missing</option></select></div>
                 </div>
                 <textarea id="m-remarks" placeholder="Provide evaluation feedback details..." class="w-full border rounded-xl p-3 h-16 mb-4 text-xs"></textarea>
-                <div class="flex gap-2"><button onclick="saveMarks()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs">Commit Evaluation Profile</button><button onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold text-xs">Cancel</button></div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="saveMarks()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs">Commit Evaluation Profile</button>
+                    <button type="button" onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold text-xs">Cancel</button>
+                </div>
             </div>
         </section>
 
@@ -437,12 +416,23 @@
 
     <script>
         const SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
-        let db = { students: {}, records: {}, attendance: {}, exams: {}, history: [], examOrder: [], notices: [], classes: [] };
+        
+        // Initial state memory block
+        let db = { 
+            students: {}, 
+            records: {}, 
+            attendance: {}, 
+            exams: {}, 
+            history: [], 
+            examOrder: [], 
+            notices: [],
+            allocatedClasses: [] // Houses institution's class streams list dynamically
+        };
+        
         let currentSchool = null; let currentUser = null; let activeId = null;
         let dynamicChartInstance = null; let currentTeacherTab = "students";
         let localAttendanceBuffer = {};
 
-        // PASTE YOUR FIREBASE OBJECT CONFIGURATION DIRECTLY HERE:
         const firebaseConfig = {
           apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
           authDomain: "eduflow-pro-f6d04.firebaseapp.com",
@@ -458,6 +448,69 @@
         } catch (e) {
             console.warn("Database bypassed. Working in isolated client layout mode.");
             window.cloudStorage = null;
+        }
+
+        // Initialize state configuration for Class 1 to Class 10 structures safely
+        function verifyAndSeedDefaultClasses() {
+            if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
+                db.allocatedClasses = [];
+                for(let i = 1; i <= 10; i++) {
+                    db.allocatedClasses.push(`${i}A`);
+                    db.allocatedClasses.push(`${i}B`);
+                }
+            }
+            resequenceAllClasses();
+        }
+
+        function resequenceAllClasses() {
+            if (!db.allocatedClasses) return;
+            // Native natural sorting matrix setup
+            db.allocatedClasses.sort((x, y) => {
+                const numX = parseInt(x);
+                const numY = parseInt(y);
+                if (numX !== numY) return numX - numY;
+                return x.localeCompare(y);
+            });
+            buildClassSelectOptions();
+        }
+
+        function buildClassSelectOptions() {
+            const select = document.getElementById('class-select');
+            if(!select) return;
+            
+            select.innerHTML = db.allocatedClasses.map(cls => 
+                `<option value="${cls}">Class Code ${cls}</option>`
+            ).join('');
+        }
+
+        function addNewClassStream() {
+            const input = document.getElementById('new-class-input');
+            const targetVal = input.value.trim().toUpperCase();
+            
+            if(!targetVal) return alert("Please specify a valid Class Code label.");
+            if(db.allocatedClasses.includes(targetVal)) return alert("This class allocation segment already exists.");
+            
+            db.allocatedClasses.push(targetVal);
+            resequenceAllClasses();
+            syncToCloud();
+            
+            input.value = '';
+            refreshCurrentTeacherTab();
+            alert(`Class Code ${targetVal} injected successfully.`);
+        }
+
+        function deleteSelectedClassStream() {
+            const currentSelected = document.getElementById('class-select').value;
+            if(!currentSelected) return;
+            
+            if(!confirm(`Warning: Are you absolutely sure you want to drop Class ${currentSelected}? This operation will remove visible roster filters.`)) return;
+            
+            db.allocatedClasses = db.allocatedClasses.filter(c => c !== currentSelected);
+            resequenceAllClasses();
+            syncToCloud();
+            
+            refreshCurrentTeacherTab();
+            alert(`Class Code ${currentSelected} successfully pruned.`);
         }
 
         function showScreen(screenId) {
@@ -479,21 +532,20 @@
             const role = document.getElementById('auth-role').value;
             const id = document.getElementById('auth-id').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
-
+            
             if (role === 'superadmin' && pass === 'master999') {
                 commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin');
-                initSuperAdminListener();
+                if(typeof initSuperAdminListener === 'function') initSuperAdminListener();
                 showScreen('screen-superadmin');
                 return;
             }
             
             if (!window.cloudStorage) {
                 currentSchool = school || "DEMO-1234";
+                verifyAndSeedDefaultClasses();
                 db.students["10A-1"] = { name: "Test Student", pass: "school1" };
                 db.exams = { "PT-1": 50 }; db.examOrder = ["PT-1"];
-                db.classes = [{ id: "10A", name: "Grade 10 Alpha" }];
                 if (role === 'parent') { activeId = "10A-1"; commitSession(currentSchool, "10A-1", 'parent'); initParentView(); }
-                else if (role === 'admin') { commitSession(currentSchool, 'admin', 'admin'); initAdminView(); }
                 else { commitSession(currentSchool, 'teacher', 'teacher'); initTeacherView(); }
                 return;
             }
@@ -501,26 +553,14 @@
             const docSnap = await window.cloudStorage.collection("schools").doc(school).get();
             if (!docSnap.exists) return alert("School node mapping not found.");
             currentSchool = school;
-            
             window.cloudStorage.collection("schools").doc(currentSchool).onSnapshot(doc => {
                 if(doc.exists) {
                     db = doc.data(); 
                     if(!db.notices) db.notices = [];
-                    if(!db.classes) db.classes = [];
+                    verifyAndSeedDefaultClasses();
                     
-                    if (role === 'admin') { 
-                        commitSession(school, 'admin', role); 
-                        initAdminView(); 
-                    }
-                    else if (role === 'teacher') { 
-                        commitSession(school, 'teacher', role); 
-                        initTeacherView(); 
-                    }
-                    else if (role === 'parent' && db.students[id]) { 
-                        activeId = id; 
-                        commitSession(school, id, 'parent'); 
-                        initParentView(); 
-                    }
+                    if (role === 'admin' || role === 'teacher') { commitSession(school, 'teacher', role); initTeacherView(); }
+                    else if (role === 'parent' && db.students[id]) { activeId = id; commitSession(school, id, 'parent'); initParentView(); }
                 }
             });
         }
@@ -531,61 +571,18 @@
         
         function commitSession(school, user, role) { 
             currentUser = { role, id: user };
-            localStorage.setItem('session_school', school); localStorage.setItem('session_user', user); localStorage.setItem('session_role', role); 
+            localStorage.setItem('session_school', school); 
+            localStorage.setItem('session_user', user); 
+            localStorage.setItem('session_role', role); 
             document.getElementById('logout-btn').classList.remove('hidden'); 
-            const rb = document.getElementById('role-badge'); rb.innerText = role; rb.classList.remove('hidden');
+            const rb = document.getElementById('role-badge'); 
+            rb.innerText = role; 
+            rb.classList.remove('hidden');
         }
         
-        function triggerSessionLogout() { localStorage.clear(); location.reload(); }
-
-        function initAdminView() {
-            if(!db.classes) db.classes = [];
-            renderAdminClassTable();
-            showScreen('screen-admin');
-        }
-
-        function renderAdminClassTable() {
-            const tbody = document.getElementById('admin-class-table-body');
-            tbody.innerHTML = '';
-            if(db.classes.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">No classes configured. Use the provision panel to populate entities.</td></tr>`;
-                return;
-            }
-            db.classes.forEach((cls, index) => {
-                tbody.innerHTML += `
-                    <tr class="border-b">
-                        <td class="p-4 font-mono text-slate-400 font-bold"># ${index + 1}</td>
-                        <td class="p-4 font-mono text-indigo-600 font-bold uppercase">${cls.id}</td>
-                        <td class="p-4 font-bold text-slate-800">${cls.name}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="deleteClassroomSequentially(${index})" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-red-100 transition-all">🗑️ Delete</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        async function addNewClassroom() {
-            const idInput = document.getElementById('admin-class-id');
-            const nameInput = document.getElementById('admin-class-name');
-            const id = idInput.value.trim().toUpperCase();
-            const name = nameInput.value.trim();
-
-            if(!id || !name) return alert("All profile parameters must be filled before creation.");
-            if(!db.classes) db.classes = [];
-            if(db.classes.some(c => c.id === id)) return alert("An structural entity with this Class Code already exists.");
-
-            db.classes.push({ id: id, name: name });
-            await syncToCloud();
-            idInput.value = ''; nameInput.value = '';
-            renderAdminClassTable();
-            alert(`Classroom [${id}] successfully added sequence-wise.`);
-        }
-
-        async function deleteClassroomSequentially(index) {
-            if(!confirm("Are you sure you want to delete this class sequence-wise?")) return;
-            db.classes.splice(index, 1);
-            await syncToCloud();
-            renderAdminClassTable();
+        function triggerSessionLogout() { 
+            localStorage.clear(); 
+            location.reload();
         }
 
         function initParentView() {
@@ -596,16 +593,7 @@
         }
 
         function initTeacherView() {
-            const select = document.getElementById('class-select');
-            let options = '';
-            if (db.classes && db.classes.length > 0) {
-                db.classes.forEach(cls => {
-                    options += `<option value="${cls.id}">Class ${cls.name} (${cls.id})</option>`;
-                });
-            } else {
-                for(let i=1; i<=10; i++) ['A', 'B'].forEach(s => options += `<option value="${i}${s}">Class Code ${i}${s}</option>`);
-            }
-            select.innerHTML = options;
+            buildClassSelectOptions();
             document.getElementById('bulletin-hw-subject').innerHTML = SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
             switchTeacherTab('students'); showScreen('screen-teacher');
         }
@@ -614,7 +602,8 @@
             currentTeacherTab = targetTab;
             ['students', 'attendance', 'config', 'bulletin'].forEach(p => {
                 document.getElementById(`tab-pane-${p}`).classList.toggle('hidden', p !== targetTab);
-                const btn = document.getElementById(`tab-btn-${p}`); if(btn) btn.className = (p === targetTab) ? "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white" : "px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700";
+                const btn = document.getElementById(`tab-btn-${p}`); 
+                if(btn) btn.className = (p === targetTab) ? "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white" : "px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700";
             });
             document.getElementById('search-container').classList.toggle('hidden', targetTab !== 'students');
             document.getElementById('date-picker-container').classList.toggle('hidden', targetTab !== 'attendance');
@@ -631,11 +620,13 @@
             const cls = document.getElementById('class-select').value;
             const search = document.getElementById('search-input').value.toLowerCase();
             const tbody = document.getElementById('teacher-table-body'); tbody.innerHTML = '';
+            if(!cls) return;
+            
             for(let i=1; i<=45; i++) {
                 const sId = `${cls}-${i}`;
                 const data = db.students[sId] || { name: "", pass: "" };
                 if(search && !data.name.toLowerCase().includes(search) && !sId.toLowerCase().includes(search)) continue;
-                tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4"><input type="text" value="${data.name}" onchange="updateProfileFieldDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none font-bold text-slate-800"><span class="text-[10px] text-slate-400 block">ID: ${sId}</span></td><td class="p-4 text-center"><input type="text" value="${data.pass || ("school" + i)}" onchange="updateProfileFieldDirect('${sId}','pass',this.value)" class="border rounded-lg px-2 text-xs font-mono text-indigo-600 text-center w-32 outline-none"></td><td class="p-4 text-center"><button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold">Evaluate</button></td></tr>`;
+                tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4"><input type="text" value="${data.name}" onchange="updateProfileFieldDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none font-bold text-slate-800"><span class="text-[10px] text-slate-400 block">ID: ${sId}</span></td><td class="p-4 text-center"><input type="text" value="${data.pass || ("school" + i)}" onchange="updateProfileFieldDirect('${sId}','pass',this.value)" class="border rounded-lg px-2 text-xs font-mono text-indigo-600 text-center w-32 outline-none"></td><td class="p-4 text-center"><button type="button" onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold">Evaluate</button></td></tr>`;
             }
         }
         
@@ -647,7 +638,7 @@
         function renderAttendancePanel() {
             const cls = document.getElementById('class-select').value;
             const dt = document.getElementById('attendance-date').value;
-            const tbody = document.getElementById('attendance-table-body'); tbody.innerHTML = ''; if(!dt) return;
+            const tbody = document.getElementById('attendance-table-body'); tbody.innerHTML = ''; if(!dt || !cls) return;
             if(!db.attendance[cls]) db.attendance[cls] = {};
             if(!db.attendance[cls][dt]) db.attendance[cls][dt] = {};
             localAttendanceBuffer = JSON.parse(JSON.stringify(db.attendance[cls][dt]));
@@ -659,34 +650,53 @@
                 tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4 font-bold">${db.students[sId].name}</td><td class="p-4 text-center"><div class="inline-flex rounded-lg border p-0.5 bg-slate-100"><button type="button" onclick="setLocalAttendanceStatus('${sId}','Present')" id="btn-pres-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${isPres ? 'bg-emerald-500 text-white':'text-slate-500'}">✔️ Present</button><button type="button" onclick="setLocalAttendanceStatus('${sId}','Absent')" id="btn-abs-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${!isPres ? 'bg-rose-500 text-white':'text-slate-500'}">❌ Absent</button></div></td></tr>`;
             }
         }
+        
         function setLocalAttendanceStatus(sId, status) { 
             localAttendanceBuffer[sId] = status;
             document.getElementById(`btn-pres-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Present'?'bg-emerald-500 text-white':'text-slate-500'}`; 
             document.getElementById(`btn-abs-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Absent'?'bg-rose-500 text-white':'text-slate-500'}`;
         }
+        
         function commitAttendanceSheet() { 
-            const cls = document.getElementById('class-select').value; const dt = document.getElementById('attendance-date').value;
-            db.attendance[cls][dt] = localAttendanceBuffer; syncToCloud(); alert("Attendance sheet committed safely."); 
+            const cls = document.getElementById('class-select').value; 
+            const dt = document.getElementById('attendance-date').value;
+            if(!dt || !cls) return alert("Please pick a valid calendar date first.");
+            db.attendance[cls][dt] = localAttendanceBuffer; 
+            syncToCloud(); 
+            alert("Attendance sheet committed safely."); 
         }
 
         function createNewExamModule() {
             const name = document.getElementById('new-exam-name').value.trim();
             const maxVal = parseInt(document.getElementById('new-exam-max').value);
-            if(!name || isNaN(maxVal)) return alert("Declare parameters."); db.exams[name] = maxVal; if(!db.examOrder.includes(name)) db.examOrder.push(name);
+            if(!name || isNaN(maxVal)) return alert("Declare parameters."); 
+            db.exams[name] = maxVal; 
+            if(!db.examOrder.includes(name)) db.examOrder.push(name);
             document.getElementById('new-exam-name').value = '';
-            document.getElementById('new-exam-max').value = ''; renderExamConfigPanel();
+            document.getElementById('new-exam-max').value = ''; 
+            renderExamConfigPanel();
         }
+        
         function renderExamConfigPanel() {
-            const wrapper = document.getElementById('exam-config-rows'); wrapper.innerHTML = '';
-            db.examOrder.forEach((ex) => { wrapper.innerHTML += `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border-b"><span class="text-xs font-bold">${ex}</span><input type="number" id="cfg-max-${ex}" value="${db.exams[ex]}" class="border w-16 p-1 text-center text-xs rounded-lg"></div>`; });
+            const wrapper = document.getElementById('exam-config-rows');
+            wrapper.innerHTML = '';
+            db.examOrder.forEach((ex) => { 
+                wrapper.innerHTML += `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border-b"><span class="text-xs font-bold">${ex}</span><input type="number" id="cfg-max-${ex}" value="${db.exams[ex]}" class="border w-16 p-1 text-center text-xs rounded-lg"></div>`; 
+            });
         }
+        
         function saveExamConfiguration() { 
-            db.examOrder.forEach(ex => { if(document.getElementById(`cfg-max-${ex}`)) db.exams[ex] = parseInt(document.getElementById(`cfg-max-${ex}`).value); }); syncToCloud();
-            alert("Saved Exam Structures."); switchTeacherTab('students'); 
+            db.examOrder.forEach(ex => { 
+                if(document.getElementById(`cfg-max-${ex}`)) db.exams[ex] = parseInt(document.getElementById(`cfg-max-${ex}`).value); 
+            }); 
+            syncToCloud();
+            alert("Saved Exam Structures."); 
+            switchTeacherTab('students'); 
         }
 
         function publishNoticeItem(type) {
             const cls = document.getElementById('class-select').value;
+            if(!cls) return alert("Please allocate an institutional class focus target.");
             let itemPayload = { type: type, classTarget: cls, timestamp: new Date().toISOString() };
             if (type === 'homework') {
                 itemPayload.subject = document.getElementById('bulletin-hw-subject').value;
@@ -705,24 +715,31 @@
             }
 
             if(!itemPayload.startDate || !itemPayload.endDate) return alert("Please specify complete display start and expiration dates.");
-            db.notices.push(itemPayload); syncToCloud();
+            db.notices.push(itemPayload); 
+            syncToCloud();
+            
             triggerNotificationToast("AcademIQ Notice Added", `New ${type.toUpperCase()} scheduled notice broadcast pushed.`);
             alert(`Notice item successfully published and enqueued!`);
         }
 
         function openMarksModal(id) { 
-            activeId = id; document.getElementById('m-student-name').innerText = db.students[id].name;
+            activeId = id; 
+            document.getElementById('m-student-name').innerText = db.students[id].name;
             document.getElementById('m-exam').innerHTML = db.examOrder.map(ex => `<option>${ex}</option>`).join(''); 
             document.getElementById('m-grid').innerHTML = SUBJECTS.map(s => `<div class='bg-slate-50 p-2 border rounded-xl'><label class='text-[10px] text-slate-400 block font-bold'>${s}</label><input type='number' id='inp-${s}' class='w-full outline-none font-bold text-sm bg-transparent'></div>`).join('');
-            loadExistingMarks(); showScreen('screen-marks'); 
+            loadExistingMarks(); 
+            showScreen('screen-marks'); 
         }
+        
         function loadExistingMarks() { 
             const ex = document.getElementById('m-exam').value;
             const r = db.records[`${activeId}_${ex}`] || { marks: {}, remarks: "", cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good" };
             SUBJECTS.forEach(s => document.getElementById(`inp-${s}`).value = r.marks[s] !== undefined ? r.marks[s] : ""); 
-            document.getElementById('m-remarks').value = r.remarks || ""; document.getElementById('m-cw-status').value = r.cw;
+            document.getElementById('m-remarks').value = r.remarks || ""; 
+            document.getElementById('m-cw-status').value = r.cw;
             document.getElementById('m-hw-status').value = r.hw; 
         }
+        
         function saveMarks() {
             const ex = document.getElementById('m-exam').value;
             const maxAllowed = db.exams[ex] || 100;
@@ -731,20 +748,26 @@
                 const val = document.getElementById(`inp-${s}`).value; 
                 if(val !== "") { 
                     const n = Number(val);
-                    if(n > maxAllowed || n < 0) return alert("Value limits validation failed."); r.marks[s] = n;
+                    if(n > maxAllowed || n < 0) return alert("Value limits validation failed."); 
+                    r.marks[s] = n;
                 } 
             }
-            db.records[`${activeId}_${ex}`] = r; syncToCloud(); alert("Marks evaluated."); showScreen('screen-teacher');
+            db.records[`${activeId}_${ex}`] = r; 
+            syncToCloud(); 
+            alert("Marks evaluated."); 
+            showScreen('screen-teacher');
         }
 
         function renderParentReport() {
             const targetClass = activeId.split('-')[0];
             const isoToday = new Date().toISOString().substring(0, 10);
+
             let working = 0, present = 0;
             if(db.attendance[targetClass]) { 
                 Object.keys(db.attendance[targetClass]).forEach(dt => { 
                     if(db.attendance[targetClass][dt][activeId] !== undefined) { 
-                        working++; if(db.attendance[targetClass][dt][activeId] === "Present") present++; 
+                        working++; 
+                        if(db.attendance[targetClass][dt][activeId] === "Present") present++; 
                     } 
                 });
             }
@@ -752,6 +775,7 @@
             document.getElementById('p-attn-fraction').innerText = `Logged Days: ${working} | Present Trackings: ${present}`;
             
             const activeNotices = (db.notices || []).filter(n => n.classTarget === targetClass && isoToday >= n.startDate && isoToday <= n.endDate);
+            
             const evts = activeNotices.filter(n => n.type === 'events');
             document.getElementById('p-events-deck').innerHTML = evts.length === 0 ? `<div class='text-slate-400 italic py-2'>Welcome back!\nNo scheduled activities for this window.</div>` : evts.map(e => `<div class='p-2 bg-amber-50 border rounded-lg font-bold text-amber-900'>• ${e.title}</div>`).join('');
             
@@ -763,15 +787,20 @@
             
             const selectedExam = document.getElementById('p-exam-view').value || db.examOrder[0];
             if(!selectedExam) return;
-            const maxPoints = db.exams[selectedExam] || 100; const rec = db.records[`${activeId}_${selectedExam}`];
+            const maxPoints = db.exams[selectedExam] || 100; 
+            const rec = db.records[`${activeId}_${selectedExam}`];
             const disp = document.getElementById('p-marks-display');
+            
             if(!rec) {
                 disp.innerHTML = `<p class='text-slate-400 italic text-xs py-2'>Awaiting metric generation.</p>`;
-                document.getElementById('p-card-cw').innerText = "—"; document.getElementById('p-card-hw').innerText = "—"; document.getElementById('p-remarks-display').innerText = "—";
+                document.getElementById('p-card-cw').innerText = "—"; 
+                document.getElementById('p-card-hw').innerText = "—"; 
+                document.getElementById('p-remarks-display').innerText = "—";
                 if(dynamicChartInstance) dynamicChartInstance.destroy();
             } else {
                 disp.innerHTML = SUBJECTS.map(s => `<div class='flex justify-between border-b py-1 text-xs'><span>${s}</span><span class='font-bold text-indigo-600'>${rec.marks[s] !== undefined ? rec.marks[s] : "—"} / ${maxPoints}</span></div>`).join('');
-                document.getElementById('p-card-cw').innerText = rec.cw || "🟢 Active"; document.getElementById('p-card-hw').innerText = rec.hw || "🟢 Good";
+                document.getElementById('p-card-cw').innerText = rec.cw || "🟢 Active"; 
+                document.getElementById('p-card-hw').innerText = rec.hw || "🟢 Good";
                 document.getElementById('p-remarks-display').innerText = rec.remarks || "No evaluation remarks available.";
                 
                 const ctx = document.getElementById('performanceChart').getContext('2d');
@@ -785,58 +814,15 @@
             }
         }
 
-        async function initSuperAdminListener() {
-            if(!window.cloudStorage) return;
-            window.cloudStorage.collection("requests").onSnapshot(snap => {
-                document.getElementById('stat-schools').innerText = "Connected";
-                const tbody = document.getElementById('superadmin-requests-table'); tbody.innerHTML = '';
-                let pendingCount = 0;
-                snap.forEach(doc => {
-                    pendingCount++;
-                    const d = doc.data();
-                    tbody.innerHTML += `
-                        <tr class="border-b">
-                            <td class="p-4 font-bold text-slate-800">${d.name}</td>
-                            <td class="p-4 font-mono text-slate-600">${d.email}</td>
-                            <td class="p-4 text-slate-600">${d.phone}</td>
-                            <td class="p-4 text-center">
-                                <button onclick="approveSchoolDeployment('${doc.id}','${d.name}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-bold hover:bg-emerald-700">Approve</button>
-                            </td>
-                        </tr>`;
-                });
-                document.getElementById('stat-requests').innerText = `${pendingCount} Pending`;
-            });
-        }
-
-        async function submitRegistrationRequest() {
-            const name = document.getElementById('reg-name').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
-            const phone = document.getElementById('reg-phone').value.trim();
-            if(!name || !email || !phone) return alert("All profile parameters must be filled before creation.");
-            if(!window.cloudStorage) return alert("Running in offline demo mode.");
-            await window.cloudStorage.collection("requests").add({ name, email, phone, timestamp: new Date().toISOString() });
-            alert("Application submitted successfully."); showScreen('screen-gate');
-        }
-
-        async function approveSchoolDeployment(reqId, schoolName) {
-            const code = prompt(`Enter a unique alphanumeric deployment school code for ${schoolName}:`).trim().toUpperCase();
-            if(!code) return alert("Code assignment cancelled.");
-            const defaultDb = { students: {}, records: {}, attendance: {}, exams: {}, history: [], examOrder: [], notices: [], classes: [] };
-            await window.cloudStorage.collection("schools").doc(code).set(defaultDb);
-            await window.cloudStorage.collection("requests").doc(reqId).delete();
-            alert(`School [${code}] safely created and deployed inside the grid ecosystem!`);
-        }
-
         function checkPersistentSession() {
             const sch = localStorage.getItem('session_school');
-            const r = localStorage.getItem('session_role'); const u = localStorage.getItem('session_user');
-            if(sch && r && u) { 
-                document.getElementById('auth-school').value = sch;
-                document.getElementById('auth-role').value = r;
-                handleSecureLogin(); 
-            } else { 
-                showScreen('screen-gate');
-            }
+            const r = localStorage.getItem('session_role'); 
+            const u = localStorage.getItem('session_user');
+            if(sch && r && u) { handleSecureLogin(); } else { showScreen('screen-gate'); }
+        }
+        
+        function submitRegistrationRequest() {
+            alert("Application submitted! In sandbox fallback layout mode, this will persist until page reload.");
         }
         
         document.addEventListener("DOMContentLoaded", checkPersistentSession);
