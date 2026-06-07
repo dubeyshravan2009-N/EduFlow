@@ -220,9 +220,19 @@
                         <div id="class-management-deck" class="border-t pt-3 space-y-2">
                             <span class="block text-[9px] font-bold text-indigo-500 uppercase tracking-wider">Dynamic Stream Manager</span>
                             <div class="flex gap-1">
-                                <input id="new-class-input" type="text" placeholder="e.g. 11A or 5C" class="border p-1.5 rounded-lg text-xs w-full bg-white outline-none uppercase font-mono">
+                                <input id="new-class-input" type="text" placeholder="e.g. 11A" class="border p-1.5 rounded-lg text-xs w-full bg-white outline-none uppercase font-mono">
                                 <button type="button" onclick="addNewClassStream()" class="bg-indigo-600 text-white text-[10px] font-bold px-2.5 rounded-lg hover:bg-indigo-700">Add</button>
                             </div>
+                            
+                            <div class="grid grid-cols-2 gap-1 pt-1">
+                                <button type="button" onclick="moveSelectedClass('up')" class="bg-slate-100 text-slate-700 font-bold py-1 px-2 rounded-lg text-[10px] hover:bg-slate-200">🔼 Move Up</button>
+                                <button type="button" onclick="moveSelectedClass('down')" class="bg-slate-100 text-slate-700 font-bold py-1 px-2 rounded-lg text-[10px] hover:bg-slate-200">🔽 Move Down</button>
+                            </div>
+                            
+                            <button type="button" onclick="triggerAutoSort()" class="w-full bg-indigo-50 text-indigo-700 font-bold py-1 rounded-lg text-[10px] hover:bg-indigo-100 transition-colors">
+                                🔢 Reset to Auto-Sort Order
+                            </button>
+                            
                             <button type="button" onclick="deleteSelectedClassStream()" class="w-full bg-red-50 text-red-600 border border-red-100 font-bold py-1 rounded-lg text-[10px] hover:bg-red-100 transition-colors">
                                 🗑️ Delete Selected Class
                             </button>
@@ -417,7 +427,6 @@
     <script>
         const SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
         
-        // Initial state memory block
         let db = { 
             students: {}, 
             records: {}, 
@@ -426,7 +435,7 @@
             history: [], 
             examOrder: [], 
             notices: [],
-            allocatedClasses: [] // Houses institution's class streams list dynamically
+            allocatedClasses: []
         };
         
         let currentSchool = null; let currentUser = null; let activeId = null;
@@ -450,7 +459,7 @@
             window.cloudStorage = null;
         }
 
-        // Initialize state configuration for Class 1 to Class 10 structures safely
+        // Verifies database array data state explicitly to prevent empty states
         function verifyAndSeedDefaultClasses() {
             if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
                 db.allocatedClasses = [];
@@ -459,12 +468,12 @@
                     db.allocatedClasses.push(`${i}B`);
                 }
             }
-            resequenceAllClasses();
+            buildClassSelectOptions();
         }
 
-        function resequenceAllClasses() {
+        // Handles standard default natural alphabetical array sorting when requested manually
+        function triggerAutoSort() {
             if (!db.allocatedClasses) return;
-            // Native natural sorting matrix setup
             db.allocatedClasses.sort((x, y) => {
                 const numX = parseInt(x);
                 const numY = parseInt(y);
@@ -472,17 +481,28 @@
                 return x.localeCompare(y);
             });
             buildClassSelectOptions();
+            syncToCloud();
+            refreshCurrentTeacherTab();
+            alert("Classes reset to standardized automatic sequencing order.");
         }
 
-        function buildClassSelectOptions() {
+        // Renders options completely into selection dropdowns
+        function buildClassSelectOptions(preserveSelectedValue = null) {
             const select = document.getElementById('class-select');
             if(!select) return;
+            
+            const currentlySelected = preserveSelectedValue || select.value;
             
             select.innerHTML = db.allocatedClasses.map(cls => 
                 `<option value="${cls}">Class Code ${cls}</option>`
             ).join('');
+
+            if (currentlySelected && db.allocatedClasses.includes(currentlySelected)) {
+                select.value = currentlySelected;
+            }
         }
 
+        // Allows adding class and appends directly where you choose without disrupting order
         function addNewClassStream() {
             const input = document.getElementById('new-class-input');
             const targetVal = input.value.trim().toUpperCase();
@@ -490,23 +510,53 @@
             if(!targetVal) return alert("Please specify a valid Class Code label.");
             if(db.allocatedClasses.includes(targetVal)) return alert("This class allocation segment already exists.");
             
-            db.allocatedClasses.push(targetVal);
-            resequenceAllClasses();
+            db.allocatedClasses.push(targetVal); // Appends cleanly at the base loop
+            buildClassSelectOptions(targetVal);
             syncToCloud();
             
             input.value = '';
             refreshCurrentTeacherTab();
-            alert(`Class Code ${targetVal} injected successfully.`);
+            
+            triggerNotificationToast("Class Added", `Class stream ${targetVal} is now live.`);
+            alert(`Class Code ${targetVal} added successfully.`);
+        }
+
+        // Manual sorting sequence permissions handler
+        function moveSelectedClass(direction) {
+            const select = document.getElementById('class-select');
+            const currentSelected = select.value;
+            if(!currentSelected) return;
+
+            const index = db.allocatedClasses.indexOf(currentSelected);
+            if(index === -1) return;
+
+            if (direction === 'up' && index > 0) {
+                // Swap array position with item above
+                let temp = db.allocatedClasses[index - 1];
+                db.allocatedClasses[index - 1] = db.allocatedClasses[index];
+                db.allocatedClasses[index] = temp;
+            } else if (direction === 'down' && index < db.allocatedClasses.length - 1) {
+                // Swap array position with item below
+                let temp = db.allocatedClasses[index + 1];
+                db.allocatedClasses[index + 1] = db.allocatedClasses[index];
+                db.allocatedClasses[index] = temp;
+            } else {
+                return; // Boundaries hit
+            }
+
+            buildClassSelectOptions(currentSelected);
+            syncToCloud();
+            refreshCurrentTeacherTab();
         }
 
         function deleteSelectedClassStream() {
             const currentSelected = document.getElementById('class-select').value;
             if(!currentSelected) return;
             
-            if(!confirm(`Warning: Are you absolutely sure you want to drop Class ${currentSelected}? This operation will remove visible roster filters.`)) return;
+            if(!confirm(`Warning: Are you absolutely sure you want to drop Class ${currentSelected}?`)) return;
             
             db.allocatedClasses = db.allocatedClasses.filter(c => c !== currentSelected);
-            resequenceAllClasses();
+            buildClassSelectOptions();
             syncToCloud();
             
             refreshCurrentTeacherTab();
@@ -535,7 +585,6 @@
             
             if (role === 'superadmin' && pass === 'master999') {
                 commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin');
-                if(typeof initSuperAdminListener === 'function') initSuperAdminListener();
                 showScreen('screen-superadmin');
                 return;
             }
