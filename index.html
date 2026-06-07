@@ -44,7 +44,7 @@
                     </div>
                     <div class="space-y-2">
                         <h2 class="text-4xl font-black tracking-tight text-slate-900">Smart Education. Simplified Management.</h2>
-                        <p class="text-sm text-slate-500 leading-relaxed">AcademIQ Portal provides dynamic, highly isolated cloud environments built to power modern academic institutions. Engineered to ensure bulletproof security, simplify grading schemas, and connect parent stakeholders directly with verified student learning trajectories.</p>
+                        <p class="text-sm text-slate-500 leading-relaxed">AcademIQ Portal provides dynamic, highly isolated cloud environments built to power modern academic institutions.</p>
                     </div>
                     <div class="flex flex-wrap gap-4">
                         <button onclick="showScreen('screen-login')" class="bg-indigo-600 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-md text-xs tracking-wide">Get Started</button>
@@ -80,15 +80,11 @@
                         <div class="space-y-3 text-xs">
                             <div class="flex items-center gap-2 text-slate-300">
                                 <span>📧</span> 
-                                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=dubeyshravan2009@gmail.com" target="_blank" class="hover:text-white transition-all underline font-mono text-[11px]">
-                                    dubeyshravan2009@gmail.com
-                                </a>
+                                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=dubeyshravan2009@gmail.com" target="_blank" class="hover:text-white transition-all underline font-mono text-[11px]">dubeyshravan2009@gmail.com</a>
                             </div>
                             <div class="flex items-center gap-2 text-slate-300">
                                 <span>📸</span> 
-                                <a href="https://instagram.com/shravandubey.2807" target="_blank" class="hover:text-indigo-400 transition-all font-bold tracking-wide text-indigo-300 underline">
-                                    @shravandubey.2807
-                                </a>
+                                <a href="https://instagram.com/shravandubey.2807" target="_blank" class="hover:text-indigo-400 transition-all font-bold tracking-wide text-indigo-300 underline">@shravandubey.2807</a>
                             </div>
                         </div>
                     </div>
@@ -116,9 +112,7 @@
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Contact Phone Number</label>
                         <input id="reg-phone" type="text" placeholder="+91 98765-43210" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
                     </div>
-                    <button id="btn-submit-request" onclick="submitRegistrationRequest()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold hover:bg-emerald-700 text-xs shadow-md">
-                        Submit Registration Application
-                    </button>
+                    <button id="btn-submit-request" onclick="submitRegistrationRequest()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold hover:bg-emerald-700 text-xs shadow-md">Submit Registration Application</button>
                     <button onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Cancel</button>
                 </div>
             </div>
@@ -152,9 +146,7 @@
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Secure Passkey</label>
                         <input id="auth-pass" type="password" placeholder="••••••••" class="w-full border rounded-xl p-3 text-xs outline-none">
                     </div>
-                    <button id="btn-login-submit" onclick="handleSecureLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 shadow-md text-xs">
-                        Authenticate Credentials
-                    </button>
+                    <button id="btn-login-submit" onclick="handleSecureLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 shadow-md text-xs">Authenticate Credentials</button>
                     <button onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Return</button>
                 </div>
             </div>
@@ -200,16 +192,13 @@
         </section>
 
         <section id="screen-teacher" class="screen w-full max-w-7xl">
-            <div class="flex flex-wrap justify-between items-center mb-4 border-b pb-2 gap-2">
-                <div class="flex flex-wrap gap-2">
-                    <button id="tab-btn-students" onclick="switchTeacherTab('students')" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white">👤 Student Roster</button>
-                    <button id="tab-btn-attendance" onclick="switchTeacherTab('attendance')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📅 Attendance</button>
-                    <button id="tab-btn-config" onclick="switchTeacherTab('config')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">⚙️ Assessment Control</button>
-                    <button id="tab-btn-bulletin" onclick="switchTeacherTab('bulletin')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📣 Notice Board Scheduler</button>
-                </div>
-                <button onclick="requestNotificationSystemPermission()" class="bg-slate-800 text-white px-3 py-1.5 rounded-xl font-bold text-[11px] hover:bg-slate-700 shadow-sm transition-all">🔔 Enable Notifications Permission</button>
+            <div class="flex flex-wrap gap-2 mb-4 border-b pb-2">
+                <button id="tab-btn-students" onclick="switchTeacherTab('students')" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white">👤 Student Roster</button>
+                <button id="tab-btn-attendance" onclick="switchTeacherTab('attendance')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📅 Attendance</button>
+                <button id="tab-btn-config" onclick="switchTeacherTab('config')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">⚙️ Assessment Control</button>
+                <button id="tab-btn-bulletin" onclick="switchTeacherTab('bulletin')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📣 Notice Board Scheduler</button>
             </div>
-           
+            
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-1 space-y-4">
                     <div class="bg-white p-5 rounded-2xl border shadow-sm">
@@ -249,7 +238,6 @@
                             </div>
                         </div>
                         <div id="exam-config-rows" class="space-y-4"></div>
-                        <button onclick="saveExamConfiguration()" class="bg-indigo-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-md">Save Assessment Configuration</button>
                     </div>
 
                     <div id="tab-pane-bulletin" class="hidden p-6 max-h-[70vh] overflow-y-auto space-y-6">
@@ -257,8 +245,8 @@
                             <h4 class="font-bold text-xs uppercase text-slate-700 tracking-wider">📚 Broadcast Subject Homework Task</h4>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="text-[10px] uppercase font-bold text-slate-400">Target Subject</label>
-                                    <input id="bulletin-hw-subject" type="text" placeholder="e.g., Maths, Hindi, French" class="w-full border p-2 rounded-lg bg-white text-xs outline-none">
+                                    <label class="text-[10px] uppercase font-bold text-slate-400">Target Subject / Reference</label>
+                                    <input id="bulletin-hw-subject" type="text" placeholder="e.g., Mathematics" class="w-full border p-2 rounded-lg bg-white text-xs outline-none">
                                 </div>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
@@ -316,21 +304,23 @@
                             <button onclick="publishNoticeItem('timetables')" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Timetable Matrix</button>
                         </div>
 
-                        <div class="border p-6 rounded-2xl space-y-4 bg-white shadow-inner">
-                            <h3 class="font-black text-slate-800 text-sm tracking-tight border-b pb-2">📋 Live Tracking Control Feed (Active Notices)</h3>
+                        <div class="border p-6 rounded-2xl bg-white space-y-4 shadow-sm">
+                            <div>
+                                <h4 class="font-black text-slate-800 text-sm tracking-tight">📋 Live Notice Control Monitor Feed</h4>
+                                <p class="text-[11px] text-slate-400">Review live parameters or delete notices completely out of active dashboards.</p>
+                            </div>
                             <div class="overflow-x-auto">
-                                <table class="w-full text-left text-xs">
-                                    <thead class="bg-slate-100 uppercase tracking-wider text-[10px] text-slate-500 font-bold font-mono">
+                                <table class="w-full text-left text-xs border border-slate-100 rounded-lg overflow-hidden">
+                                    <thead class="bg-slate-100 text-slate-600 font-bold uppercase text-[9px] tracking-wider">
                                         <tr>
-                                            <th class="p-3">Notice Type</th>
-                                            <th class="p-3">Topic/Details</th>
-                                            <th class="p-3">Timeline Run Range</th>
-                                            <th class="p-3 text-center">Action Options</th>
+                                            <th class="p-3">Feed Type</th>
+                                            <th class="p-3">Title / Core Context</th>
+                                            <th class="p-3">Visibility Window</th>
+                                            <th class="p-3 text-center">Actions</th>
                                         </tr>
-                                    </thead>
-                                    <tbody id="teacher-notices-feed-table">
-                                        <tr><td colspan="4" class="p-4 text-center text-slate-400 italic">No notices populated for this class environment.</td></tr>
-                                    </tbody>
+                                    </table>
+                                    <table class="w-full text-left text-xs border border-slate-100 rounded-lg overflow-hidden">
+                                    <tbody id="live-notices-monitor-table-body" class="divide-y divide-slate-100"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -420,13 +410,14 @@
         let localAttendanceBuffer = {};
 
         const firebaseConfig = {
-          apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
-          authDomain: "eduflow-pro-f6d04.firebaseapp.com",
-          projectId: "eduflow-pro-f6d04",
-          storageBucket: "eduflow-pro-f6d04.firebasestorage.app",
-          messagingSenderId: "961305546473",
-          appId: "1:961305546473:web:71db6c4d8da6c4950a6a78"
+            apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
+            authDomain: "eduflow-pro-f6d04.firebaseapp.com",
+            projectId: "eduflow-pro-f6d04",
+            storageBucket: "eduflow-pro-f6d04.firebasestorage.app",
+            messagingSenderId: "961305546473",
+            appId: "1:961305546473:web:71db6c4d8da6c4950a6a78"
         };
+
         try {
             firebase.initializeApp(firebaseConfig);
             window.cloudStorage = firebase.firestore();
@@ -441,17 +432,14 @@
             if(target) target.classList.add('active');
         }
 
-        function requestNotificationSystemPermission() {
-            if (!("Notification" in window)) return alert("This device browser layout context does not accept standard push alerts.");
-            Notification.requestPermission().then(permission => {
-                alert(`Notification access profile alignment response: ${permission.toUpperCase()}`);
-            });
-        }
-
         function triggerNotificationToast(title, body) {
             if (!("Notification" in window)) return;
             if (Notification.permission === "granted") { 
                 new Notification(title, { body: body });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(p => { 
+                    if(p === "granted") new Notification(title, { body: body }); 
+                });
             }
         }
 
@@ -460,9 +448,9 @@
             const role = document.getElementById('auth-role').value;
             const id = document.getElementById('auth-id').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
+
             if (role === 'superadmin' && pass === 'master999') {
                 commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin');
-                initSuperAdminListener();
                 showScreen('screen-superadmin');
                 return;
             }
@@ -470,10 +458,7 @@
             if (!window.cloudStorage) {
                 currentSchool = school || "DEMO-1234";
                 db.students["10A-1"] = { name: "Test Student", pass: "school1" };
-                if (Object.keys(db.exams).length === 0) {
-                    db.exams = { "PT-1": { "Maths": 50, "Science": 50, "English": 100 } }; 
-                    db.examOrder = ["PT-1"];
-                }
+                db.exams = { "PT-1": { "Maths": 50, "Science": 50 } }; db.examOrder = ["PT-1"];
                 if (role === 'parent') { activeId = "10A-1"; commitSession(currentSchool, "10A-1", 'parent'); initParentView(); }
                 else { commitSession(currentSchool, 'teacher', 'teacher'); initTeacherView(); }
                 return;
@@ -488,6 +473,7 @@
                     if(!db.notices) db.notices = [];
                     if(!db.exams) db.exams = {};
                     if(!db.examOrder) db.examOrder = [];
+                    
                     if (role === 'admin' || role === 'teacher') { commitSession(school, 'teacher', role); initTeacherView(); }
                     else if (role === 'parent' && db.students[id]) { activeId = id; commitSession(school, id, 'parent'); initParentView(); }
                 }
@@ -497,17 +483,26 @@
         async function syncToCloud() { 
             if (window.cloudStorage && currentSchool) await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
         }
+        
         function commitSession(school, user, role) { 
             currentUser = { role, id: user };
-            localStorage.setItem('session_school', school); localStorage.setItem('session_user', user); localStorage.setItem('session_role', role); document.getElementById('logout-btn').classList.remove('hidden'); const rb = document.getElementById('role-badge'); rb.innerText = role; rb.classList.remove('hidden');
+            localStorage.setItem('session_school', school); 
+            localStorage.setItem('session_user', user); 
+            localStorage.setItem('session_role', role); 
+            document.getElementById('logout-btn').classList.remove('hidden'); 
+            const rb = document.getElementById('role-badge'); 
+            rb.innerText = role; 
+            rb.classList.remove('hidden');
         }
+        
         function triggerSessionLogout() { localStorage.clear(); location.reload(); }
 
         function initParentView() {
             document.getElementById('p-name').innerText = db.students[activeId]?.name || "Student Portfolio";
             document.getElementById('p-id').innerText = `Roster Verification Trace: ${activeId}`;
             document.getElementById('p-exam-view').innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join('');
-            renderParentReport(); showScreen('screen-parent');
+            renderParentReport(); 
+            showScreen('screen-parent');
         }
 
         function initTeacherView() {
@@ -515,32 +510,36 @@
             let options = '';
             for(let i=1; i<=10; i++) ['A', 'B'].forEach(s => options += `<option value="${i}${s}">Class Code ${i}${s}</option>`);
             select.innerHTML = options;
-            switchTeacherTab('students'); showScreen('screen-teacher');
+            switchTeacherTab('students'); 
+            showScreen('screen-teacher');
         }
 
         function switchTeacherTab(targetTab) {
             currentTeacherTab = targetTab;
             ['students', 'attendance', 'config', 'bulletin'].forEach(p => {
                 document.getElementById(`tab-pane-${p}`).classList.toggle('hidden', p !== targetTab);
-                const btn = document.getElementById(`tab-btn-${p}`); if(btn) btn.className = (p === targetTab) ? "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white" : "px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700";
+                const btn = document.getElementById(`tab-btn-${p}`); 
+                if(btn) btn.className = (p === targetTab) ? "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white" : "px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700";
             });
             document.getElementById('search-container').classList.toggle('hidden', targetTab !== 'students');
             document.getElementById('date-picker-container').classList.toggle('hidden', targetTab !== 'attendance');
+            
             if(targetTab === 'config') renderExamConfigPanel();
-            if(targetTab === 'bulletin') renderTeacherNoticesFeed();
+            if(targetTab === 'bulletin') renderLiveNoticesMonitorPanel();
             refreshCurrentTeacherTab();
         }
 
         function refreshCurrentTeacherTab() { 
             if (currentTeacherTab === 'students') renderTeacherList();
             else if (currentTeacherTab === 'attendance') renderAttendancePanel(); 
-            else if (currentTeacherTab === 'bulletin') renderTeacherNoticesFeed();
+            else if (currentTeacherTab === 'bulletin') renderLiveNoticesMonitorPanel();
         }
         
         function renderTeacherList() {
             const cls = document.getElementById('class-select').value;
             const search = document.getElementById('search-input').value.toLowerCase();
-            const tbody = document.getElementById('teacher-table-body'); tbody.innerHTML = '';
+            const tbody = document.getElementById('teacher-table-body'); 
+            tbody.innerHTML = '';
             for(let i=1; i<=45; i++) {
                 const sId = `${cls}-${i}`;
                 const data = db.students[sId] || { name: "", pass: "" };
@@ -548,15 +547,19 @@
                 tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4"><input type="text" value="${data.name}" onchange="updateProfileFieldDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none font-bold text-slate-800"><span class="text-[10px] text-slate-400 block">ID: ${sId}</span></td><td class="p-4 text-center"><input type="text" value="${data.pass || ("school" + i)}" onchange="updateProfileFieldDirect('${sId}','pass',this.value)" class="border rounded-lg px-2 text-xs font-mono text-indigo-600 text-center w-32 outline-none"></td><td class="p-4 text-center"><button onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold">Evaluate</button></td></tr>`;
             }
         }
+        
         function updateProfileFieldDirect(id, field, val) { 
             if(!db.students[id]) db.students[id] = { name: "", pass: "" };
-            db.students[id][field] = val; syncToCloud(); 
+            db.students[id][field] = val; 
+            syncToCloud(); 
         }
 
         function renderAttendancePanel() {
             const cls = document.getElementById('class-select').value;
             const dt = document.getElementById('attendance-date').value;
-            const tbody = document.getElementById('attendance-table-body'); tbody.innerHTML = ''; if(!dt) return;
+            const tbody = document.getElementById('attendance-table-body'); 
+            tbody.innerHTML = ''; 
+            if(!dt) return;
             if(!db.attendance[cls]) db.attendance[cls] = {};
             if(!db.attendance[cls][dt]) db.attendance[cls][dt] = {};
             localAttendanceBuffer = JSON.parse(JSON.stringify(db.attendance[cls][dt]));
@@ -568,114 +571,153 @@
                 tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4 font-bold">${db.students[sId].name}</td><td class="p-4 text-center"><div class="inline-flex rounded-lg border p-0.5 bg-slate-100"><button type="button" onclick="setLocalAttendanceStatus('${sId}','Present')" id="btn-pres-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${isPres ? 'bg-emerald-500 text-white':'text-slate-500'}">✔️ Present</button><button type="button" onclick="setLocalAttendanceStatus('${sId}','Absent')" id="btn-abs-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${!isPres ? 'bg-rose-500 text-white':'text-slate-500'}">❌ Absent</button></div></td></tr>`;
             }
         }
+        
         function setLocalAttendanceStatus(sId, status) { 
             localAttendanceBuffer[sId] = status;
-            document.getElementById(`btn-pres-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Present'?'bg-emerald-500 text-white':'text-slate-500'}`; document.getElementById(`btn-abs-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Absent'?'bg-rose-500 text-white':'text-slate-500'}`;
+            document.getElementById(`btn-pres-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Present'?'bg-emerald-500 text-white':'text-slate-500'}`; 
+            document.getElementById(`btn-abs-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Absent'?'bg-rose-500 text-white':'text-slate-500'}`;
         }
+        
         function commitAttendanceSheet() { 
-            const cls = document.getElementById('class-select').value; const dt = document.getElementById('attendance-date').value;
-            db.attendance[cls][dt] = localAttendanceBuffer; syncToCloud(); alert("Attendance sheet committed safely."); 
+            const cls = document.getElementById('class-select').value; 
+            const dt = document.getElementById('attendance-date').value;
+            db.attendance[cls][dt] = localAttendanceBuffer; 
+            syncToCloud(); 
+            alert("Attendance sheet committed safely."); 
         }
 
         function createNewExamModule() {
             const name = document.getElementById('new-exam-name').value.trim();
-            if(!name) return alert("Declare an exam title module string."); 
-            if(!db.exams[name]) db.exams[name] = {}; 
+            if(!name) return alert("Declare assessment module parameters.");
+            if(typeof db.exams[name] !== 'object') db.exams[name] = {};
             if(!db.examOrder.includes(name)) db.examOrder.push(name);
             document.getElementById('new-exam-name').value = '';
+            syncToCloud();
             renderExamConfigPanel();
         }
 
         function renderExamConfigPanel() {
             const wrapper = document.getElementById('exam-config-rows');
             wrapper.innerHTML = '';
-            if(db.examOrder.length === 0) {
-                wrapper.innerHTML = `<p class="text-xs text-slate-400 italic">No exams configured yet.</p>`;
-                return;
-            }
+            
             db.examOrder.forEach((ex) => {
-                let examSubjectsObj = db.exams[ex];
-                if(typeof examSubjectsObj !== 'object' || examSubjectsObj === null) {
-                    db.exams[ex] = {}; examSubjectsObj = {};
-                }
-                
-                let subjectsHTML = '';
-                Object.keys(examSubjectsObj).forEach(sub => {
-                    subjectsHTML += `
-                    <div class="flex items-center gap-2 bg-white p-2 rounded-lg border text-xs">
-                        <span class="font-bold text-slate-700 flex-1">${sub}</span>
-                        <span class="text-[10px] uppercase font-bold text-slate-400">Max:</span>
-                        <input type="number" id="cfg-max-${ex}-${sub}" value="${examSubjectsObj[sub]}" class="border w-16 p-1 text-center font-bold text-indigo-600 rounded-md">
-                        <button onclick="deleteSubjectFromExam('${ex}','${sub}')" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button>
-                    </div>`;
+                if (typeof db.exams[ex] !== 'object') db.exams[ex] = {};
+
+                let subjectRowsHTML = '';
+                Object.keys(db.exams[ex]).forEach(subName => {
+                    const maxPoints = db.exams[ex][subName];
+                    subjectRowsHTML += `
+                        <div class="flex items-center justify-between gap-2 pl-4 py-1 border-l-2 border-indigo-200 text-xs">
+                            <span class="text-slate-600 font-medium">${subName}</span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" value="${maxPoints}" onchange="db.exams['${ex}']['${subName}'] = parseInt(this.value); syncToCloud();" class="border w-14 p-1 text-center rounded-md text-[11px]">
+                                <button onclick="deleteSubjectFromExam('${ex}', '${subName}')" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button>
+                            </div>
+                        </div>
+                    `;
                 });
 
                 wrapper.innerHTML += `
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                    <div class="flex items-center justify-between border-b pb-2">
-                        <span class="text-xs font-black text-indigo-700 tracking-wide uppercase">${ex} Assessment Strategy</span>
-                        <button onclick="removeExamEntirely('${ex}')" class="text-[10px] text-red-500 font-bold hover:underline">Remove Module</button>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-                        <input id="add-sub-name-${ex}" type="text" placeholder="Subject Name (e.g. Hindi)" class="border p-2 text-xs bg-white rounded-lg outline-none font-medium">
-                        <div class="flex gap-1">
-                            <input id="add-sub-max-${ex}" type="number" placeholder="Max Points" class="border p-2 text-xs bg-white rounded-lg text-center outline-none w-24 font-medium">
-                            <button onclick="addSubjectToExam('${ex}')" class="bg-emerald-600 text-white text-[11px] font-bold px-3 rounded-lg flex-1">Add Subject</button>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 mb-3">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-xs font-black text-slate-800 uppercase tracking-wider">${ex}</span>
+                            <button onclick="deleteExamModule('${ex}')" class="text-xs text-rose-600 hover:underline">Delete Module</button>
+                        </div>
+                        <div class="space-y-1">${subjectRowsHTML || '<p class="text-[11px] italic text-slate-400 pl-4">No subjects assigned.</p>'}</div>
+                        <div class="flex gap-2 pt-2 items-center">
+                            <input type="text" id="add-sub-name-${ex}" placeholder="Subject Name" class="border p-1.5 text-xs rounded-lg flex-1 bg-white outline-none">
+                            <input type="number" id="add-sub-max-${ex}" placeholder="Max" class="border p-1.5 text-xs rounded-lg w-16 text-center bg-white outline-none">
+                            <button onclick="addSubjectToExam('${ex}')" class="bg-indigo-600 text-white font-bold text-[11px] px-3 py-1.5 rounded-lg hover:bg-indigo-700">Add</button>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1">
-                        ${subjectsHTML || '<p class="text-[11px] text-slate-400 italic col-span-3">No custom subjects added yet.</p>'}
-                    </div>
-                </div>`;
+                `;
             });
         }
 
         function addSubjectToExam(examName) {
-            const subInput = document.getElementById(`add-sub-name-${examName}`);
+            const nameInput = document.getElementById(`add-sub-name-${examName}`);
             const maxInput = document.getElementById(`add-sub-max-${examName}`);
-            const subName = subInput.value.trim();
+            const name = nameInput.value.trim();
             const maxVal = parseInt(maxInput.value);
-            if(!subName || isNaN(maxVal)) return alert("Declare both subject key title and max score bound mapping parameters.");
-            db.exams[examName][subName] = maxVal;
-            subInput.value = ''; maxInput.value = '';
+
+            if (!name || isNaN(maxVal)) return alert("Specify subject name and maximum points.");
+            db.exams[examName][name] = maxVal;
+            
+            nameInput.value = ''; maxInput.value = '';
+            syncToCloud();
             renderExamConfigPanel();
         }
 
         function deleteSubjectFromExam(examName, subName) {
-            delete db.exams[examName][subName];
-            renderExamConfigPanel();
+            if (confirm(`Remove ${subName} from ${examName}?`)) {
+                delete db.exams[examName][subName];
+                syncToCloud();
+                renderExamConfigPanel();
+            }
         }
 
-        function removeExamEntirely(examName) {
-            if(!confirm(`Confirm destruction delete execution sequence onto exam pattern: ${examName}?`)) return;
-            delete db.exams[examName];
-            db.examOrder = db.examOrder.filter(e => e !== examName);
-            renderExamConfigPanel();
+        function deleteExamModule(examName) {
+            if (confirm(`Delete the entire ${examName} module?`)) {
+                delete db.exams[examName];
+                db.examOrder = db.examOrder.filter(e => e !== examName);
+                syncToCloud();
+                renderExamConfigPanel();
+            }
         }
 
-        function saveExamConfiguration() { 
-            db.examOrder.forEach(ex => {
-                if(db.exams[ex] && typeof db.exams[ex] === 'object') {
-                    Object.keys(db.exams[ex]).forEach(sub => {
-                        const el = document.getElementById(`cfg-max-${ex}-${sub}`);
-                        if(el) db.exams[ex][sub] = parseInt(el.value) || 100;
-                    });
-                }
+        function renderLiveNoticesMonitorPanel() {
+            const cls = document.getElementById('class-select').value;
+            const tbody = document.getElementById('live-notices-monitor-table-body');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            if (!db.notices) db.notices = [];
+            let count = 0;
+
+            db.notices.forEach((notice, index) => {
+                if (notice.classTarget !== cls) return;
+                count++;
+
+                let style = "bg-slate-100 text-slate-700";
+                if (notice.type === 'homework') style = "bg-indigo-100 text-indigo-700";
+                else if (notice.type === 'events') style = "bg-amber-100 text-amber-700";
+                else if (notice.type === 'timetables') style = "bg-emerald-100 text-emerald-700";
+
+                let title = notice.title || notice.subject || "Notice Broadcast";
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 text-xs">
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wide ${style}">${notice.type}</span></td>
+                        <td class="p-3 text-slate-800 font-bold truncate max-w-xs">${title}</td>
+                        <td class="p-3 font-mono text-slate-400 text-[11px]">${notice.startDate} ➔ ${notice.endDate}</td>
+                        <td class="p-3 text-center"><button onclick="deleteNoticeItem(${index})" class="text-rose-500 hover:text-rose-700 font-black px-3 py-1 bg-rose-50 rounded-lg text-xs">✕ Delete</button></td>
+                    </tr>
+                `;
             });
-            syncToCloud();
-            alert("Saved Custom Exam Configurations."); 
-            switchTeacherTab('students'); 
+
+            if (count === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 italic bg-slate-50/50">No active notices found for Class ${cls}.</td></tr>`;
+            }
+        }
+
+        function deleteNoticeItem(index) {
+            if (confirm("Permanently delete this notice tracking item?")) {
+                db.notices.splice(index, 1);
+                syncToCloud();
+                renderLiveNoticesMonitorPanel();
+                alert("Notice entry removed successfully.");
+            }
         }
 
         function publishNoticeItem(type) {
             const cls = document.getElementById('class-select').value;
-            let itemPayload = { id: 'nt-' + Date.now() + '-' + Math.floor(Math.random()*1000), type: type, classTarget: cls, timestamp: new Date().toISOString() };
+            let itemPayload = { type: type, classTarget: cls, timestamp: new Date().toISOString() };
+            
             if (type === 'homework') {
                 itemPayload.subject = document.getElementById('bulletin-hw-subject').value.trim();
                 itemPayload.content = document.getElementById('bulletin-hw-task').value.trim();
                 itemPayload.startDate = document.getElementById('bulletin-hw-start').value;
                 itemPayload.endDate = document.getElementById('bulletin-hw-end').value;
-                if(!itemPayload.subject) return alert("Please specify target subject code value.");
             } else if (type === 'events') {
                 itemPayload.title = document.getElementById('bulletin-evt-title').value.trim();
                 itemPayload.startDate = document.getElementById('bulletin-evt-start').value;
@@ -687,50 +729,15 @@
                 itemPayload.endDate = document.getElementById('bulletin-tt-end').value;
             }
 
-            if(!itemPayload.startDate || !itemPayload.endDate) return alert("Please specify complete display start and expiration dates.");
+            if(!itemPayload.startDate || !itemPayload.endDate || !(itemPayload.title || itemPayload.subject)) {
+                return alert("Please complete all required field guidelines and schedule parameters.");
+            }
+
             db.notices.push(itemPayload); 
             syncToCloud();
-            
-            triggerNotificationToast("AcademIQ Notice Added", `New ${type.toUpperCase()} scheduled notice broadcast pushed.`);
-            alert(`Notice item successfully published and enqueued!`);
-            
-            if(type === 'homework') { document.getElementById('bulletin-hw-subject').value = ''; document.getElementById('bulletin-hw-task').value = ''; }
-            else if(type === 'events') { document.getElementById('bulletin-evt-title').value = ''; }
-            else if(type === 'timetables') { document.getElementById('bulletin-tt-title').value = ''; document.getElementById('bulletin-tt-matrix').value = ''; }
-            
-            renderTeacherNoticesFeed();
-        }
-
-        function renderTeacherNoticesFeed() {
-            const cls = document.getElementById('class-select').value;
-            const tbody = document.getElementById('teacher-notices-feed-table');
-            tbody.innerHTML = '';
-            const classNotices = (db.notices || []).filter(n => n.classTarget === cls);
-            if(classNotices.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">No notices tracking populated inside class allocation window ${cls}.</td></tr>`;
-                return;
-            }
-            classNotices.reverse().forEach(n => {
-                let displayDetails = '';
-                if(n.type === 'homework') displayDetails = `<strong>[${n.subject || 'Core'}]</strong> ${n.content || ''}`;
-                else if(n.type === 'events') displayDetails = `🏆 ${n.title || ''}`;
-                else if(n.type === 'timetables') displayDetails = `📅 <strong>${n.title || ''}</strong>: <span class="font-mono text-[11px] block whitespace-pre-line">${n.content || ''}</span>`;
-                
-                tbody.innerHTML += `
-                <tr class="border-b hover:bg-slate-50">
-                    <td class="p-3"><span class="px-2 py-0.5 font-bold font-mono text-[10px] rounded uppercase ${n.type==='homework'?'bg-indigo-100 text-indigo-700':n.type==='events'?'bg-amber-100 text-amber-700':'bg-emerald-100 text-emerald-700'}">${n.type}</span></td>
-                    <td class="p-3 text-slate-700 font-medium">${displayDetails}</td>
-                    <td class="p-3 text-slate-400 font-mono text-[11px]">${n.startDate} ➔ ${n.endDate}</td>
-                    <td class="p-3 text-center"><button onclick="deleteNoticeByTeacher('${n.id || ''}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold px-3 py-1 rounded-xl text-xs transition-all">Delete</button></td>
-                </tr>`;
-            });
-        }
-
-        function deleteNoticeByTeacher(noticeId) {
-            if(!noticeId) return;
-            db.notices = (db.notices || []).filter(n => n.id !== noticeId);
-            syncToCloud();
-            renderTeacherNoticesFeed();
+            triggerNotificationToast("AcademIQ Notice Added", `New ${type.toUpperCase()} notice broadcast pushed.`);
+            alert(`Notice item successfully published!`);
+            renderLiveNoticesMonitorPanel();
         }
 
         function openMarksModal(id) { 
@@ -743,52 +750,52 @@
 
         function loadExistingMarks() { 
             const ex = document.getElementById('m-exam').value;
-            if(!ex) {
-                document.getElementById('m-grid').innerHTML = `<p class="text-xs italic text-slate-400 col-span-4">Please build subjects under this exam profile configuration first.</p>`;
-                return;
-            }
-            const examSubjectsObj = db.exams[ex] || {};
-            const subjectsList = Object.keys(examSubjectsObj);
-            const r = db.records[`${activeId}_${ex}`] || { marks: {}, remarks: "", cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good" };
+            if(!ex) return;
+
+            const assignedSubjects = (db.exams[ex] && typeof db.exams[ex] === 'object') ? Object.keys(db.exams[ex]) : [];
+            const grid = document.getElementById('m-grid');
             
-            if(subjectsList.length === 0) {
-                document.getElementById('m-grid').innerHTML = `<p class="text-xs italic text-slate-400 col-span-4">No subjects registered for this exam layout.</p>`;
+            if(assignedSubjects.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-xs text-slate-400 italic">Configure subjects in Assessment Control first.</p>`;
             } else {
-                document.getElementById('m-grid').innerHTML = subjectsList.map(s => `
+                grid.innerHTML = assignedSubjects.map(s => `
                     <div class='bg-slate-50 p-2 border rounded-xl'>
-                        <label class='text-[10px] text-slate-400 block font-bold'>${s} (Max ${examSubjectsObj[s]})</label>
-                        <input type='number' id='inp-${s}' class='w-full outline-none font-bold text-sm bg-transparent'>
-                    </div>`).join('');
-                
-                subjectsList.forEach(s => {
-                    document.getElementById(`inp-${s}`).value = r.marks[s] !== undefined ? r.marks[s] : "";
-                });
+                        <label class='text-[10px] text-slate-400 block font-bold'>${s} (Max: ${db.exams[ex][s]})</label>
+                        <input type='number' id='inp-${s}' class='w-full outline-none font-bold text-sm bg-transparent exam-subject-input' data-subject="${s}">
+                    </div>
+                `).join('');
             }
+
+            const r = db.records[`${activeId}_${ex}`] || { marks: {}, remarks: "", cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good" };
+            assignedSubjects.forEach(s => {
+                const field = document.getElementById(`inp-${s}`);
+                if(field) field.value = r.marks[s] !== undefined ? r.marks[s] : "";
+            });
+            
             document.getElementById('m-remarks').value = r.remarks || ""; 
-            document.getElementById('m-cw-status').value = r.cw || "🟢 Active & Regular";
-            document.getElementById('m-hw-status').value = r.hw || "🟢 On-Time & Good"; 
+            document.getElementById('m-cw-status').value = r.cw;
+            document.getElementById('m-hw-status').value = r.hw; 
         }
 
         function saveMarks() {
             const ex = document.getElementById('m-exam').value;
-            if(!ex) return alert("No valid evaluation target layout module open.");
-            const examSubjectsObj = db.exams[ex] || {};
-            const subjectsList = Object.keys(examSubjectsObj);
-            
+            if(!ex) return;
+
             const r = { marks: {}, remarks: document.getElementById('m-remarks').value, cw: document.getElementById('m-cw-status').value, hw: document.getElementById('m-hw-status').value };
+            const inputs = document.querySelectorAll('.exam-subject-input');
             
-            for(let s of subjectsList) { 
-                const el = document.getElementById(`inp-${s}`);
-                if(el) {
-                    const val = el.value; 
-                    if(val !== "") { 
-                        const n = Number(val);
-                        const maxAllowed = examSubjectsObj[s] || 100;
-                        if(n > maxAllowed || n < 0) return alert(`Value validation limits mapping tracking crash on ${s}. Max allowed: ${maxAllowed}`); 
-                        r.marks[s] = n;
-                    } 
+            for(let inp of inputs) {
+                const s = inp.getAttribute('data-subject');
+                const val = inp.value;
+                const maxAllowed = db.exams[ex][s] || 100;
+
+                if(val !== "") { 
+                    const n = Number(val);
+                    if(n > maxAllowed || n < 0) return alert(`Validation failed for ${s}. Max allowed: ${maxAllowed}`); 
+                    r.marks[s] = n;
                 }
             }
+            
             db.records[`${activeId}_${ex}`] = r; 
             syncToCloud(); 
             alert("Marks evaluated safely."); 
@@ -810,58 +817,61 @@
             }
             document.getElementById('p-attn-percent').innerText = `${working > 0 ? Math.round((present/working)*100) : 100}%`;
             document.getElementById('p-attn-fraction').innerText = `Logged Days: ${working} | Present Trackings: ${present}`;
-            
+
             const activeNotices = (db.notices || []).filter(n => n.classTarget === targetClass && isoToday >= n.startDate && isoToday <= n.endDate);
             
             const evts = activeNotices.filter(n => n.type === 'events');
-            document.getElementById('p-events-deck').innerHTML = evts.length === 0 ? `<div class='text-slate-400 italic py-2'>Welcome back! No scheduled activities for this window.</div>` : evts.map(e => `<div class='p-2 bg-amber-50 border rounded-lg font-bold text-amber-900'>• ${e.title}</div>`).join('');
-            
-            const tts = activeNotices.filter(n => n.type === 'timetables');
-            document.getElementById('p-timetable-deck').innerHTML = tts.length === 0 ? `<div class='text-slate-400 italic py-2'>Welcome back! No upcoming examination timelines scheduled.</div>` : tts.map(t => `<div class='p-2.5 bg-emerald-50 border rounded-lg'><span class='font-black text-emerald-900 block'>🏆 ${t.title}</span><p class='whitespace-pre-line text-xs font-mono text-slate-700 mt-1'>${t.content}</p></div>`).join('');
-            
-            const hws = activeNotices.filter(n => n.type === 'homework');
-            document.getElementById('p-homework-deck').innerHTML = hws.length === 0 ? `<div class='text-slate-400 italic py-2 col-span-2'>Welcome back! No active assignments found.</div>` : hws.map(h => `<div class='p-3 bg-slate-50 border rounded-xl'><span class='bg-indigo-100 text-indigo-700 font-bold text-[10px] px-1.5 py-0.5 rounded w-max block mb-1'>${h.subject}</span><p class='font-medium text-slate-800 text-xs'>${h.content}</p></div>`).join('');
-            
-            const selectedExam = document.getElementById('p-exam-view').value || db.examOrder[0];
-            if(!selectedExam) {
-                document.getElementById('p-marks-display').innerHTML = `<p class='text-slate-400 italic text-xs py-2'>No active exams established yet.</p>`;
-                return;
-            }
-            
-            const examSubjectsObj = db.exams[selectedExam] || {};
-            const subjectsList = Object.keys(examSubjectsObj);
-            const rec = db.records[`${activeId}_${selectedExam}`];
-            const disp = document.getElementById('p-marks-display');
-            
-            if(subjectsList.length === 0) {
-                disp.innerHTML = `<p class='text-slate-400 italic text-xs py-2'>No metrics tracked for this configured matrix yet.</p>`;
-                if(dynamicChartInstance) dynamicChartInstance.destroy();
-                return;
-            }
+            document.getElementById('p-events-deck').innerHTML = evts.length === 0 ? `<div class='text-slate-400 italic py-2'>No scheduled activities.</div>` : evts.map(e => `<div class='p-2 bg-amber-50 border rounded-lg font-bold text-amber-900'>• ${e.title}</div>`).join('');
 
-            if(!rec) {
-                disp.innerHTML = subjectsList.map(s => `<div class='flex justify-between border-b py-1 text-xs'><span>${s}</span><span class='font-bold text-slate-400'>— / ${examSubjectsObj[s]}</span></div>`).join('');
-                document.getElementById('p-card-cw').innerText = "—"; document.getElementById('p-card-hw').innerText = "—"; document.getElementById('p-remarks-display').innerText = "—";
+            const tts = activeNotices.filter(n => n.type === 'timetables');
+            document.getElementById('p-timetable-deck').innerHTML = tts.length === 0 ? `<div class='text-slate-400 italic py-2'>No upcoming examination timelines.</div>` : tts.map(t => `<div class='p-2.5 bg-emerald-50 border rounded-lg'><span class='font-black text-emerald-900 block'>🏆 ${t.title}</span><p class='whitespace-pre-line text-xs font-mono text-slate-700 mt-1'>${t.content}</p></div>`).join('');
+
+            const hws = activeNotices.filter(n => n.type === 'homework');
+            document.getElementById('p-homework-deck').innerHTML = hws.length === 0 ? `<div class='text-slate-400 italic py-2 col-span-2'>No active assignments found.</div>` : hws.map(h => `<div class='p-3 bg-slate-50 border rounded-xl'><span class='bg-indigo-100 text-indigo-700 font-bold text-[10px] px-1.5 py-0.5 rounded'>${h.subject}</span><p class='mt-1 font-medium text-slate-800'>${h.content}</p></div>`).join('');
+
+            const selectedExam = document.getElementById('p-exam-view').value || db.examOrder[0];
+            if(!selectedExam) return;
+
+            const disp = document.getElementById('p-marks-display');
+            const rec = db.records[`${activeId}_${selectedExam}`];
+            const activeExamSubjects = (db.exams[selectedExam] && typeof db.exams[selectedExam] === 'object') ? Object.keys(db.exams[selectedExam]) : [];
+
+            if(!rec || activeExamSubjects.length === 0) {
+                disp.innerHTML = `<p class='text-slate-400 italic text-xs py-2'>Awaiting metric generation or configuration schema.</p>`;
+                document.getElementById('p-card-cw').innerText = "—"; 
+                document.getElementById('p-card-hw').innerText = "—"; 
+                document.getElementById('p-remarks-display').innerText = "—";
                 if(dynamicChartInstance) dynamicChartInstance.destroy();
             } else {
-                disp.innerHTML = subjectsList.map(s => `<div class='flex justify-between border-b py-1 text-xs'><span>${s}</span><span class='font-bold text-indigo-600'>${rec.marks[s] !== undefined ? rec.marks[s] : "—"} / ${examSubjectsObj[s]}</span></div>`).join('');
-                document.getElementById('p-card-cw').innerText = rec.cw || "🟢 Active"; document.getElementById('p-card-hw').innerText = rec.hw || "🟢 Good";
-                document.getElementById('p-remarks-display').innerText = rec.remarks || "No evaluation remarks available.";
+                disp.innerHTML = activeExamSubjects.map(s => {
+                    const maxPoints = db.exams[selectedExam][s] || 100;
+                    return `<div class='flex justify-between border-b py-1 text-xs'><span>${s}</span><span class='font-bold text-indigo-600'>${rec.marks[s] !== undefined ? rec.marks[s] : "—"} / ${maxPoints}</span></div>`;
+                }).join('');
                 
+                document.getElementById('p-card-cw').innerText = rec.cw || "🟢 Active"; 
+                document.getElementById('p-card-hw').innerText = rec.hw || "🟢 Good";
+                document.getElementById('p-remarks-display').innerText = rec.remarks || "No evaluation remarks available.";
+
                 const ctx = document.getElementById('performanceChart').getContext('2d');
-                const scores = subjectsList.map(s => (rec.marks && rec.marks[s] !== undefined) ? rec.marks[s] : 0);
+                const scores = activeExamSubjects.map(s => (rec.marks && rec.marks[s] !== undefined) ? rec.marks[s] : 0);
+                
                 if (dynamicChartInstance) dynamicChartInstance.destroy();
                 dynamicChartInstance = new Chart(ctx, {
                     type: 'bar',
-                    data: { labels: subjectsList, datasets: [{ label: 'Marks Scaled Portfolio', data: scores, backgroundColor: '#4f46e5' }] },
-                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: Math.max(...Object.values(examSubjectsObj), 100) } } }
+                    data: { labels: activeExamSubjects, datasets: [{ label: 'Marks Portfolio', data: scores, backgroundColor: '#4f46e5' }] },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        scales: { y: { min: 0, max: Math.max(...activeExamSubjects.map(s => db.exams[selectedExam][s] || 100), 100) } } 
+                    }
                 });
             }
         }
 
         function checkPersistentSession() {
             const sch = localStorage.getItem('session_school');
-            const r = localStorage.getItem('session_role'); const u = localStorage.getItem('session_user');
+            const r = localStorage.getItem('session_role'); 
+            const u = localStorage.getItem('session_user');
             if(sch && r && u) { handleSecureLogin(); } else { showScreen('screen-gate'); }
         }
         
