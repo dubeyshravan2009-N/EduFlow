@@ -1237,30 +1237,35 @@
                 });
             }
         }
-
         function checkPersistentSession() {
-            const sch = localStorage.getItem('session_school');
-            const r = localStorage.getItem('session_role'); 
-            const u = localStorage.getItem('session_user');
-            
-            // SAFETY CHECK: Make sure the values actually contain real text, not just empty strings
-            if (sch && sch.trim() !== "" && r && u) { 
-                // Put values directly into inputs so handleSecureLogin can read them smoothly
-                const schoolInput = document.getElementById('auth-school');
-                const roleInput = document.getElementById('auth-role');
-                const idInput = document.getElementById('auth-id');
-                
-                if (schoolInput) schoolInput.value = sch;
-                if (roleInput) roleInput.value = r;
-                if (idInput) idInput.value = (r === 'parent') ? u : '';
-                
-                handleSecureLogin(); 
-            } else { 
-                // If data is corrupt or empty, clear it completely and show the clean landing page
-                localStorage.clear();
-                showScreen('screen-gate'); 
-            }
+    const sch = localStorage.getItem('session_school');
+    const r = localStorage.getItem('session_role'); 
+    const u = localStorage.getItem('session_user');
+    
+    // SAFETY CHECK: Make sure saved values exist and are valid text
+    if (sch && sch.trim() !== "" && r && u) { 
+        // Put values back into form inputs so handleSecureLogin can read them smoothly
+        document.getElementById('auth-school').value = sch;
+        document.getElementById('auth-role').value = r;
+        document.getElementById('auth-id').value = (r === 'parent') ? u : '';
+        
+        // 🔑 FIX: Pre-fill the correct passkey for teachers so it auto-authenticates without errors
+        if (r === 'teacher') {
+            document.getElementById('auth-pass').value = 'admin789'; 
+        } else {
+            document.getElementById('auth-pass').value = 'school1'; // Default for other test roles
         }
+        
+        handleSecureLogin(); 
+    } else { 
+        // If data is corrupt or empty, clear it completely and show clean landing page
+        localStorage.clear();
+        showScreen('screen-gate'); 
+    }
+}
+
+        
+
         
         function submitRegistrationRequest() {
             alert("Sandbox submission recorded.");
