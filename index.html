@@ -4,7 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AcademIQ Portal | Enterprise School Management Ecosystem</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -23,7 +35,7 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.75);
             backdrop-filter: blur(4px);
             z-index: 9999;
             align-items: center;
@@ -32,10 +44,10 @@
             gap: 1rem;
         }
         .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4f46e5;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4f46e5;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -45,11 +57,11 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-900 flex flex-col font-sans">
+<body class="bg-slate-50 min-h-screen text-slate-900 flex flex-col font-sans antialiased">
 
     <div id="global-processing-loader">
         <div class="spinner"></div>
-        <p class="text-white text-xs font-bold tracking-wider uppercase font-mono bg-slate-900/80 px-4 py-2 rounded-xl">Syncing Network Database...</p>
+        <p class="text-white text-xs font-bold tracking-wider uppercase font-mono bg-slate-900/90 px-4 py-2 rounded-xl border border-slate-700">Syncing Network Database...</p>
     </div>
 
     <nav id="main-nav" class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
@@ -60,18 +72,17 @@
         
         <div class="flex items-center gap-4">
             <span id="role-badge" class="hidden px-3 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-600 uppercase"></span>
-            <button id="logout-btn" type="button" onclick="triggerSessionLogout()" class="hidden text-red-500 text-xs font-bold border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50">Logout</button>
+            <button id="logout-btn" type="button" onclick="triggerSessionLogout()" class="hidden text-red-500 text-xs font-bold border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors">Logout</button>
         </div>
     </nav>
 
     <main class="flex-1 flex items-center justify-center p-4 md:p-8 w-full">
 
         <section id="screen-gate" class="screen active w-full max-w-6xl mx-auto space-y-12">
-            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                 <div class="md:col-span-2 space-y-6">
                     <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-100">
-                        <span class="text-xl">🚀</span>
+                        <span class="text-xl text-white">🚀</span>
                     </div>
                     <div class="space-y-2">
                         <h2 class="text-4xl font-black tracking-tight text-slate-900">Smart Education. Simplified Management.</h2>
@@ -125,7 +136,6 @@
                     </div>
                 </div>
             </div>
-
         </section>
 
         <section id="screen-register" class="screen w-full max-w-md mx-auto">
@@ -138,20 +148,20 @@
                 <div class="space-y-3">
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Official Institution Name</label>
-                        <input id="reg-name" type="text" placeholder="e.g., Maplewood Academy" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
+                        <input id="reg-name" type="text" placeholder="e.g., Maplewood Academy" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none focus:border-indigo-500">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Administrative Email Address</label>
-                        <input id="reg-email" type="email" placeholder="principal@school.com" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
+                        <input id="reg-email" type="email" placeholder="principal@school.com" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none focus:border-indigo-500">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Contact Phone Number</label>
-                        <input id="reg-phone" type="text" placeholder="+91 98765-43210" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none">
+                        <input id="reg-phone" type="text" placeholder="+91 98765-43210" class="w-full border rounded-xl p-3 text-xs bg-slate-50 outline-none focus:border-indigo-500">
                     </div>
-                    <button id="btn-submit-request" type="button" onclick="submitRegistrationRequest()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold hover:bg-emerald-700 text-xs shadow-md">
+                    <button id="btn-submit-request" type="button" onclick="submitRegistrationRequest()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold hover:bg-emerald-700 text-xs shadow-md transition-colors">
                         Submit Registration Application
                     </button>
-                    <button type="button" onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Cancel</button>
+                    <button type="button" onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1 hover:text-slate-600">Cancel</button>
                 </div>
             </div>
         </section>
@@ -160,16 +170,17 @@
             <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200 space-y-4">
                 <div>
                     <h2 class="text-xl font-black text-slate-800">Identity Verification</h2>
+                    <p class="text-xs text-slate-400">Access your synchronized academic dashboard environment.</p>
                 </div>
                 <hr>
                 <div class="space-y-3">
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">School Code</label>
-                        <input id="auth-school" type="text" placeholder="Enter School Code" class="w-full border rounded-xl p-3 text-xs font-mono uppercase bg-slate-50 outline-none">
+                        <input id="auth-school" type="text" placeholder="Enter School Code" class="w-full border rounded-xl p-3 text-xs font-mono uppercase bg-slate-50 outline-none focus:border-indigo-500">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Access Authorization Profile</label>
-                        <select id="auth-role" class="w-full border rounded-xl p-3 text-xs bg-slate-50 font-bold outline-none">
+                        <select id="auth-role" class="w-full border rounded-xl p-3 text-xs bg-slate-50 font-bold outline-none focus:border-indigo-500">
                             <option value="admin">Principal / School Admin</option>
                             <option value="teacher">Classroom Teacher</option>
                             <option value="parent">Parent / Student Viewer</option>
@@ -178,30 +189,28 @@
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Student Roll Identifier (Parents Only)</label>
-                        <input id="auth-id" type="text" placeholder="e.g., 10A-5" class="w-full border rounded-xl p-3 text-xs outline-none">
+                        <input id="auth-id" type="text" placeholder="e.g., 10A-5" class="w-full border rounded-xl p-3 text-xs outline-none focus:border-indigo-500">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Secure Passkey</label>
-                        <input id="auth-pass" type="password" placeholder="••••••••" class="w-full border rounded-xl p-3 text-xs outline-none">
+                        <input id="auth-pass" type="password" placeholder="••••••••" class="w-full border rounded-xl p-3 text-xs outline-none focus:border-indigo-500">
                     </div>
-                    <button id="btn-login-submit" type="button" onclick="handleSecureLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 shadow-md text-xs">
+                    <button id="btn-login-submit" type="button" onclick="handleSecureLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 shadow-md text-xs transition-colors">
                         Authenticate Credentials
                     </button>
-                    <button type="button" onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1">Return</button>
+                    <button type="button" onclick="showScreen('screen-gate')" class="w-full text-slate-400 text-xs py-1 hover:text-slate-600">Return</button>
                 </div>
             </div>
         </section>
 
         <section id="screen-superadmin" class="screen w-full max-w-6xl space-y-6">
             <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-black tracking-tight text-indigo-400">Network Operations Dashboard</h2>
-                </div>
+                <h2 class="text-2xl font-black tracking-tight text-indigo-400">Network Operations Dashboard</h2>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active Deployments</span>
-                    <h3 id="stat-schools" class="text-2xl font-black text-indigo-600 mt-1">Loading...</h3>
+                    <h3 id="stat-schools" class="text-2xl font-black text-indigo-600 mt-1">Loading System Status...</h3>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Inbound Requests</span>
@@ -209,34 +218,17 @@
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Platform Actions</span>
-                    <h3 id="stat-visitors" class="text-2xl font-black text-blue-600 mt-1">0 Hits</h3>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl border shadow-sm p-6 space-y-4">
-                <h3 class="font-black text-slate-800 text-base">Pending Institutional Requests</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-50 text-slate-400 font-bold uppercase border-b text-[10px]">
-                            <tr>
-                                <th class="p-4">Requested Entity Name</th>
-                                <th class="p-4">Contact Email</th>
-                                <th class="p-4">Phone Point</th>
-                                <th class="p-4 text-center">Operational Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="superadmin-requests-table"></tbody>
-                    </table>
+                    <h3 id="stat-visitors" class="text-2xl font-black text-blue-600 mt-1">System Operational</h3>
                 </div>
             </div>
         </section>
 
         <section id="screen-teacher" class="screen w-full max-w-7xl">
             <div class="flex flex-wrap gap-2 mb-4 border-b pb-2">
-                <button id="tab-btn-students" type="button" onclick="switchTeacherTab('students')" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white">👤 Student Roster</button>
-                <button id="tab-btn-attendance" type="button" onclick="switchTeacherTab('attendance')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📅 Attendance</button>
-                <button id="tab-btn-config" type="button" onclick="switchTeacherTab('config')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">⚙️ Assessment Control</button>
-                <button id="tab-btn-bulletin" type="button" onclick="switchTeacherTab('bulletin')" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700">📣 Notice Board Scheduler</button>
+                <button id="tab-btn-students" type="button" onclick="switchTeacherTab('students')" class="px-4 py-2 rounded-xl font-bold text-xs transition-colors">👤 Student Roster</button>
+                <button id="tab-btn-attendance" type="button" onclick="switchTeacherTab('attendance')" class="px-4 py-2 rounded-xl font-bold text-xs transition-colors">📅 Attendance</button>
+                <button id="tab-btn-config" type="button" onclick="switchTeacherTab('config')" class="px-4 py-2 rounded-xl font-bold text-xs transition-colors">⚙️ Assessment Control</button>
+                <button id="tab-btn-bulletin" type="button" onclick="switchTeacherTab('bulletin')" class="px-4 py-2 rounded-xl font-bold text-xs transition-colors">📣 Notice Board Scheduler</button>
             </div>
            
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -244,19 +236,19 @@
                     <div class="bg-white p-5 rounded-2xl border shadow-sm space-y-4">
                         <div>
                             <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Target Class Allocation</label>
-                            <select id="class-select" onchange="refreshCurrentTeacherTab()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold text-xs"></select>
+                            <select id="class-select" onchange="refreshCurrentTeacherTab()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold text-xs outline-none focus:border-indigo-500"></select>
                         </div>
                         
                         <div id="class-management-deck" class="border-t pt-3 space-y-2">
                             <span class="block text-[9px] font-bold text-indigo-500 uppercase tracking-wider">Dynamic Stream Manager</span>
                             <div class="flex gap-1">
-                                <input id="new-class-input" type="text" placeholder="e.g. 11A" class="border p-1.5 rounded-lg text-xs w-full bg-white outline-none uppercase font-mono">
-                                <button type="button" onclick="addNewClassStream()" class="bg-indigo-600 text-white text-[10px] font-bold px-2.5 rounded-lg hover:bg-indigo-700">Add</button>
+                                <input id="new-class-input" type="text" placeholder="e.g. 11A" class="border p-1.5 rounded-lg text-xs w-full bg-white outline-none uppercase font-mono focus:border-indigo-500">
+                                <button type="button" onclick="addNewClassStream()" class="bg-indigo-600 text-white text-[10px] font-bold px-2.5 rounded-lg hover:bg-indigo-700 transition-colors">Add</button>
                             </div>
                             
                             <div class="grid grid-cols-2 gap-1 pt-1">
-                                <button type="button" onclick="moveSelectedClass('up')" class="bg-slate-100 text-slate-700 font-bold py-1 px-2 rounded-lg text-[10px] hover:bg-slate-200">🔼 Move Up</button>
-                                <button type="button" onclick="moveSelectedClass('down')" class="bg-slate-100 text-slate-700 font-bold py-1 px-2 rounded-lg text-[10px] hover:bg-slate-200">🔽 Move Down</button>
+                                <button type="button" onclick="moveSelectedClass('up')" class="bg-slate-100 text-slate-700 font-bold py-1 px-2 rounded-lg text-[10px] hover:bg-slate-200 transition-colors">🔼 Move Up</button>
+                                <button type="button" onclick="moveSelectedClass('down')" class="bg-slate-100 text-slate-700 font-bold py-1 px-2 rounded-lg text-[10px] hover:bg-slate-200 transition-colors">🔽 Move Down</button>
                             </div>
                             
                             <button type="button" onclick="triggerAutoSort()" class="w-full bg-indigo-50 text-indigo-700 font-bold py-1 rounded-lg text-[10px] hover:bg-indigo-100 transition-colors">
@@ -269,13 +261,13 @@
                         </div>
 
                         <div id="search-container" class="border-t pt-3">
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Live Filter</label>
-                            <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Search student name..." class="w-full border p-2 rounded-lg text-xs">
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Live Filter Search</label>
+                            <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Search student name..." class="w-full border p-2 rounded-lg text-xs outline-none focus:border-indigo-500">
                         </div>
 
                         <div id="date-picker-container" class="hidden border-t pt-3">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Attendance Timeline</label>
-                            <input id="attendance-date" type="date" onchange="renderAttendancePanel()" class="w-full border p-2 rounded-lg text-xs bg-indigo-50/50 font-bold">
+                            <input id="attendance-date" type="date" onchange="renderAttendancePanel()" class="w-full border p-2 rounded-lg text-xs bg-indigo-50/50 font-bold outline-none">
                         </div>
                     </div>
                 </div>
@@ -283,30 +275,43 @@
                 <div class="lg:col-span-3 bg-white rounded-2xl border shadow-sm overflow-hidden">
                     <div id="tab-pane-students" class="max-h-[70vh] overflow-y-auto">
                         <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-50 sticky top-0 shadow-sm z-10"><tr><th class="p-4">Roll</th><th class="p-4">Student Profile Name</th><th class="p-4 text-center">Access Passkey</th><th class="p-4 text-center">Actions</th></tr></thead>
-                            <tbody id="teacher-table-body"></tbody>
+                            <thead class="bg-slate-50 border-b sticky top-0 shadow-sm z-10 text-slate-500 uppercase text-[10px] font-bold">
+                                <tr>
+                                    <th class="p-4">Roll</th>
+                                    <th class="p-4">Student Profile Name</th>
+                                    <th class="p-4 text-center">Access Passkey</th>
+                                    <th class="p-4 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacher-table-body" class="divide-y"></tbody>
                         </table>
                     </div>
                     
                     <div id="tab-pane-attendance" class="hidden p-4 max-h-[70vh] overflow-y-auto">
                         <table class="w-full text-left text-xs mb-4">
-                            <thead class="bg-slate-50"><tr><th class="p-4">Roll</th><th class="p-4">Student Name</th><th class="p-4 text-center">Status</th></tr></thead>
-                            <tbody id="attendance-table-body"></tbody>
+                            <thead class="bg-slate-50 border-b text-slate-500 uppercase text-[10px] font-bold">
+                                <tr>
+                                    <th class="p-4">Roll</th>
+                                    <th class="p-4">Student Name</th>
+                                    <th class="p-4 text-center">Status Toggle</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-table-body" class="divide-y"></tbody>
                         </table>
-                        <button type="button" onclick="commitAttendanceSheet()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs shadow-md">💾 Save Checked Attendance Tracking Data</button>
+                        <button type="button" onclick="commitAttendanceSheet()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs shadow-md hover:bg-indigo-700 transition-colors">💾 Save Checked Attendance Tracking Data</button>
                     </div>
                     
                     <div id="tab-pane-config" class="hidden p-6 max-h-[70vh] overflow-y-auto space-y-6">
                         <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl space-y-3">
                             <h4 class="font-black text-indigo-900 text-xs uppercase tracking-wider">Deploy New Examination Module</h4>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <input id="new-exam-name" type="text" placeholder="e.g., Mid-Term" class="border p-2 rounded-lg bg-white text-xs font-bold outline-none">
-                                <input id="new-exam-max" type="number" placeholder="Max Points" class="border p-2 rounded-lg bg-white text-xs font-bold text-center outline-none">
-                                <button type="button" onclick="createNewExamModule()" class="bg-indigo-600 text-white text-xs font-bold rounded-lg py-2">Inject Assessment Module</button>
+                                <input id="new-exam-name" type="text" placeholder="e.g., Mid-Term" class="border p-2 rounded-lg bg-white text-xs font-bold outline-none focus:border-indigo-500">
+                                <input id="new-exam-max" type="number" placeholder="Max Points" class="border p-2 rounded-lg bg-white text-xs font-bold text-center outline-none focus:border-indigo-500">
+                                <button type="button" onclick="createNewExamModule()" class="bg-indigo-600 text-white text-xs font-bold rounded-lg py-2 hover:bg-indigo-700 transition-colors">Inject Assessment Module</button>
                             </div>
                         </div>
                         <div id="exam-config-rows" class="space-y-2"></div>
-                        <button type="button" onclick="saveExamConfiguration()" class="bg-indigo-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-md">Save Assessment Configuration</button>
+                        <button type="button" onclick="saveExamConfiguration()" class="bg-indigo-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-md hover:bg-indigo-700 transition-colors">Save Assessment Configuration</button>
                     </div>
 
                     <div id="tab-pane-bulletin" class="hidden p-6 max-h-[70vh] overflow-y-auto space-y-6">
@@ -315,26 +320,26 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="text-[10px] uppercase font-bold text-slate-400">Target Subject</label>
-                                    <div class="flex gap-2">
-                                        <select id="bulletin-hw-subject-select" onchange="syncSubjectCustomField(this.value)" class="border p-2 rounded-lg bg-white text-xs w-1/2">
+                                    <div class="flex gap-2 mt-1">
+                                        <select id="bulletin-hw-subject-select" onchange="syncSubjectCustomField(this.value)" class="border p-2 rounded-lg bg-white text-xs w-1/2 outline-none">
                                             <option value="">-- Custom Input --</option>
                                         </select>
-                                        <input id="bulletin-hw-subject" type="text" placeholder="Or type custom subject name..." class="border p-2 rounded-lg bg-white text-xs w-1/2 font-bold outline-none">
+                                        <input id="bulletin-hw-subject" type="text" placeholder="Or type custom subject name..." class="border p-2 rounded-lg bg-white text-xs w-1/2 font-bold outline-none focus:border-indigo-500">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
                                         <label class="text-[10px] uppercase font-bold text-slate-400">Display From</label>
-                                        <input id="bulletin-hw-start" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
+                                        <input id="bulletin-hw-start" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white mt-1">
                                     </div>
                                     <div>
                                         <label class="text-[10px] uppercase font-bold text-slate-400">Display Until</label>
-                                        <input id="bulletin-hw-end" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
+                                        <input id="bulletin-hw-end" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white mt-1">
                                     </div>
                                 </div>
                             </div>
-                            <textarea id="bulletin-hw-task" placeholder="Enter assignment guidelines..." class="w-full border p-2 h-16 rounded-lg text-xs bg-white outline-none"></textarea>
-                            <button type="button" onclick="publishNoticeItem('homework')" class="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Homework Assignment</button>
+                            <textarea id="bulletin-hw-task" placeholder="Enter assignment guidelines..." class="w-full border p-2 h-16 rounded-lg text-xs bg-white outline-none focus:border-indigo-500"></textarea>
+                            <button type="button" onclick="publishNoticeItem('homework')" class="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-indigo-700 transition-colors">Publish Homework Assignment</button>
                         </div>
 
                         <div class="border p-4 rounded-xl space-y-3 bg-slate-50">
@@ -342,20 +347,20 @@
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <div class="sm:col-span-2">
                                     <label class="text-[10px] uppercase font-bold text-slate-400">Event Notice Heading</label>
-                                    <input id="bulletin-evt-title" type="text" placeholder="e.g., Annual Sports Meet" class="w-full border p-2 rounded-lg text-xs bg-white">
+                                    <input id="bulletin-evt-title" type="text" placeholder="e.g., Annual Sports Meet" class="w-full border p-2 rounded-lg text-xs bg-white mt-1 outline-none focus:border-indigo-500">
                                 </div>
                                 <div class="grid grid-cols-2 gap-1">
                                     <div>
                                         <label class="text-[10px] uppercase font-bold text-slate-400">Show From</label>
-                                        <input id="bulletin-evt-start" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
+                                        <input id="bulletin-evt-start" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white mt-1">
                                     </div>
                                     <div>
                                         <label class="text-[10px] uppercase font-bold text-slate-400">Show Until</label>
-                                        <input id="bulletin-evt-end" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
+                                        <input id="bulletin-evt-end" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white mt-1">
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" onclick="publishNoticeItem('events')" class="bg-amber-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Event Broadcast</button>
+                            <button type="button" onclick="publishNoticeItem('events')" class="bg-amber-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-amber-700 transition-colors">Publish Event Broadcast</button>
                         </div>
 
                         <div class="border p-4 rounded-xl space-y-3 bg-slate-50">
@@ -363,19 +368,19 @@
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <div>
                                     <label class="text-[10px] uppercase font-bold text-slate-400">Exam Title Focus</label>
-                                    <input id="bulletin-tt-title" type="text" placeholder="e.g., PT-2 Schedule" class="w-full border p-2 rounded-lg text-xs bg-white">
+                                    <input id="bulletin-tt-title" type="text" placeholder="e.g., PT-2 Schedule" class="w-full border p-2 rounded-lg text-xs bg-white mt-1 outline-none focus:border-indigo-500">
                                 </div>
                                 <div>
                                     <label class="text-[10px] uppercase font-bold text-slate-400">Show From</label>
-                                    <input id="bulletin-tt-start" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
+                                    <input id="bulletin-tt-start" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white mt-1">
                                 </div>
                                 <div>
                                     <label class="text-[10px] uppercase font-bold text-slate-400">Show Until</label>
-                                    <input id="bulletin-tt-end" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white">
+                                    <input id="bulletin-tt-end" type="date" class="w-full border p-1.5 rounded-lg text-xs bg-white mt-1">
                                 </div>
                             </div>
-                            <textarea id="bulletin-tt-matrix" placeholder="June 22: Maths |\nJune 24: Science..." class="w-full border p-2 h-16 rounded-lg text-xs bg-white outline-none"></textarea>
-                            <button type="button" onclick="publishNoticeItem('timetables')" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Publish Timetable Matrix</button>
+                            <textarea id="bulletin-tt-matrix" placeholder="June 22: Maths&#10;June 24: Science..." class="w-full border p-2 h-16 rounded-lg text-xs bg-white outline-none focus:border-indigo-500"></textarea>
+                            <button type="button" onclick="publishNoticeItem('timetables')" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-emerald-700 transition-colors">Publish Timetable Matrix</button>
                         </div>
                     </div>
                 </div>
@@ -385,18 +390,32 @@
         <section id="screen-marks" class="screen w-full max-w-2xl">
             <div class="bg-white p-8 rounded-3xl border shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 id="m-student-name" class="text-xl font-bold">Evaluation Record</h2>
-                    <select id="m-exam" onchange="loadExistingMarks()" class="border rounded-lg p-2 font-bold bg-slate-50 text-xs"></select>
+                    <h2 id="m-student-name" class="text-xl font-bold text-slate-800">Evaluation Record</h2>
+                    <select id="m-exam" onchange="loadExistingMarks()" class="border rounded-lg p-2 font-bold bg-slate-50 text-xs outline-none"></select>
                 </div>
                 <div id="m-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
                 <div class="bg-slate-50 border p-4 rounded-2xl mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Behavioral Rating Grade</label><select id="m-cw-status" class="w-full border p-2 rounded-lg bg-white text-xs font-bold"><option>🟢 Active & Regular</option><option>🟡 Incomplete</option><option>🔴 Inactive</option></select></div>
-                    <div><label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Homework Delivery Standing</label><select id="m-hw-status" class="w-full border p-2 rounded-lg bg-white text-xs font-bold"><option>🟢 On-Time & Good</option><option>🟡 Irregular</option><option>🔴 Missing</option></select></div>
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Behavioral Rating Grade</label>
+                        <select id="m-cw-status" class="w-full border p-2 rounded-lg bg-white text-xs font-bold outline-none">
+                            <option>🟢 Active & Regular</option>
+                            <option>🟡 Incomplete</option>
+                            <option>🔴 Inactive</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-indigo-600 mb-1">Homework Delivery Standing</label>
+                        <select id="m-hw-status" class="w-full border p-2 rounded-lg bg-white text-xs font-bold outline-none">
+                            <option>🟢 On-Time & Good</option>
+                            <option>🟡 Irregular</option>
+                            <option>🔴 Missing</option>
+                        </select>
+                    </div>
                 </div>
-                <textarea id="m-remarks" placeholder="Provide evaluation feedback details..." class="w-full border rounded-xl p-3 h-16 mb-4 text-xs"></textarea>
+                <textarea id="m-remarks" placeholder="Provide evaluation feedback details..." class="w-full border rounded-xl p-3 h-16 mb-4 text-xs outline-none focus:border-indigo-500"></textarea>
                 <div class="flex gap-2">
-                    <button type="button" onclick="saveMarks()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs">Commit Evaluation Profile</button>
-                    <button type="button" onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold text-xs">Cancel</button>
+                    <button type="button" onclick="saveMarks()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs hover:bg-green-700 transition-colors">Commit Evaluation Profile</button>
+                    <button type="button" onclick="showScreen('screen-teacher')" class="px-6 bg-slate-100 rounded-xl font-bold text-xs hover:bg-slate-200 transition-colors">Cancel</button>
                 </div>
             </div>
         </section>
@@ -436,7 +455,7 @@
                         <h3 class="font-black text-slate-900 text-base">Comprehensive Academic Diagnostics Report</h3>
                         <p class="text-xs text-slate-400">Select an examination sequence module to view details.</p>
                     </div>
-                    <select id="p-exam-view" onchange="renderParentReport()" class="border p-2 rounded-xl font-bold bg-slate-50 text-xs shadow-sm"></select>
+                    <select id="p-exam-view" onchange="renderParentReport()" class="border p-2 rounded-xl font-bold bg-slate-50 text-xs shadow-sm outline-none"></select>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -448,7 +467,10 @@
                             <div><label class="block text-[10px] text-slate-400 uppercase font-bold">Behavioral Rating</label><span id="p-card-cw" class="font-bold"></span></div>
                             <div><label class="block text-[10px] text-slate-400 uppercase font-bold">Homework Delivery</label><span id="p-card-hw" class="font-bold"></span></div>
                         </div>
-                        <div class="p-3 bg-white border rounded-xl text-xs"><label class="block text-[9px] text-indigo-500 uppercase font-bold mb-1">Strategic Educator Remarks</label><p id="p-remarks-display" class="italic text-slate-600"></p></div>
+                        <div class="p-3 bg-white border rounded-xl text-xs">
+                            <label class="block text-[9px] text-indigo-500 uppercase font-bold mb-1">Strategic Educator Remarks</label>
+                            <p id="p-remarks-display" class="italic text-slate-600"></p>
+                        </div>
                     </div>
                     <div class="lg:col-span-2 border p-4 rounded-2xl flex flex-col justify-between bg-white min-h-[300px]">
                         <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-2">Subject Performance Analysis Graph</div>
@@ -460,7 +482,8 @@
     </main>
 
     <script>
-        const SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
+        // Core fallbacks
+        const CONFIG_FALLBACK_SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
         
         let db = { 
             students: {}, 
@@ -477,6 +500,7 @@
         let dynamicChartInstance = null; let currentTeacherTab = "students";
         let localAttendanceBuffer = {};
 
+        // Replace these keys with your unique Firebase Dashboard connection properties
         const firebaseConfig = {
           apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
           authDomain: "eduflow-pro-f6d04.firebaseapp.com",
@@ -490,7 +514,7 @@
             firebase.initializeApp(firebaseConfig);
             window.cloudStorage = firebase.firestore();
         } catch (e) {
-            console.warn("Database bypassed. Working in isolated client layout mode.");
+            console.warn("Cloud infrastructure fallback activated. Interface locked to client session simulation sandbox.");
             window.cloudStorage = null;
         }
 
@@ -500,13 +524,13 @@
             if (loader) loader.style.display = isVisible ? 'flex' : 'none';
         }
 
-        // Sync helper dropdown with custom manual text area
+        // Sync helper dropdown with custom text field
         function syncSubjectCustomField(value) {
             const inputField = document.getElementById('bulletin-hw-subject');
             if(inputField) inputField.value = value;
         }
 
-        // Seeds default fallback classes if array is completely missing or empty
+        // Generate classes array fallback if database is empty
         function verifyAndSeedDefaultClasses() {
             if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
                 db.allocatedClasses = [];
@@ -518,7 +542,7 @@
             buildClassSelectOptions();
         }
 
-        // Auto-sorting matrix algorithm
+        // Auto sorting class matrix algorithm
         async function triggerAutoSort() {
             if (!db.allocatedClasses) return;
             showLoader(true);
@@ -532,18 +556,15 @@
             await syncToCloud();
             refreshCurrentTeacherTab();
             showLoader(false);
-            alert("Classes reset to standardized automatic sequencing order.");
         }
 
-        // Renders options into selection components smoothly
         function buildClassSelectOptions(preserveSelectedValue = null) {
             const select = document.getElementById('class-select');
             if(!select) return;
             
             const currentlySelected = preserveSelectedValue || select.value;
-            
             select.innerHTML = db.allocatedClasses.map(cls => 
-                `<option value="${cls}">Class Code ${cls}</option>`
+                `<option value="${cls}">Class Stream Code ${cls}</option>`
             ).join('');
 
             if (currentlySelected && db.allocatedClasses.includes(currentlySelected)) {
@@ -551,13 +572,12 @@
             }
         }
 
-        // Inserts new dynamic streams and instantly mirrors them to cloud storage with async lock
         async function addNewClassStream() {
             const input = document.getElementById('new-class-input');
             const targetVal = input.value.trim().toUpperCase();
             
             if(!targetVal) return alert("Please specify a valid Class Code label.");
-            if(db.allocatedClasses.includes(targetVal)) return alert("This class allocation segment already exists.");
+            if(db.allocatedClasses.includes(targetVal)) return alert("This stream node already exists.");
             
             showLoader(true);
             if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
@@ -568,16 +588,11 @@
             buildClassSelectOptions(targetVal);
             
             await syncToCloud();
-            
             input.value = '';
             refreshCurrentTeacherTab();
             showLoader(false);
-            
-            triggerNotificationToast("Class Added", `Class stream ${targetVal} is now live.`);
-            alert(`Class Code ${targetVal} successfully synced to cloud repository.`);
         }
 
-        // Manual sorting configuration framework
         async function moveSelectedClass(direction) {
             const select = document.getElementById('class-select');
             const currentSelected = select.value;
@@ -610,16 +625,14 @@
             const currentSelected = document.getElementById('class-select').value;
             if(!currentSelected) return;
             
-            if(!confirm(`Warning: Are you absolutely sure you want to drop Class ${currentSelected}?`)) return;
+            if(!confirm(`Are you sure you want to completely erase Class Code ${currentSelected}?`)) return;
             
             showLoader(true);
             db.allocatedClasses = db.allocatedClasses.filter(c => c !== currentSelected);
             buildClassSelectOptions();
             await syncToCloud();
-            
             refreshCurrentTeacherTab();
             showLoader(false);
-            alert(`Class Code ${currentSelected} successfully pruned.`);
         }
 
         function showScreen(screenId) {
@@ -628,113 +641,83 @@
             if(target) target.classList.add('active');
         }
 
-        function triggerNotificationToast(title, body) {
-            if (!("Notification" in window)) return;
-            if (Notification.permission === "granted") { new Notification(title, { body: body }); }
-            else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(p => { if(p === "granted") new Notification(title, { body: body }); });
-            }
-        }
-
+        // AUTH ENGINE: Patched to dynamically build structural layout nodes automatically on new codes
         async function handleSecureLogin() {
-    const school = document.getElementById('auth-school').value.trim().toUpperCase();
-    const role = document.getElementById('auth-role').value;
-    const id = document.getElementById('auth-id').value.trim();
-    const pass = document.getElementById('auth-pass').value.trim();
-    
-    if (!school) {
-        return alert("School Code field is required to establish a network connection.");
-    }
-
-    if (role === 'superadmin' && pass === 'master999') {
-        commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin');
-        showScreen('screen-superadmin');
-        return;
-    }
-    
-    showLoader(true);
-    
-    // Offline Sandbox Fallback Mode
-    if (!window.cloudStorage) {
-        currentSchool = school;
-        verifyAndSeedDefaultClasses();
-        db.students["10A-1"] = { name: "Test Student", pass: "school1" };
-        db.exams = { "PT-1": 50 }; db.examOrder = ["PT-1"];
-        showLoader(false);
-        if (role === 'parent') { activeId = "10A-1"; commitSession(currentSchool, "10A-1", 'parent'); initParentView(); }
-        else { commitSession(currentSchool, 'teacher', 'teacher'); initTeacherView(); }
-        return;
-    }
-
-    try {
-        const docRef = window.cloudStorage.collection("schools").doc(school);
-        const docSnap = await docRef.get();
-        
-        // BUSINESS LOGIC: If a school document doesn't exist yet, automatically seed it!
-        if (!docSnap.exists) {
-            currentSchool = school;
-            verifyAndSeedDefaultClasses(); // Generates default 1A-10B array
+            const school = document.getElementById('auth-school').value.trim().toUpperCase();
+            const role = document.getElementById('auth-role').value;
+            const id = document.getElementById('auth-id').value.trim();
+            const pass = document.getElementById('auth-pass').value.trim();
             
-            // Set up empty standard layout fields required by the app
-            db.students = {};
-            db.records = {};
-            db.attendance = {};
-            db.exams = { "Quarterly Exam": 100 };
-            db.examOrder = ["Quarterly Exam"];
-            db.notices = [];
+            if(!school) return alert("School authentication code required.");
             
-            await docRef.set(db);
-            console.log("New school node initialized successfully.");
-        }
-
-        currentSchool = school;
-        
-        // Establish real-time database listener stream
-        window.cloudStorage.collection("schools").doc(currentSchool).onSnapshot(doc => {
-            if(doc.exists) {
-                const incomingData = doc.data();
-                
-                db.allocatedClasses = incomingData.allocatedClasses || [];
-                if (db.allocatedClasses.length === 0) {
-                    verifyAndSeedDefaultClasses();
-                }
-                
-                db.students = incomingData.students || {};
-                db.records = incomingData.records || {};
-                db.attendance = incomingData.attendance || {};
-                db.exams = incomingData.exams || {};
-                db.examOrder = incomingData.examOrder || [];
-                db.notices = incomingData.notices || [];
-                
-                buildClassSelectOptions();
-                
-                // Route navigation views based on credential profiles
-                if (role === 'admin' || role === 'teacher') { 
-                    commitSession(school, 'teacher', role); 
-                    initTeacherView(); 
-                } else if (role === 'parent') {
-                    if (db.students[id]) {
-                        activeId = id; 
-                        commitSession(school, id, 'parent'); 
-                        initParentView(); 
-                    } else {
-                        alert("Student ID identifier not registered under this institution.");
-                    }
-                }
+            if (role === 'superadmin' && pass === 'master999') {
+                commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin');
+                showScreen('screen-superadmin');
+                return;
             }
-            showLoader(false);
-        }, error => {
-            console.error("Firestore stream error:", error);
-            showLoader(false);
-            alert("Firebase Security Rules or Authorization limits blocked connection.");
-        });
+            
+            showLoader(true);
+            if (!window.cloudStorage) {
+                currentSchool = school;
+                verifyAndSeedDefaultClasses();
+                db.students["10A-1"] = { name: "Demo Student", pass: "school1" };
+                db.exams = { "PT-1": 50 }; db.examOrder = ["PT-1"];
+                showLoader(false);
+                if (role === 'parent') { activeId = "10A-1"; commitSession(currentSchool, "10A-1", 'parent'); initParentView(); }
+                else { commitSession(currentSchool, 'teacher', 'teacher'); initTeacherView(); }
+                return;
+            }
 
-    } catch (err) {
-        console.error("Authentication system breakdown:", err);
-        showLoader(false);
-        alert("Synchronisation error occurred. Check browser console logs for network traces.");
-    }
-}
+            try {
+                const docRef = window.cloudStorage.collection("schools").doc(school);
+                const docSnap = await docRef.get();
+                
+                if (!docSnap.exists) {
+                    currentSchool = school;
+                    verifyAndSeedDefaultClasses();
+                    db.students = {}; db.records = {}; db.attendance = {};
+                    db.exams = { "PT-1": 100 }; db.examOrder = ["PT-1"];
+                    db.notices = [];
+                    await docRef.set(db);
+                }
+
+                currentSchool = school;
+                document.getElementById('nav-school-display').innerText = `Workspace Environment: ${currentSchool}`;
+                
+                docRef.onSnapshot(doc => {
+                    if(doc.exists) {
+                        const incomingData = doc.data();
+                        db.allocatedClasses = incomingData.allocatedClasses || [];
+                        if(db.allocatedClasses.length === 0) verifyAndSeedDefaultClasses();
+                        
+                        db.students = incomingData.students || {};
+                        db.records = incomingData.records || {};
+                        db.attendance = incomingData.attendance || {};
+                        db.exams = incomingData.exams || {};
+                        db.examOrder = incomingData.examOrder || [];
+                        db.notices = incomingData.notices || [];
+                        
+                        buildClassSelectOptions();
+                        
+                        if (role === 'admin' || role === 'teacher') { commitSession(school, 'teacher', role); initTeacherView(); }
+                        else if (role === 'parent') {
+                            if(db.students[id]) {
+                                activeId = id; commitSession(school, id, 'parent'); initParentView();
+                            } else {
+                                alert("Student parsing token registry error. ID unmatched.");
+                            }
+                        }
+                    }
+                    showLoader(false);
+                }, err => {
+                    showLoader(false);
+                    alert("Firebase structural query sync failure.");
+                });
+            } catch (err) {
+                showLoader(false);
+                alert("Security handshake processing exception caught.");
+            }
+        }
 
         async function syncToCloud() { 
             if (window.cloudStorage && currentSchool) {
@@ -749,29 +732,25 @@
             localStorage.setItem('session_role', role); 
             document.getElementById('logout-btn').classList.remove('hidden'); 
             const rb = document.getElementById('role-badge'); 
-            rb.innerText = role; 
-            rb.classList.remove('hidden');
+            rb.innerText = role; rb.classList.remove('hidden');
         }
         
         function triggerSessionLogout() { 
-            localStorage.clear(); 
-            location.reload();
+            localStorage.clear(); location.reload();
         }
 
         function initParentView() {
             document.getElementById('p-name').innerText = db.students[activeId]?.name || "Student Portfolio";
-            document.getElementById('p-id').innerText = `Roster Verification Trace: ${activeId}`;
+            document.getElementById('p-id').innerText = `Roster ID Track Trace Verification: ${activeId}`;
             document.getElementById('p-exam-view').innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join('');
             renderParentReport(); showScreen('screen-parent');
         }
 
         function initTeacherView() {
             buildClassSelectOptions();
-            
-            // Populates editable subject drop options
             const dropSel = document.getElementById('bulletin-hw-subject-select');
             if(dropSel) {
-                dropSel.innerHTML = `<option value="">-- Manual/Custom --</option>` + SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
+                dropSel.innerHTML = `<option value="">-- Manual Custom Input --</option>` + CONFIG_FALLBACK_SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
             }
             switchTeacherTab('students'); showScreen('screen-teacher');
         }
@@ -781,7 +760,7 @@
             ['students', 'attendance', 'config', 'bulletin'].forEach(p => {
                 document.getElementById(`tab-pane-${p}`).classList.toggle('hidden', p !== targetTab);
                 const btn = document.getElementById(`tab-btn-${p}`); 
-                if(btn) btn.className = (p === targetTab) ? "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white" : "px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700";
+                if(btn) btn.className = (p === targetTab) ? "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white shadow-sm" : "px-4 py-2 rounded-xl font-bold text-xs bg-slate-200 text-slate-700 hover:bg-slate-300";
             });
             document.getElementById('search-container').classList.toggle('hidden', targetTab !== 'students');
             document.getElementById('date-picker-container').classList.toggle('hidden', targetTab !== 'attendance');
@@ -804,7 +783,20 @@
                 const sId = `${cls}-${i}`;
                 const data = db.students[sId] || { name: "", pass: "" };
                 if(search && !data.name.toLowerCase().includes(search) && !sId.toLowerCase().includes(search)) continue;
-                tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4"><input type="text" value="${data.name}" onchange="updateProfileFieldDirect('${sId}','name',this.value)" placeholder="Enter Name..." class="w-full bg-transparent outline-none font-bold text-slate-800"><span class="text-[10px] text-slate-400 block">ID: ${sId}</span></td><td class="p-4 text-center"><input type="text" value="${data.pass || ("school" + i)}" onchange="updateProfileFieldDirect('${sId}','pass',this.value)" class="border rounded-lg px-2 text-xs font-mono text-indigo-600 text-center w-32 outline-none"></td><td class="p-4 text-center"><button type="button" onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold">Evaluate</button></td></tr>`;
+                tbody.innerHTML += `
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="p-4 font-mono text-slate-400 font-bold">${i}</td>
+                    <td class="p-4">
+                        <input type="text" value="${data.name}" onchange="updateProfileFieldDirect('${sId}','name',this.value)" placeholder="Unregistered / Click to add name..." class="w-full bg-transparent outline-none font-bold text-slate-800 border-b border-transparent hover:border-slate-200 focus:border-indigo-500 py-0.5">
+                        <span class="text-[10px] text-slate-400 font-mono block mt-0.5">ID Token Trace: ${sId}</span>
+                    </td>
+                    <td class="p-4 text-center">
+                        <input type="text" value="${data.pass || ("school" + i)}" onchange="updateProfileFieldDirect('${sId}','pass',this.value)" class="border rounded-lg px-2 py-1 text-xs font-mono text-indigo-600 text-center w-32 outline-none focus:border-indigo-500 bg-slate-50">
+                    </td>
+                    <td class="p-4 text-center">
+                        <button type="button" onclick="openMarksModal('${sId}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-all">Evaluate</button>
+                    </td>
+                </tr>`;
             }
         }
         
@@ -828,31 +820,41 @@
                 if(!db.students[sId] || !db.students[sId].name) continue;
                 if(localAttendanceBuffer[sId] === undefined) localAttendanceBuffer[sId] = "Present";
                 const isPres = localAttendanceBuffer[sId] === "Present";
-                tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-mono text-slate-400">${i}</td><td class="p-4 font-bold">${db.students[sId].name}</td><td class="p-4 text-center"><div class="inline-flex rounded-lg border p-0.5 bg-slate-100"><button type="button" onclick="setLocalAttendanceStatus('${sId}','Present')" id="btn-pres-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${isPres ? 'bg-emerald-500 text-white':'text-slate-500'}">✔️ Present</button><button type="button" onclick="setLocalAttendanceStatus('${sId}','Absent')" id="btn-abs-${sId}" class="px-3 py-1 rounded-md text-xs font-bold ${!isPres ? 'bg-rose-500 text-white':'text-slate-500'}">❌ Absent</button></div></td></tr>`;
+                tbody.innerHTML += `
+                <tr class="hover:bg-slate-50/50">
+                    <td class="p-4 font-mono text-slate-400">${i}</td>
+                    <td class="p-4 font-bold text-slate-800">${db.students[sId].name}</td>
+                    <td class="p-4 text-center">
+                        <div class="inline-flex rounded-lg border p-0.5 bg-slate-100">
+                            <button type="button" onclick="setLocalAttendanceStatus('${sId}','Present')" id="btn-pres-${sId}" class="px-3 py-1 rounded-md text-xs font-bold transition-all ${isPres ? 'bg-emerald-500 text-white shadow-sm':'text-slate-500'}">✔️ Present</button>
+                            <button type="button" onclick="setLocalAttendanceStatus('${sId}','Absent')" id="btn-abs-${sId}" class="px-3 py-1 rounded-md text-xs font-bold transition-all ${!isPres ? 'bg-rose-500 text-white shadow-sm':'text-slate-500'}">❌ Absent</button>
+                        </div>
+                    </td>
+                </tr>`;
             }
         }
         
         function setLocalAttendanceStatus(sId, status) { 
             localAttendanceBuffer[sId] = status;
-            document.getElementById(`btn-pres-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Present'?'bg-emerald-500 text-white':'text-slate-500'}`; 
-            document.getElementById(`btn-abs-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold ${status==='Absent'?'bg-rose-500 text-white':'text-slate-500'}`;
+            document.getElementById(`btn-pres-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold transition-all ${status==='Present'?'bg-emerald-500 text-white shadow-sm':'text-slate-500'}`; 
+            document.getElementById(`btn-abs-${sId}`).className = `px-3 py-1 rounded-md text-xs font-bold transition-all ${status==='Absent'?'bg-rose-500 text-white shadow-sm':'text-slate-500'}`;
         }
         
         async function commitAttendanceSheet() { 
             const cls = document.getElementById('class-select').value; 
             const dt = document.getElementById('attendance-date').value;
-            if(!dt || !cls) return alert("Please pick a valid calendar date first.");
+            if(!dt || !cls) return alert("Please specify a calendar timeline date target entry position.");
             showLoader(true);
             db.attendance[cls][dt] = localAttendanceBuffer; 
             await syncToCloud(); 
             showLoader(false);
-            alert("Attendance sheet committed safely."); 
+            alert("Attendance timeline packet synchronized safely."); 
         }
 
         function createNewExamModule() {
             const name = document.getElementById('new-exam-name').value.trim();
             const maxVal = parseInt(document.getElementById('new-exam-max').value);
-            if(!name || isNaN(maxVal)) return alert("Declare parameters."); 
+            if(!name || isNaN(maxVal)) return alert("Declare complete exam module specifications."); 
             db.exams[name] = maxVal; 
             if(!db.examOrder.includes(name)) db.examOrder.push(name);
             document.getElementById('new-exam-name').value = '';
@@ -861,10 +863,9 @@
         }
         
         function renderExamConfigPanel() {
-            const wrapper = document.getElementById('exam-config-rows');
-            wrapper.innerHTML = '';
+            const wrapper = document.getElementById('exam-config-rows'); wrapper.innerHTML = '';
             db.examOrder.forEach((ex) => { 
-                wrapper.innerHTML += `<div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border-b"><span class="text-xs font-bold">${ex}</span><input type="number" id="cfg-max-${ex}" value="${db.exams[ex]}" class="border w-16 p-1 text-center text-xs rounded-lg"></div>`; 
+                wrapper.innerHTML += `<div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border"><span class="text-xs font-bold text-slate-700">${ex}</span><input type="number" id="cfg-max-${ex}" value="${db.exams[ex]}" class="border w-16 p-1 text-center text-xs font-bold rounded-lg outline-none bg-white"></div>`; 
             });
         }
         
@@ -873,20 +874,18 @@
             db.examOrder.forEach(ex => { 
                 if(document.getElementById(`cfg-max-${ex}`)) db.exams[ex] = parseInt(document.getElementById(`cfg-max-${ex}`).value); 
             }); 
-            await syncToCloud();
-            showLoader(false);
-            alert("Saved Exam Structures."); 
+            await syncToCloud(); showLoader(false);
             switchTeacherTab('students'); 
         }
 
         async function publishNoticeItem(type) {
             const cls = document.getElementById('class-select').value;
-            if(!cls) return alert("Please allocate an institutional class focus target.");
+            if(!cls) return alert("Class focus target required.");
             
             let itemPayload = { type: type, classTarget: cls, timestamp: new Date().toISOString() };
             if (type === 'homework') {
                 const subInput = document.getElementById('bulletin-hw-subject').value.trim();
-                if(!subInput) return alert("Please specify or choose a valid subject name.");
+                if(!subInput) return alert("Please clarify custom subject label targeting framework.");
                 itemPayload.subject = subInput;
                 itemPayload.content = document.getElementById('bulletin-hw-task').value.trim();
                 itemPayload.startDate = document.getElementById('bulletin-hw-start').value;
@@ -902,22 +901,20 @@
                 itemPayload.endDate = document.getElementById('bulletin-tt-end').value;
             }
 
-            if(!itemPayload.startDate || !itemPayload.endDate) return alert("Please specify complete display start and expiration dates.");
+            if(!itemPayload.startDate || !itemPayload.endDate) return alert("Complete schedule timeline brackets required.");
             
             showLoader(true);
             db.notices.push(itemPayload); 
-            await syncToCloud();
+            await syncToCloud(); 
             showLoader(false);
-            
-            triggerNotificationToast("AcademIQ Notice Added", `New ${type.toUpperCase()} scheduled notice broadcast pushed.`);
-            alert(`Notice item successfully published and enqueued!`);
+            alert("Broadcast channel notice dispatched successfully.");
         }
 
         function openMarksModal(id) { 
             activeId = id; 
-            document.getElementById('m-student-name').innerText = db.students[id].name;
+            document.getElementById('m-student-name').innerText = db.students[id].name || `Student ${id}`;
             document.getElementById('m-exam').innerHTML = db.examOrder.map(ex => `<option>${ex}</option>`).join(''); 
-            document.getElementById('m-grid').innerHTML = SUBJECTS.map(s => `<div class='bg-slate-50 p-2 border rounded-xl'><label class='text-[10px] text-slate-400 block font-bold'>${s}</label><input type='number' id='inp-${s}' class='w-full outline-none font-bold text-sm bg-transparent'></div>`).join('');
+            document.getElementById('m-grid').innerHTML = CONFIG_FALLBACK_SUBJECTS.map(s => `<div class='bg-slate-50 p-2.5 border rounded-xl'><label class='text-[10px] text-slate-400 block font-bold uppercase'>${s}</label><input type='number' id='inp-${s}' class='w-full outline-none font-bold text-sm bg-transparent border-b border-transparent focus:border-indigo-500 pt-1'></div>`).join('');
             loadExistingMarks(); 
             showScreen('screen-marks'); 
         }
@@ -925,7 +922,7 @@
         function loadExistingMarks() { 
             const ex = document.getElementById('m-exam').value;
             const r = db.records[`${activeId}_${ex}`] || { marks: {}, remarks: "", cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good" };
-            SUBJECTS.forEach(s => document.getElementById(`inp-${s}`).value = r.marks[s] !== undefined ? r.marks[s] : ""); 
+            CONFIG_FALLBACK_SUBJECTS.forEach(s => document.getElementById(`inp-${s}`).value = r.marks[s] !== undefined ? r.marks[s] : ""); 
             document.getElementById('m-remarks').value = r.remarks || ""; 
             document.getElementById('m-cw-status').value = r.cw;
             document.getElementById('m-hw-status').value = r.hw; 
@@ -935,11 +932,10 @@
             const ex = document.getElementById('m-exam').value;
             const maxAllowed = db.exams[ex] || 100;
             const r = { marks: {}, remarks: document.getElementById('m-remarks').value, cw: document.getElementById('m-cw-status').value, hw: document.getElementById('m-hw-status').value };
-            for(let s of SUBJECTS) { 
+            for(let s of CONFIG_FALLBACK_SUBJECTS) { 
                 const val = document.getElementById(`inp-${s}`).value; 
                 if(val !== "") { 
-                    const n = Number(val);
-                    if(n > maxAllowed || n < 0) return alert("Value limits validation failed."); 
+                    const n = Number(val); if(n > maxAllowed || n < 0) return alert("Metric bounds scaling violation evaluation aborted."); 
                     r.marks[s] = n;
                 } 
             }
@@ -947,7 +943,6 @@
             db.records[`${activeId}_${ex}`] = r; 
             await syncToCloud(); 
             showLoader(false);
-            alert("Marks evaluated."); 
             showScreen('screen-teacher');
         }
 
@@ -959,24 +954,23 @@
             if(db.attendance[targetClass]) { 
                 Object.keys(db.attendance[targetClass]).forEach(dt => { 
                     if(db.attendance[targetClass][dt][activeId] !== undefined) { 
-                        working++; 
-                        if(db.attendance[targetClass][dt][activeId] === "Present") present++; 
+                        working++; if(db.attendance[targetClass][dt][activeId] === "Present") present++; 
                     } 
                 });
             }
             document.getElementById('p-attn-percent').innerText = `${working > 0 ? Math.round((present/working)*100) : 100}%`;
-            document.getElementById('p-attn-fraction').innerText = `Logged Days: ${working} | Present Trackings: ${present}`;
+            document.getElementById('p-attn-fraction').innerText = `Logged Target Cycles: ${working} | Evaluated Attendance Nodes: ${present}`;
             
             const activeNotices = (db.notices || []).filter(n => n.classTarget === targetClass && isoToday >= n.startDate && isoToday <= n.endDate);
             
             const evts = activeNotices.filter(n => n.type === 'events');
-            document.getElementById('p-events-deck').innerHTML = evts.length === 0 ? `<div class='text-slate-400 italic py-2'>Welcome back!\nNo scheduled activities for this window.</div>` : evts.map(e => `<div class='p-2 bg-amber-50 border rounded-lg font-bold text-amber-900'>• ${e.title}</div>`).join('');
+            document.getElementById('p-events-deck').innerHTML = evts.length === 0 ? `<div class='text-slate-400 italic py-2'>Clear timeline log. No pending community activities.</div>` : evts.map(e => `<div class='p-2 bg-amber-50 border border-amber-200 rounded-lg font-bold text-amber-900 shadow-sm'>• ${e.title}</div>`).join('');
             
             const tts = activeNotices.filter(n => n.type === 'timetables');
-            document.getElementById('p-timetable-deck').innerHTML = tts.length === 0 ? `<div class='text-slate-400 italic py-2'>Welcome back!\nNo upcoming examination timelines scheduled.</div>` : tts.map(t => `<div class='p-2.5 bg-emerald-50 border rounded-lg'><span class='font-black text-emerald-900 block'>🏆 ${t.title}</span><p class='whitespace-pre-line text-xs font-mono text-slate-700 mt-1'>${t.content}</p></div>`).join('');
+            document.getElementById('p-timetable-deck').innerHTML = tts.length === 0 ? `<div class='text-slate-400 italic py-2'>Clear framework log. No active exam schedules found.</div>` : tts.map(t => `<div class='p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg shadow-sm'><span class='font-black text-emerald-900 block'>🏆 ${t.title}</span><p class='whitespace-pre-line text-xs font-mono text-slate-700 mt-1'>${t.content}</p></div>`).join('');
             
             const hws = activeNotices.filter(n => n.type === 'homework');
-            document.getElementById('p-homework-deck').innerHTML = hws.length === 0 ? `<div class='text-slate-400 italic py-2 col-span-2'>Welcome back!\nNo active assignments found.</div>` : hws.map(h => `<div class='p-3 bg-slate-50 border rounded-xl'><span class='bg-indigo-100 text-indigo-700 font-bold text-[10px] px-1.5 py-0.5 rounded'>${h.subject}</span><p class='mt-1 font-medium text-slate-800'>${h.content}</p></div>`).join('');
+            document.getElementById('p-homework-deck').innerHTML = hws.length === 0 ? `<div class='text-slate-400 italic py-2 col-span-2'>Assignment stream complete. Clear feed.</div>` : hws.map(h => `<div class='p-3 bg-white border rounded-xl shadow-sm space-y-1'><span class='inline-block bg-indigo-100 text-indigo-700 font-bold text-[10px] px-2 py-0.5 rounded-md uppercase'>${h.subject}</span><p class='text-slate-800 font-medium text-xs leading-relaxed'>${h.content}</p></div>`).join('');
             
             const selectedExam = document.getElementById('p-exam-view').value || db.examOrder[0];
             if(!selectedExam) return;
@@ -985,23 +979,21 @@
             const disp = document.getElementById('p-marks-display');
             
             if(!rec) {
-                disp.innerHTML = `<p class='text-slate-400 italic text-xs py-2'>Awaiting metric generation.</p>`;
-                document.getElementById('p-card-cw').innerText = "—"; 
-                document.getElementById('p-card-hw').innerText = "—"; 
-                document.getElementById('p-remarks-display').innerText = "—";
+                disp.innerHTML = `<p class='text-slate-400 italic text-xs py-2'>Awaiting structural metrics compilation evaluation card properties mapping trace.</p>`;
+                document.getElementById('p-card-cw').innerText = "—"; document.getElementById('p-card-hw').innerText = "—"; document.getElementById('p-remarks-display').innerText = "—";
                 if(dynamicChartInstance) dynamicChartInstance.destroy();
             } else {
-                disp.innerHTML = SUBJECTS.map(s => `<div class='flex justify-between border-b py-1 text-xs'><span>${s}</span><span class='font-bold text-indigo-600'>${rec.marks[s] !== undefined ? rec.marks[s] : "—"} / ${maxPoints}</span></div>`).join('');
+                disp.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(s => `<div class='flex justify-between border-b py-1.5 text-xs'><span class='font-medium text-slate-600'>${s}</span><span class='font-bold text-indigo-600'>${rec.marks[s] !== undefined ? rec.marks[s] : "—"} / ${maxPoints}</span></div>`).join('');
                 document.getElementById('p-card-cw').innerText = rec.cw || "🟢 Active"; 
                 document.getElementById('p-card-hw').innerText = rec.hw || "🟢 Good";
-                document.getElementById('p-remarks-display').innerText = rec.remarks || "No evaluation remarks available.";
+                document.getElementById('p-remarks-display').innerText = rec.remarks || "No processing entries recorded.";
                 
                 const ctx = document.getElementById('performanceChart').getContext('2d');
-                const scores = SUBJECTS.map(s => (rec.marks && rec.marks[s] !== undefined) ? rec.marks[s] : 0);
+                const scores = CONFIG_FALLBACK_SUBJECTS.map(s => (rec.marks && rec.marks[s] !== undefined) ? rec.marks[s] : 0);
                 if (dynamicChartInstance) dynamicChartInstance.destroy();
                 dynamicChartInstance = new Chart(ctx, {
                     type: 'bar',
-                    data: { labels: SUBJECTS, datasets: [{ label: 'Marks Scaled Portfolio', data: scores, backgroundColor: '#4f46e5' }] },
+                    data: { labels: CONFIG_FALLBACK_SUBJECTS, datasets: [{ label: 'Marks Distribution Profile', data: scores, backgroundColor: '#4f46e5', borderRadius: 4 }] },
                     options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: maxPoints } } }
                 });
             }
@@ -1015,7 +1007,7 @@
         }
         
         function submitRegistrationRequest() {
-            alert("Application submitted! In sandbox fallback layout mode, this will persist until page reload.");
+            alert("Sandbox submission recorded.");
         }
         
         document.addEventListener("DOMContentLoaded", checkPersistentSession);
