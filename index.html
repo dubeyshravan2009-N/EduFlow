@@ -637,66 +637,104 @@
         }
 
         async function handleSecureLogin() {
-            const school = document.getElementById('auth-school').value.trim().toUpperCase();
-            const role = document.getElementById('auth-role').value;
-            const id = document.getElementById('auth-id').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
-            
-            if (role === 'superadmin' && pass === 'master999') {
-                commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin');
-                showScreen('screen-superadmin');
-                return;
-            }
-            
-            showLoader(true);
-            if (!window.cloudStorage) {
-                currentSchool = school || "DEMO-1234";
-                verifyAndSeedDefaultClasses();
-                db.students["10A-1"] = { name: "Test Student", pass: "school1" };
-                db.exams = { "PT-1": 50 }; db.examOrder = ["PT-1"];
-                showLoader(false);
-                if (role === 'parent') { activeId = "10A-1"; commitSession(currentSchool, "10A-1", 'parent'); initParentView(); }
-                else { commitSession(currentSchool, 'teacher', 'teacher'); initTeacherView(); }
-                return;
-            }
+    const school = document.getElementById('auth-school').value.trim().toUpperCase();
+    const role = document.getElementById('auth-role').value;
+    const id = document.getElementById('auth-id').value.trim();
+    const pass = document.getElementById('auth-pass').value.trim();
+    
+    if (!school) {
+        return alert("School Code field is required to establish a network connection.");
+    }
 
-            try {
-                const docSnap = await window.cloudStorage.collection("schools").doc(school).get();
-                if (!docSnap.exists) {
-                    showLoader(false);
-                    return alert("School node mapping not found.");
-                }
-                currentSchool = school;
-                
-                window.cloudStorage.collection("schools").doc(currentSchool).onSnapshot(doc => {
-                    if(doc.exists) {
-                        const incomingData = doc.data();
-                        
-                        if(incomingData.allocatedClasses && incomingData.allocatedClasses.length > 0) {
-                            db.allocatedClasses = incomingData.allocatedClasses;
-                        } else if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
-                            verifyAndSeedDefaultClasses();
-                        }
-                        
-                        db.students = incomingData.students || {};
-                        db.records = incomingData.records || {};
-                        db.attendance = incomingData.attendance || {};
-                        db.exams = incomingData.exams || {};
-                        db.examOrder = incomingData.examOrder || [];
-                        db.notices = incomingData.notices || [];
-                        
-                        buildClassSelectOptions();
-                        
-                        if (role === 'admin' || role === 'teacher') { commitSession(school, 'teacher', role); initTeacherView(); }
-                        else if (role === 'parent' && db.students[id]) { activeId = id; commitSession(school, id, 'parent'); initParentView(); }
-                    }
-                    showLoader(false);
-                });
-            } catch (err) {
-                showLoader(false);
-                alert("Synchronization error occurred.");
-            }
+    if (role === 'superadmin' && pass === 'master999') {
+        commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin');
+        showScreen('screen-superadmin');
+        return;
+    }
+    
+    showLoader(true);
+    
+    // Offline Sandbox Fallback Mode
+    if (!window.cloudStorage) {
+        currentSchool = school;
+        verifyAndSeedDefaultClasses();
+        db.students["10A-1"] = { name: "Test Student", pass: "school1" };
+        db.exams = { "PT-1": 50 }; db.examOrder = ["PT-1"];
+        showLoader(false);
+        if (role === 'parent') { activeId = "10A-1"; commitSession(currentSchool, "10A-1", 'parent'); initParentView(); }
+        else { commitSession(currentSchool, 'teacher', 'teacher'); initTeacherView(); }
+        return;
+    }
+
+    try {
+        const docRef = window.cloudStorage.collection("schools").doc(school);
+        const docSnap = await docRef.get();
+        
+        // BUSINESS LOGIC: If a school document doesn't exist yet, automatically seed it!
+        if (!docSnap.exists) {
+            currentSchool = school;
+            verifyAndSeedDefaultClasses(); // Generates default 1A-10B array
+            
+            // Set up empty standard layout fields required by the app
+            db.students = {};
+            db.records = {};
+            db.attendance = {};
+            db.exams = { "Quarterly Exam": 100 };
+            db.examOrder = ["Quarterly Exam"];
+            db.notices = [];
+            
+            await docRef.set(db);
+            console.log("New school node initialized successfully.");
         }
+
+        currentSchool = school;
+        
+        // Establish real-time database listener stream
+        window.cloudStorage.collection("schools").doc(currentSchool).onSnapshot(doc => {
+            if(doc.exists) {
+                const incomingData = doc.data();
+                
+                db.allocatedClasses = incomingData.allocatedClasses || [];
+                if (db.allocatedClasses.length === 0) {
+                    verifyAndSeedDefaultClasses();
+                }
+                
+                db.students = incomingData.students || {};
+                db.records = incomingData.records || {};
+                db.attendance = incomingData.attendance || {};
+                db.exams = incomingData.exams || {};
+                db.examOrder = incomingData.examOrder || [];
+                db.notices = incomingData.notices || [];
+                
+                buildClassSelectOptions();
+                
+                // Route navigation views based on credential profiles
+                if (role === 'admin' || role === 'teacher') { 
+                    commitSession(school, 'teacher', role); 
+                    initTeacherView(); 
+                } else if (role === 'parent') {
+                    if (db.students[id]) {
+                        activeId = id; 
+                        commitSession(school, id, 'parent'); 
+                        initParentView(); 
+                    } else {
+                        alert("Student ID identifier not registered under this institution.");
+                    }
+                }
+            }
+            showLoader(false);
+        }, error => {
+            console.error("Firestore stream error:", error);
+            showLoader(false);
+            alert("Firebase Security Rules or Authorization limits blocked connection.");
+        });
+
+    } catch (err) {
+        console.error("Authentication system breakdown:", err);
+        showLoader(false);
+        alert("Synchronisation error occurred. Check browser console logs for network traces.");
+    }
+}
 
         async function syncToCloud() { 
             if (window.cloudStorage && currentSchool) {
