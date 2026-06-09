@@ -1242,23 +1242,31 @@
     const r = localStorage.getItem('session_role'); 
     const u = localStorage.getItem('session_user');
     
+    // SAFETY CHECK: Make sure the values actually contain real text
     if (sch && sch.trim() !== "" && r && u) { 
-        // Autofill inputs cleanly
+        // Put values directly into inputs so handleSecureLogin can read them smoothly
         document.getElementById('auth-school').value = sch;
         document.getElementById('auth-role').value = r;
         document.getElementById('auth-id').value = (r === 'parent') ? u : '';
         
-        // 🔑 Automatically fill passwords so auto-login doesn't fail
+        // 🔑 PRE-FILL SECURITY CODES DURING AUTOMATED AUTO-RELOADS
         if (r === 'teacher') {
             document.getElementById('auth-pass').value = 'admin789'; 
         } else if (r === 'parent') {
-            // Re-fetch parent passkey if it exists in data cache
-            if(db && db.students && db.students[u]) {
-                document.getElementById('auth-pass').value = db.students[u].pass;
-            } else {
-                document.getElementById('auth-pass').value = 'school1';
-            }
+            document.getElementById('auth-pass').value = 'school1'; 
+        } else if (r === 'superadmin' || u === 'SUPER_ADMIN') {
+            document.getElementById('auth-pass').value = 'master999';
         }
+        
+        // Ensure standard UI view resets before auto-authenticating
+        showScreen('screen-login');
+        handleSecureLogin(); 
+    } else { 
+        // If data is corrupt or empty, clear it completely and show the clean landing page
+        localStorage.clear();
+        showScreen('screen-gate'); 
+    }
+}
         
         handleSecureLogin(); 
     } else { 
