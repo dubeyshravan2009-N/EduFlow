@@ -496,7 +496,9 @@
         };
         
         try { 
-            firebase.initializeApp(firebaseConfig); 
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
             window.cloudStorage = firebase.firestore(); 
         } catch (e) { 
             console.warn("Cloud connection block. Running local sandbox model simulation.");
@@ -615,10 +617,14 @@
             const id = document.getElementById('auth-id').value.trim(); 
             const pass = document.getElementById('auth-pass').value.trim(); 
             
-            if(!school) return alert("School authentication code required.");
+            if(!school) {
+                localStorage.clear();
+                return alert("School authentication code required.");
+            }
             
             if (role === 'teacher' && pass !== 'admin789') {
                 showLoader(false);
+                localStorage.clear();
                 return alert("Invalid Educator Verification Key Code.");
             }
             if (role === 'superadmin' && pass === 'master999') { 
@@ -654,6 +660,7 @@
                 if (!docSnap.exists) { 
                     if (role === 'parent') {
                         showLoader(false);
+                        localStorage.clear();
                         return alert("This School Code does not exist or has no recorded data yet.");
                     }
                     currentSchool = school; 
@@ -676,6 +683,7 @@
                 if (role === 'parent') {
                     if (!db.students || !db.students[id] || db.students[id].pass !== pass) {
                         showLoader(false);
+                        localStorage.clear();
                         return alert("Invalid student roll identifier or matching parent passkey credentials.");
                     }
                     activeId = id;
@@ -688,6 +696,7 @@
                 showLoader(false);
             } catch(err) {
                 showLoader(false);
+                localStorage.clear();
                 console.error(err);
                 alert("Database Engine Authentication Fault Trace. Check internet settings or Firestore console rules schema setup options.");
             }
@@ -705,9 +714,7 @@
         }
 
         function triggerSessionLogout() {
-            localStorage.removeItem('session_school');
-            localStorage.removeItem('session_user');
-            localStorage.removeItem('session_role');
+            localStorage.clear();
             
             const badge = document.getElementById('role-badge');
             const logout = document.getElementById('logout-btn');
@@ -1087,7 +1094,8 @@
             
             display.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => {
                 const mark = (sRec.marks && sRec.marks[sub] !== undefined) ? sRec.marks[sub] : '-';
-                const pct = (sRec.marks && sRec.marks[sub] !== undefined) ? Math.round((sRec.marks[sub] / maxPoints) * 100) : 0;
+                const scoreValue = (sRec.marks && sRec.marks[sub] !== undefined) ? parseFloat(sRec.marks[sub]) : 0;
+                const pct = Math.round((scoreValue / maxPoints) * 100);
                 return `
                 <div class="space-y-1 text-xs">
                     <div class="flex justify-between font-bold text-slate-700"><span>${sub}</span><span>${mark} / ${maxPoints}</span></div>
@@ -1103,7 +1111,13 @@
             
             document.getElementById('p-remarks-display').innerText = sRec.remarks || "No comments synchronized.";
             
-            const scores = CONFIG_FALLBACK_SUBJECTS.map(s => (sRec.marks && sRec.marks[s] !== undefined) ? sRec.marks[s] : 0);
+            const scores = CONFIG_FALLBACK_SUBJECTS.map(s => {
+                if (sRec.marks && sRec.marks[s] !== undefined && sRec.marks[s] !== null && sRec.marks[s] !== '') {
+                    return parseFloat(sRec.marks[s]);
+                }
+                return 0;
+            });
+            
             const ctx = document.getElementById('performanceChart');
             if(ctx) {
                 if(dynamicChartInstance) dynamicChartInstance.destroy();
@@ -1136,9 +1150,7 @@
                 showScreen('screen-login');
                 handleSecureLogin(); 
             } else { 
-                localStorage.removeItem('session_school');
-                localStorage.removeItem('session_role');
-                localStorage.removeItem('session_user');
+                localStorage.clear();
                 showScreen('screen-gate'); 
             }
         }
