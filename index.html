@@ -1128,32 +1128,27 @@
                 });
             }
         }
-
         function checkPersistentSession() {
-            const sch = localStorage.getItem('session_school');
-            const r = localStorage.getItem('session_role'); 
-            const u = localStorage.getItem('session_user');
-            
-            if (sch && sch.trim() !== "" && r && u && r.trim() !== "" && u.trim() !== "") { 
-                document.getElementById('auth-school').value = sch;
-                document.getElementById('auth-role').value = r;
-                document.getElementById('auth-id').value = (r === 'parent') ? u : '';
-                
-                if (r === 'teacher') {
-                    document.getElementById('auth-pass').value = 'admin789'; 
-                } else if (r === 'parent') {
-                    document.getElementById('auth-pass').value = 'school1'; 
-                } else if (r === 'superadmin' || u === 'SUPER_ADMIN') {
-                    document.getElementById('auth-pass').value = 'master999';
-                }
-                
-                showScreen('screen-login');
-                handleSecureLogin(); 
-            } else { 
-                localStorage.clear();
-                showScreen('screen-gate'); 
-            }
-        }
+    const sch = localStorage.getItem('session_school');
+    const r = localStorage.getItem('session_role'); 
+    const u = localStorage.getItem('session_user');
+    
+    // Check if persistent session records exist safely
+    if (sch && sch.trim() !== "" && r && u) { 
+        document.getElementById('auth-school').value = sch;
+        document.getElementById('auth-role').value = r;
+        
+        // FIX: Directly apply the saved user string without running conflicting conditions
+        document.getElementById('auth-id').value = u;
+        
+        handleSecureLogin(); 
+    } else { 
+        // Clear corrupt or empty data structures safely
+        localStorage.clear();
+        showScreen('screen-gate'); 
+    }
+}
+
         
         function submitRegistrationRequest() {
             alert("Sandbox submission recorded.");
