@@ -1242,23 +1242,26 @@
     const r = localStorage.getItem('session_role'); 
     const u = localStorage.getItem('session_user');
     
-    // SAFETY CHECK: Make sure saved values exist and are valid text
     if (sch && sch.trim() !== "" && r && u) { 
-        // Put values back into form inputs so handleSecureLogin can read them smoothly
+        // Autofill inputs cleanly
         document.getElementById('auth-school').value = sch;
         document.getElementById('auth-role').value = r;
         document.getElementById('auth-id').value = (r === 'parent') ? u : '';
         
-        // 🔑 FIX: Pre-fill the correct passkey for teachers so it auto-authenticates without errors
+        // 🔑 Automatically fill passwords so auto-login doesn't fail
         if (r === 'teacher') {
             document.getElementById('auth-pass').value = 'admin789'; 
-        } else {
-            document.getElementById('auth-pass').value = 'school1'; // Default for other test roles
+        } else if (r === 'parent') {
+            // Re-fetch parent passkey if it exists in data cache
+            if(db && db.students && db.students[u]) {
+                document.getElementById('auth-pass').value = db.students[u].pass;
+            } else {
+                document.getElementById('auth-pass').value = 'school1';
+            }
         }
         
         handleSecureLogin(); 
     } else { 
-        // If data is corrupt or empty, clear it completely and show clean landing page
         localStorage.clear();
         showScreen('screen-gate'); 
     }
