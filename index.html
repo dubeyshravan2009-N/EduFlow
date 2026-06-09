@@ -260,19 +260,6 @@
                             </button>
                         </div>
 
-                        <div id="student-creation-deck" class="border-t pt-3 space-y-2">
-                            <span class="block text-[9px] font-bold text-indigo-500 uppercase tracking-wider">Add New Student Profile</span>
-                            <div class="space-y-1.5">
-                                <input id="new-student-name" type="text" placeholder="Full Student Name..." class="w-full border p-2 rounded-lg text-xs bg-white outline-none focus:border-indigo-500">
-                                <div class="flex gap-1">
-                                    <input id="new-student-roll" type="number" placeholder="Roll No." class="border p-2 rounded-lg text-xs w-1/3 text-center bg-white outline-none focus:border-indigo-500">
-                                    <button type="button" onclick="createNewStudentProfile()" class="w-2/3 bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg hover:bg-emerald-700 transition-colors">
-                                        ➕ Insert Student
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
                         <div id="search-container" class="border-t pt-3">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Live Filter Search</label>
                             <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Search student name..." class="w-full border p-2 rounded-lg text-xs outline-none focus:border-indigo-500">
@@ -492,229 +479,218 @@
                 </div>
             </div>
         </section>
-
     </main>
 
     <script>
         // Core fallbacks
         const CONFIG_FALLBACK_SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
         let db = { students: {}, records: {}, attendance: {}, exams: {}, history: [], examOrder: [], notices: [], allocatedClasses: [] };
-        
-        let currentSchool = null;
-        let currentUser = null;
-        let activeId = null;
-        let dynamicChartInstance = null;
-        let currentTeacherTab = "students";
+        let currentSchool = null; let currentUser = null; let activeId = null; let dynamicChartInstance = null; let currentTeacherTab = "students";
         let localAttendanceBuffer = {};
 
         // Replace these keys with your unique Firebase Dashboard connection properties
-        const firebaseConfig = {
-            apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70",
-            authDomain: "eduflow-pro-f6d04.firebaseapp.com",
-            projectId: "eduflow-pro-f6d04",
-            storageBucket: "eduflow-pro-f6d04.firebasestorage.app",
-            messagingSenderId: "961305546473",
-            appId: "1:961305546473:web:71db6c4d8da6c4950a6a78"
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70", 
+            authDomain: "eduflow-pro-f6d04.firebaseapp.com", 
+            projectId: "eduflow-pro-f6d04", 
+            storageBucket: "eduflow-pro-f6d04.firebasestorage.app", 
+            messagingSenderId: "961305546473", 
+            appId: "1:961305546473:web:71db6c4d8da6c4950a6a78" 
         };
-
-        try {
-            firebase.initializeApp(firebaseConfig);
-            window.cloudStorage = firebase.firestore();
-        } catch (e) {
-            console.warn("Cloud infrastructure fallback activated. Interface locked to client session simulation sandbox.");
-            window.cloudStorage = null;
+        
+        // 🛡️bulletproof production firestore initialization wrapper
+        try { 
+            firebase.initializeApp(firebaseConfig); 
+            window.cloudStorage = firebase.firestore(); 
+        } catch (e) { 
+            console.warn("Cloud connection block. Running local sandbox model simulation.");
+            window.cloudStorage = null; 
         }
 
-        // Toggle Processing Circle Spinner Visibility
-        function showLoader(isVisible) {
+        function showLoader(isVisible) { 
             const loader = document.getElementById('global-processing-loader');
-            if (loader) loader.style.display = isVisible ? 'flex' : 'none';
+            if (loader) loader.style.display = isVisible ? 'flex' : 'none'; 
         }
 
-        // Sync helper dropdown with custom text field
-        function syncSubjectCustomField(value) {
+        function syncSubjectCustomField(value) { 
             const inputField = document.getElementById('bulletin-hw-subject');
-            if(inputField) inputField.value = value;
+            if(inputField) inputField.value = value; 
         }
 
-        // Generate classes array fallback if database is empty
-        function verifyAndSeedDefaultClasses() {
-            if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
+        function verifyAndSeedDefaultClasses() { 
+            if (!db.allocatedClasses || db.allocatedClasses.length === 0) { 
                 db.allocatedClasses = [];
-                for(let i = 1; i <= 10; i++) {
-                    db.allocatedClasses.push(`${i}A`);
-                    db.allocatedClasses.push(`${i}B`);
-                }
-            }
+                for(let i = 1; i <= 10; i++) { 
+                    db.allocatedClasses.push(`${i}A`); 
+                    db.allocatedClasses.push(`${i}B`); 
+                } 
+            } 
             buildClassSelectOptions();
         }
 
-        // Auto sorting class matrix algorithm
-        async function triggerAutoSort() {
-            if (!db.allocatedClasses) return;
+        async function triggerAutoSort() { 
+            if (!db.allocatedClasses) return; 
             showLoader(true);
-            db.allocatedClasses.sort((x, y) => {
-                const numX = parseInt(x);
-                const numY = parseInt(y);
-                if (numX !== numY) return numX - numY;
-                return x.localeCompare(y);
+            db.allocatedClasses.sort((x, y) => { 
+                const numX = parseInt(x); 
+                const numY = parseInt(y); 
+                if (numX !== numY) return numX - numY; 
+                return x.localeCompare(y); 
             });
-            buildClassSelectOptions();
-            await syncToCloud();
-            refreshCurrentTeacherTab();
-            showLoader(false);
+            buildClassSelectOptions(); 
+            await syncToCloud(); 
+            refreshCurrentTeacherTab(); 
+            showLoader(false); 
         }
 
-        function buildClassSelectOptions(preserveSelectedValue = null) {
-            const select = document.getElementById('class-select');
+        function buildClassSelectOptions(preserveSelectedValue = null) { 
+            const select = document.getElementById('class-select'); 
             if(!select) return;
-            const currentlySelected = preserveSelectedValue || select.value;
-            select.innerHTML = db.allocatedClasses.map(cls => `<option value="${cls}">Class Stream Code ${cls}</option>`).join('');
-            if (currentlySelected && db.allocatedClasses.includes(currentlySelected)) {
-                select.value = currentlySelected;
-            }
+            const currentlySelected = preserveSelectedValue || select.value; 
+            select.innerHTML = db.allocatedClasses.map(cls => `<option value="${cls}">Class Stream Code ${cls}</option>` ).join('');
+            if (currentlySelected && db.allocatedClasses.includes(currentlySelected)) { 
+                select.value = currentlySelected; 
+            } 
         }
 
-        async function addNewClassStream() {
+        async function addNewClassStream() { 
             const input = document.getElementById('new-class-input');
-            const targetVal = input.value.trim().toUpperCase();
-            if(!targetVal) return alert("Please specify a valid Class Code label.");
+            const targetVal = input.value.trim().toUpperCase(); 
+            if(!targetVal) return alert("Please specify a valid Class Code label."); 
             if(db.allocatedClasses.includes(targetVal)) return alert("This stream node already exists.");
-            
-            showLoader(true);
-            if (!db.allocatedClasses || db.allocatedClasses.length === 0) {
-                verifyAndSeedDefaultClasses();
-            }
-            db.allocatedClasses.push(targetVal);
-            buildClassSelectOptions(targetVal);
-            await syncToCloud();
-            input.value = '';
-            refreshCurrentTeacherTab();
+            showLoader(true); 
+            if (!db.allocatedClasses || db.allocatedClasses.length === 0) { 
+                verifyAndSeedDefaultClasses(); 
+            } 
+            db.allocatedClasses.push(targetVal); 
+            buildClassSelectOptions(targetVal); 
+            await syncToCloud(); 
+            input.value = ''; 
+            refreshCurrentTeacherTab(); 
             showLoader(false);
         }
 
-        async function moveSelectedClass(direction) {
-            const select = document.getElementById('class-select');
-            const currentSelected = select.value;
-            if(!currentSelected) return;
+        async function moveSelectedClass(direction) { 
+            const select = document.getElementById('class-select'); 
+            const currentSelected = select.value; 
+            if(!currentSelected) return; 
             const index = db.allocatedClasses.indexOf(currentSelected);
-            if(index === -1) return;
-            
-            showLoader(true);
-            if (direction === 'up' && index > 0) {
+            if(index === -1) return; 
+            showLoader(true); 
+            if (direction === 'up' && index > 0) { 
                 let temp = db.allocatedClasses[index - 1];
-                db.allocatedClasses[index - 1] = db.allocatedClasses[index];
-                db.allocatedClasses[index] = temp;
-            } else if (direction === 'down' && index < db.allocatedClasses.length - 1) {
+                db.allocatedClasses[index - 1] = db.allocatedClasses[index]; 
+                db.allocatedClasses[index] = temp; 
+            } else if (direction === 'down' && index < db.allocatedClasses.length - 1) { 
                 let temp = db.allocatedClasses[index + 1];
-                db.allocatedClasses[index + 1] = db.allocatedClasses[index];
-                db.allocatedClasses[index] = temp;
-            } else {
-                showLoader(false);
-                return;
-            }
-            buildClassSelectOptions(currentSelected);
-            await syncToCloud();
-            refreshCurrentTeacherTab();
+                db.allocatedClasses[index + 1] = db.allocatedClasses[index]; 
+                db.allocatedClasses[index] = temp; 
+            } else { 
+                showLoader(false); 
+                return; 
+            } 
+            buildClassSelectOptions(currentSelected); 
+            await syncToCloud(); 
+            refreshCurrentTeacherTab(); 
             showLoader(false);
         }
 
-        async function deleteSelectedClassStream() {
-            const currentSelected = document.getElementById('class-select').value;
+        async function deleteSelectedClassStream() { 
+            const currentSelected = document.getElementById('class-select').value; 
             if(!currentSelected) return;
-            if(!confirm(`Are you sure you want to completely erase Class Code ${currentSelected}?`)) return;
-            
-            showLoader(true);
+            if(!confirm(`Are you sure you want to completely erase Class Code ${currentSelected}?`)) return; 
+            showLoader(true); 
             db.allocatedClasses = db.allocatedClasses.filter(c => c !== currentSelected);
-            buildClassSelectOptions();
-            await syncToCloud();
-            refreshCurrentTeacherTab();
-            showLoader(false);
+            buildClassSelectOptions(); 
+            await syncToCloud(); 
+            refreshCurrentTeacherTab(); 
+            showLoader(false); 
         }
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            const target = document.getElementById(screenId);
+        function showScreen(screenId) { 
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); 
+            const target = document.getElementById(screenId); 
             if(target) target.classList.add('active');
         }
 
-        // AUTH ENGINE: Patched to dynamically build structural layout nodes automatically on new codes
-        async function handleSecureLogin() {
+        async function handleSecureLogin() { 
             const school = document.getElementById('auth-school').value.trim().toUpperCase();
-            const role = document.getElementById('auth-role').value;
-            const id = document.getElementById('auth-id').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
+            const role = document.getElementById('auth-role').value; 
+            const id = document.getElementById('auth-id').value.trim(); 
+            const pass = document.getElementById('auth-pass').value.trim(); 
             
             if(!school) return alert("School authentication code required.");
-            if (role === 'superadmin' && pass === 'master999') {
-                commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin');
-                showScreen('screen-superadmin');
-                return;
+            
+            // 🔒 Guard check for Educator Security Passkey
+            if (role === 'teacher' && pass !== 'admin789') {
+                showLoader(false);
+                return alert("Invalid Educator Verification Key Code.");
             }
+            if (role === 'superadmin' && pass === 'master999') { 
+                commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin'); 
+                showScreen('screen-superadmin'); 
+                return; 
+            } 
             
             showLoader(true);
-            if (!window.cloudStorage) {
-                currentSchool = school;
-                verifyAndSeedDefaultClasses();
-                db.students["10A-1"] = { name: "Demo Student", pass: "school1", rollNumber: 1 };
-                db.exams = { "PT-1": 50 };
-                db.examOrder = ["PT-1"];
-                showLoader(false);
-                if (role === 'parent') {
-                    activeId = "10A-1";
-                    commitSession(currentSchool, "10A-1", 'parent');
-                    initParentView();
-                } else {
-                    commitSession(currentSchool, 'teacher', 'teacher');
-                    initTeacherView();
-                }
-                return;
-            }
             
-            try {
+            if (!window.cloudStorage) { 
+                currentSchool = school; 
+                verifyAndSeedDefaultClasses(); 
+                db.students["10A-1"] = { name: "Demo Student", pass: "school1" };
+                db.exams = { "PT-1": 50 }; 
+                db.examOrder = ["PT-1"]; 
+                showLoader(false); 
+                if (role === 'parent') { 
+                    activeId = "10A-1";
+                    commitSession(currentSchool, "10A-1", 'parent'); 
+                    initParentView(); 
+                } else { 
+                    commitSession(currentSchool, 'teacher', 'teacher'); 
+                    initTeacherView(); 
+                } 
+                return; 
+            } 
+            
+            try { 
                 const docRef = window.cloudStorage.collection("schools").doc(school);
-                const docSnap = await docRef.get();
-                if (!docSnap.exists) {
-                    currentSchool = school;
-                    verifyAndSeedDefaultClasses();
-                    db.students = {};
+                const docSnap = await docRef.get(); 
+                if (!docSnap.exists) { 
+                    currentSchool = school; 
+                    verifyAndSeedDefaultClasses(); 
+                    db.students = {}; 
                     db.records = {};
-                    db.attendance = {};
-                    db.exams = { "PT-1": 100 };
-                    db.examOrder = ["PT-1"];
-                    db.notices = [];
+                    db.attendance = {}; 
+                    db.exams = { "PT-1": 100 }; 
+                    db.examOrder = ["PT-1"]; 
+                    db.notices = []; 
                     await docRef.set(db);
                 } else {
                     db = docSnap.data();
-                    if(!db.allocatedClasses || db.allocatedClasses.length === 0) {
-                        verifyAndSeedDefaultClasses();
-                    }
+                    if(!db.allocatedClasses) verifyAndSeedDefaultClasses();
                 }
                 
-                currentSchool = school;
-                document.getElementById('nav-school-display').innerText = `Workspace Environment: ${currentSchool}`;
+                currentSchool = school; 
+                document.getElementById('nav-school-display').innerText = `Workspace Environment: ${currentSchool}`; 
                 
                 if (role === 'parent') {
                     if (!db.students[id] || db.students[id].pass !== pass) {
                         showLoader(false);
-                        return alert("Invalid Parent Access Key Credential Parameters.");
+                        return alert("Invalid parent student credentials allocation parameters.");
                     }
                     activeId = id;
-                    commitSession(currentSchool, activeId, 'parent');
+                    commitSession(currentSchool, id, 'parent');
                     initParentView();
                 } else {
-                    if (pass !== "admin789") {
-                        showLoader(false);
-                        return alert("Invalid Educator Verification Key Code.");
-                    }
                     commitSession(currentSchool, 'teacher', 'teacher');
                     initTeacherView();
                 }
-            } catch (err) {
+                showLoader(false);
+            } catch(err) {
+                showLoader(false);
                 console.error(err);
-                alert("Database Engine Authentication Fault Trace.");
+                alert("Database Engine Authentication Fault Trace. Check internet settings or Firestore console rules schema setup options.");
             }
-            showLoader(false);
         }
 
         function commitSession(school, user, role) {
@@ -724,336 +700,316 @@
             
             const badge = document.getElementById('role-badge');
             const logout = document.getElementById('logout-btn');
-            if (badge) { badge.innerText = role; badge.classList.remove('hidden'); }
-            if (logout) logout.classList.remove('hidden');
+            if(badge) { badge.innerText = role; badge.classList.remove('hidden'); }
+            if(logout) logout.classList.remove('hidden');
         }
 
         function triggerSessionLogout() {
-            localStorage.clear();
-            currentSchool = null;
-            currentUser = null;
-            activeId = null;
+            localStorage.removeItem('session_school');
+            localStorage.removeItem('session_user');
+            localStorage.removeItem('session_role');
             
             const badge = document.getElementById('role-badge');
             const logout = document.getElementById('logout-btn');
-            if (badge) badge.classList.add('hidden');
-            if (logout) logout.classList.add('hidden');
+            if(badge) badge.classList.add('hidden');
+            if(logout) logout.classList.add('hidden');
             
             document.getElementById('nav-school-display').innerText = "Secure Network Workspace";
+            currentSchool = null; currentUser = null; activeId = null;
             showScreen('screen-gate');
         }
 
         async function syncToCloud() {
-            if (!window.cloudStorage || !currentSchool) return;
+            if(!window.cloudStorage || !currentSchool) return;
             try {
                 await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
-            } catch (e) {
-                console.error("Cloud Database Sync Collision Fault:", e);
+            } catch(e) {
+                console.error("Cloud synchronization mismatch error:", e);
             }
         }
 
         function initTeacherView() {
-            buildClassSelectOptions();
-            
-            const hwSubjectSelect = document.getElementById('bulletin-hw-subject-select');
-            if (hwSubjectSelect) {
-                hwSubjectSelect.innerHTML = '<option value="">-- Custom Input --</option>' + 
+            verifyAndSeedDefaultClasses();
+            const subjectSelect = document.getElementById('bulletin-hw-subject-select');
+            if(subjectSelect) {
+                subjectSelect.innerHTML = '<option value="">-- Custom Input --</option>' + 
                     CONFIG_FALLBACK_SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
             }
-            
-            const today = new Date().toISOString().split('T')[0];
-            const datePicker = document.getElementById('attendance-date');
-            if(datePicker) datePicker.value = today;
-            
             switchTeacherTab('students');
             showScreen('screen-teacher');
         }
 
         function switchTeacherTab(tabId) {
             currentTeacherTab = tabId;
-            document.querySelectorAll("[id Harvey^='tab-pane-']").forEach(p => p.classList.add('hidden'));
-            document.querySelectorAll("[id Harvey^='tab-btn-']").forEach(b => {
-                b.classList.remove('bg-indigo-600', 'text-white');
-                b.classList.add('bg-slate-100', 'text-slate-600');
-            });
+            document.querySelectorAll("[id^='tab-pane-']").forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll("[id^='tab-btn-']").forEach(b => b.className = "px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-600 transition-colors");
             
-            const activePane = document.getElementById(`tab-pane-${tabId}`);
-            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
-            if(activePane) activePane.classList.remove('hidden');
-            if(activeBtn) {
-                activeBtn.classList.add('bg-indigo-600', 'text-white');
-                activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
-            }
+            const targetPane = document.getElementById(`tab-pane-${tabId}`);
+            if(targetPane) targetPane.classList.remove('hidden');
             
-            const searchContainer = document.getElementById('search-container');
-            const dateContainer = document.getElementById('date-picker-container');
+            const targetBtn = document.getElementById(`tab-btn-${tabId}`);
+            if(targetBtn) targetBtn.className = "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white transition-colors";
             
-            if (tabId === 'attendance') {
-                if(searchContainer) searchContainer.classList.add('hidden');
-                if(dateContainer) dateContainer.classList.remove('hidden');
-            } else if (tabId === 'students') {
-                if(searchContainer) searchContainer.classList.remove('hidden');
-                if(dateContainer) dateContainer.classList.add('hidden');
-            } else {
-                if(searchContainer) searchContainer.classList.add('hidden');
-                if(dateContainer) dateContainer.classList.add('hidden');
-            }
+            const dp = document.getElementById('date-picker-container');
+            if(dp) dp.style.display = (tabId === 'attendance') ? 'block' : 'none';
             
             refreshCurrentTeacherTab();
         }
 
         function refreshCurrentTeacherTab() {
-            if (currentTeacherTab === 'students') renderTeacherList();
-            if (currentTeacherTab === 'attendance') renderAttendancePanel();
-            if (currentTeacherTab === 'config') renderConfigPanel();
+            if(currentTeacherTab === 'students') renderTeacherList();
+            if(currentTeacherTab === 'attendance') {
+                const dateEl = document.getElementById('attendance-date');
+                if(dateEl && !dateEl.value) {
+                    dateEl.value = new Date().toISOString().split('T')[0];
+                }
+                renderAttendancePanel();
+            }
+            if(currentTeacherTab === 'config') renderExamConfigurationPanel();
         }
 
-        // 1. DYNAMIC SYSTEM FUNCTION: Create and save a brand new student profile
-        async function createNewStudentProfile() {
-            const cls = document.getElementById('class-select').value;
-            const nameInput = document.getElementById('new-student-name');
-            const rollInput = document.getElementById('new-student-roll');
+        function renderTeacherList() {
+            const currentClass = document.getElementById('class-select').value;
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const tbody = document.getElementById('teacher-table-body');
+            if(!tbody) return;
             
-            const name = nameInput.value.trim();
-            const roll = rollInput.value.trim();
-            
-            if(!cls) return alert("Please select or allocate a target Class Stream first.");
-            if(!name || !roll) return alert("Both Student Name and Roll Number fields are required.");
-            
-            const sId = `${cls}-${roll}`;
-            
-            // Check if this Roll Number is already assigned in this specific class
-            if (db.students[sId]) {
-                return alert(`Roll Number ${roll} is already registered under this class stream as ${db.students[sId].name}.`);
+            let html = '';
+            // Seed a default mock structure value node array set if zero rows are active
+            const studentsArr = Object.keys(db.students).filter(k => k.startsWith(currentClass));
+            if(studentsArr.length === 0 && query === "") {
+                html = `<tr><td colspan="4" class="p-8 text-center text-slate-400">No active students enrolled under class stream node ${currentClass}. Click the green button below to inject records manually.</td></tr>`;
+            } else {
+                studentsArr.forEach(id => {
+                    const s = db.students[id];
+                    if(s.name.toLowerCase().includes(query)) {
+                        html += `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-4 font-mono font-bold text-indigo-600">${id}</td>
+                            <td class="p-4 font-bold text-slate-700">${s.name}</td>
+                            <td class="p-4 text-center font-mono text-slate-400">${s.pass}</td>
+                            <td class="p-4 text-center space-x-2">
+                                <button type="button" onclick="openEvaluationWindow('${id}')" class="bg-indigo-50 text-indigo-600 font-bold px-3 py-1.5 rounded-lg text-[11px] hover:bg-indigo-100">Grade Matrix</button>
+                                <button type="button" onclick="triggerRecordDeletion('${id}')" class="text-red-500 hover:text-red-700 text-xs font-bold font-mono">🗑️</button>
+                            </td>
+                        </tr>`;
+                    }
+                });
             }
             
+            html += `
+            <tr class="bg-slate-50/70">
+                <td class="p-4"><input id="new-roll" type="text" placeholder="Roll Num" class="border p-2 rounded-lg text-xs w-full bg-white font-mono uppercase"></td>
+                <td class="p-4"><input id="new-name" type="text" placeholder="Full Student Legal Name" class="border p-2 rounded-lg text-xs w-full bg-white font-bold"></td>
+                <td class="p-4"><input id="new-pass" type="text" placeholder="Passkey" class="border p-2 rounded-lg text-xs w-full bg-white font-mono text-center" value="school1"></td>
+                <td class="p-4 text-center"><button type="button" onclick="commitNewStudentToRoster()" class="bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm hover:bg-emerald-700 w-full">＋ Enroll Student</button></td>
+            </tr>`;
+            tbody.innerHTML = html;
+        }
+
+        async function commitNewStudentToRoster() {
+            const currentClass = document.getElementById('class-select').value;
+            const roll = document.getElementById('new-roll').value.trim().toUpperCase();
+            const name = document.getElementById('new-name').value.trim();
+            const pass = document.getElementById('new-pass').value.trim();
+            
+            if(!roll || !name || !pass) return alert("All student registration cells are mandatory.");
+            const fullId = `${currentClass}-${roll}`;
+            if(db.students[fullId]) return alert("This sequence identity code string already exists.");
+            
             showLoader(true);
-            
-            // Initialize the student object schema
-            db.students[sId] = {
-                name: name,
-                pass: "school" + roll, // Autogenerated default passkey
-                rollNumber: parseInt(roll)
-            };
-            
+            db.students[fullId] = { name: name, pass: pass };
             await syncToCloud();
-            
-            // Clear the input fields for the next entry
-            nameInput.value = '';
-            rollInput.value = '';
-            
-            refreshCurrentTeacherTab();
+            renderTeacherList();
             showLoader(false);
         }
 
-        // 2. REFACTORED TEACHER LIST: Reads directly from actual data arrays instead of loops
-        function renderTeacherList() {
-            const cls = document.getElementById('class-select').value;
-            const search = document.getElementById('search-input').value.toLowerCase();
-            const tbody = document.getElementById('teacher-table-body'); 
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            
-            if(!cls) return;
-            
-            // Filter out students belonging ONLY to the selected class stream
-            const classStudents = Object.keys(db.students)
-                .filter(sId => sId.startsWith(`${cls}-`))
-                .map(sId => {
-                    const fallbackRoll = parseInt(sId.split('-')[1]);
-                    return {
-                        id: sId,
-                        roll: db.students[sId].rollNumber || fallbackRoll,
-                        name: db.students[sId].name,
-                        pass: db.students[sId].pass
-                    };
-                });
-                
-            // Sort students numerically by their actual Roll Numbers
-            classStudents.sort((a, b) => a.roll - b.roll);
-            
-            if (classStudents.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 italic">No registered students found in Class ${cls}. Use the panel on the left to add your first student profile!</td></tr>`;
-                return;
-            }
-            
-            classStudents.forEach(student => {
-                if(search && !student.name.toLowerCase().includes(search) && !student.id.toLowerCase().includes(search)) return;
-                
-                tbody.innerHTML += `
-                <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="p-4 font-mono text-slate-400 font-bold">${student.roll}</td>
-                    <td class="p-4">
-                        <input type="text" value="${student.name}" onchange="updateProfileFieldDirect('${student.id}','name',this.value)" class="w-full bg-transparent outline-none font-bold text-slate-800 border-b border-transparent hover:border-slate-200 focus:border-indigo-500 py-0.5">
-                        <span class="text-[10px] text-slate-400 font-mono block mt-0.5">ID Token Trace: ${student.id}</span>
-                    </td>
-                    <td class="p-4 text-center">
-                        <input type="text" value="${student.pass}" onchange="updateProfileFieldDirect('${student.id}','pass',this.value)" class="border rounded-lg px-2 py-1 text-xs font-mono text-indigo-600 text-center w-32 outline-none focus:border-indigo-500 bg-slate-50">
-                    </td>
-                    <td class="p-4 text-center">
-                        <button type="button" onclick="openMarksModal('${student.id}')" class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-all">Evaluate</button>
-                    </td>
-                </tr>`;
-            });
-        }
-
-        // 3. REFACTORED ATTENDANCE PANEL: Dynamically matches class size profiles
-        function renderAttendancePanel() {
-            const cls = document.getElementById('class-select').value;
-            const dt = document.getElementById('attendance-date').value;
-            const tbody = document.getElementById('attendance-table-body'); 
-            if(!tbody) return;
-            tbody.innerHTML = ''; 
-            
-            if(!dt || !cls) return;
-            if(!db.attendance[cls]) db.attendance[cls] = {};
-            if(!db.attendance[cls][dt]) db.attendance[cls][dt] = {};
-            
-            localAttendanceBuffer = JSON.parse(JSON.stringify(db.attendance[cls][dt]));
-            
-            const classStudents = Object.keys(db.students)
-                .filter(sId => sId.startsWith(`${cls}-`))
-                .map(sId => ({
-                    id: sId,
-                    roll: db.students[sId].rollNumber || parseInt(sId.split('-')[1]),
-                    name: db.students[sId].name
-                }));
-                
-            classStudents.sort((a, b) => a.roll - b.roll);
-            
-            if (classStudents.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 italic">No registered roster metadata to track attendance for.</td></tr>`;
-                return;
-            }
-            
-            classStudents.forEach(student => {
-                if(localAttendanceBuffer[student.id] === undefined) localAttendanceBuffer[student.id] = "Present";
-                const isPres = localAttendanceBuffer[student.id] === "Present";
-                
-                tbody.innerHTML += `
-                <tr class="hover:bg-slate-50/50">
-                    <td class="p-4 font-mono text-slate-400">${student.roll}</td>
-                    <td class="p-4 font-bold text-slate-800">${student.name}</td>
-                    <td class="p-4 text-center">
-                        <div class="inline-flex rounded-lg border p-0.5 bg-slate-100">
-                            <button type="button" onclick="setLocalAttendanceStatus('${student.id}','Present')" id="btn-pres-${student.id}" class="px-3 py-1 rounded-md text-xs font-bold transition-all ${isPres ? 'bg-emerald-500 text-white shadow-sm':'text-slate-500'}">✔️ Present</button>
-                            <button type="button" onclick="setLocalAttendanceStatus('${student.id}','Absent')" id="btn-abs-${student.id}" class="px-3 py-1 rounded-md text-xs font-bold transition-all ${!isPres ? 'bg-rose-500 text-white shadow-sm':'text-slate-500'}">❌ Absent</button>
-                        </div>
-                    </td>
-                </tr>`;
-            });
-        }
-
-        async function updateProfileFieldDirect(id, field, value) {
-            if(!db.students[id]) return;
-            db.students[id][field] = value;
+        async function triggerRecordDeletion(id) {
+            if(!confirm(`Erase structural profile and data matrix permanently for ${id}?`)) return;
+            showLoader(true);
+            delete db.students[id];
+            if(db.records[id]) delete db.records[id];
             await syncToCloud();
+            renderTeacherList();
+            showLoader(false);
         }
 
-        function setLocalAttendanceStatus(id, state) {
-            localAttendanceBuffer[id] = state;
-            const presBtn = document.getElementById(`btn-pres-${id}`);
-            const absBtn = document.getElementById(`btn-abs-${id}`);
+        function renderAttendancePanel() {
+            const currentClass = document.getElementById('class-select').value;
+            const date = document.getElementById('attendance-date').value;
+            const tbody = document.getElementById('attendance-table-body');
+            if(!tbody || !date) return;
             
-            if(state === 'Present') {
-                presBtn.className = "px-3 py-1 rounded-md text-xs font-bold transition-all bg-emerald-500 text-white shadow-sm";
-                absBtn.className = "px-3 py-1 rounded-md text-xs font-bold transition-all text-slate-500";
-            } else {
-                absBtn.className = "px-3 py-1 rounded-md text-xs font-bold transition-all bg-rose-500 text-white shadow-sm";
-                presBtn.className = "px-3 py-1 rounded-md text-xs font-bold transition-all text-slate-500";
+            const studentsArr = Object.keys(db.students).filter(k => k.startsWith(currentClass));
+            if(studentsArr.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400">No student target sets discovered.</td></tr>`;
+                return;
+            }
+            
+            if(!db.attendance[date]) db.attendance[date] = {};
+            localAttendanceBuffer = { ...db.attendance[date] };
+            
+            tbody.innerHTML = studentsArr.map(id => {
+                const status = localAttendanceBuffer[id] !== undefined ? localAttendanceBuffer[id] : true;
+                return `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-4 font-mono font-bold text-slate-500">${id}</td>
+                    <td class="p-4 font-bold text-slate-800">${db.students[id].name}</td>
+                    <td class="p-4 text-center">
+                        <button type="button" onclick="toggleLocalAttendance('${id}')" id="attn-btn-${id}" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${status ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300'}">
+                            ${status ? '🟢 PRESENT' : '🔴 ABSENT'}
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function toggleLocalAttendance(id) {
+            const currentStatus = localAttendanceBuffer[id] !== undefined ? localAttendanceBuffer[id] : true;
+            localAttendanceBuffer[id] = !currentStatus;
+            const btn = document.getElementById(`attn-btn-${id}`);
+            if(btn) {
+                if(localAttendanceBuffer[id]) {
+                    btn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-green-100 text-green-700 border border-green-300";
+                    btn.innerText = "🟢 PRESENT";
+                } else {
+                    btn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-red-100 text-red-700 border border-red-300";
+                    btn.innerText = "🔴 ABSENT";
+                }
             }
         }
 
         async function commitAttendanceSheet() {
-            const cls = document.getElementById('class-select').value;
-            const dt = document.getElementById('attendance-date').value;
-            if(!cls || !dt) return;
-            
+            const date = document.getElementById('attendance-date').value;
+            if(!date) return alert("Select standard timeline sequence.");
             showLoader(true);
-            db.attendance[cls][dt] = localAttendanceBuffer;
+            db.attendance[date] = { ...localAttendanceBuffer };
             await syncToCloud();
             showLoader(false);
-            alert("Attendance Session matrix saved.");
+            alert("Attendance timeline profile metrics locked successfully.");
         }
 
-        function renderConfigPanel() {
+        function renderExamConfigurationPanel() {
             const container = document.getElementById('exam-config-rows');
             if(!container) return;
-            container.innerHTML = '';
+            if(!db.examOrder) db.examOrder = Object.keys(db.exams);
             
-            if(!db.exams) db.exams = {};
-            if(!db.examOrder) db.examOrder = [];
-            
-            db.examOrder.forEach(exKey => {
-                const mx = db.exams[exKey] || 100;
-                container.innerHTML += `
-                <div class="flex items-center gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    <span class="text-xs font-bold text-slate-700 flex-1">📋 Assessment Node: ${exKey}</span>
-                    <div class="flex items-center gap-1">
-                        <span class="text-[10px] uppercase font-bold text-slate-400">Scale Scope:</span>
-                        <input type="number" value="${mx}" id="input-mx-${exKey}" class="border w-16 text-center text-xs p-1 rounded bg-white font-mono font-bold">
-                    </div>
-                    <button type="button" onclick="eraseExamModule('${exKey}')" class="text-red-500 text-xs px-2 py-1 rounded hover:bg-red-50">🗑️</button>
-                </div>`;
-            });
+            container.innerHTML = db.examOrder.map(ex => `
+            <div class="flex items-center justify-between p-3 bg-slate-50 border rounded-xl text-xs font-bold">
+                <span class="text-slate-700">${ex} <span class="text-slate-400 font-normal">(${db.exams[ex]} Max Points)</span></span>
+                <button type="button" onclick="purgeExamModule('${ex}')" class="text-red-500 font-mono text-xs hover:underline">Remove Module</button>
+            </div>`).join('');
         }
 
         function createNewExamModule() {
-            const nameInput = document.getElementById('new-exam-name');
-            const maxInput = document.getElementById('new-exam-max');
-            const nm = nameInput.value.trim();
-            const val = parseInt(maxInput.value) || 100;
+            const name = document.getElementById('new-exam-name').value.trim();
+            const max = parseInt(document.getElementById('new-exam-max').value);
+            if(!name || isNaN(max)) return alert("Specify legitimate module focus text metrics.");
             
-            if(!nm) return alert("Please state an assessment title identifier.");
-            if(!db.exams) db.exams = {};
-            if(!db.examOrder) db.examOrder = [];
-            
-            db.exams[nm] = val;
-            if(!db.examOrder.includes(nm)) db.examOrder.push(nm);
-            
-            nameInput.value = '';
-            maxInput.value = '';
-            renderConfigPanel();
+            db.exams[name] = max;
+            if(!db.examOrder.includes(name)) db.examOrder.push(name);
+            renderExamConfigurationPanel();
+            document.getElementById('new-exam-name').value = '';
+            document.getElementById('new-exam-max').value = '';
         }
 
-        function eraseExamModule(key) {
-            if(!confirm(`Erase total operational records linked to evaluation sequence index: ${key}?`)) return;
-            delete db.exams[key];
-            db.examOrder = db.examOrder.filter(k => k !== key);
-            renderConfigPanel();
+        function purgeExamModule(name) {
+            delete db.exams[name];
+            db.examOrder = db.examOrder.filter(x => x !== name);
+            renderExamConfigurationPanel();
         }
 
         async function saveExamConfiguration() {
             showLoader(true);
-            db.examOrder.forEach(key => {
-                const el = document.getElementById(`input-mx-${key}`);
-                if(el) db.exams[key] = parseInt(el.value) || 100;
-            });
             await syncToCloud();
             showLoader(false);
-            alert("Assessment limits updated.");
+            alert("Assessment structure rules synchronized safely.");
+        }
+
+        function openEvaluationWindow(studentId) {
+            activeId = studentId;
+            document.getElementById('m-student-name').innerText = `Evaluation: ${db.students[studentId].name} (${studentId})`;
+            const select = document.getElementById('m-exam');
+            
+            if(!db.examOrder || db.examOrder.length === 0) db.examOrder = Object.keys(db.exams);
+            select.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join('');
+            
+            loadExistingMarks();
+            showScreen('screen-marks');
+        }
+
+        function loadExistingMarks() {
+            const exam = document.getElementById('m-exam').value;
+            const container = document.getElementById('m-grid');
+            if(!exam || !container) return;
+            
+            if(!db.records[activeId]) db.records[activeId] = {};
+            if(!db.records[activeId][exam]) db.records[activeId][exam] = { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "" };
+            
+            const currentRecord = db.records[activeId][exam];
+            container.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => {
+                const val = currentRecord.marks[sub] !== undefined ? currentRecord.marks[sub] : '';
+                return `
+                <div class="bg-slate-50 p-2 rounded-xl border">
+                    <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">${sub}</label>
+                    <input type="number" id="marks-${sub}" value="${val}" placeholder="0" max="${db.exams[exam]}" class="w-full border rounded-lg p-1.5 text-xs font-bold text-center bg-white outline-none focus:border-indigo-500">
+                </div>`;
+            }).join('');
+            
+            document.getElementById('m-cw-status').value = currentRecord.cw || "🟢 Active & Regular";
+            document.getElementById('m-hw-status').value = currentRecord.hw || "🟢 On-Time & Good";
+            document.getElementById('m-remarks').value = currentRecord.remarks || "";
+        }
+
+        async function saveMarks() {
+            const exam = document.getElementById('m-exam').value;
+            if(!exam) return;
+            
+            const maxPoints = db.exams[exam];
+            let targetMarks = {};
+            for(let i=0; i<CONFIG_FALLBACK_SUBJECTS.length; i++) {
+                const sub = CONFIG_FALLBACK_SUBJECTS[i];
+                const inputVal = document.getElementById(`marks-${sub}`).value;
+                if(inputVal !== '') {
+                    const numericVal = parseFloat(inputVal);
+                    if(numericVal < 0 || numericVal > maxPoints) {
+                        return alert(`Value entry boundary error for ${sub}. Must fall cleanly within 0 and ${maxPoints}.`);
+                    }
+                    targetMarks[sub] = numericVal;
+                }
+            }
+            
+            showLoader(true);
+            db.records[activeId][exam] = {
+                marks: targetMarks,
+                cw: document.getElementById('m-cw-status').value,
+                hw: document.getElementById('m-hw-status').value,
+                remarks: document.getElementById('m-remarks').value.trim()
+            };
+            await syncToCloud();
+            showScreen('screen-teacher');
+            showLoader(false);
         }
 
         async function publishNoticeItem(category) {
-            let item = { id: category + "_" + Date.now(), type: category, targetClass: document.getElementById('class-select').value };
-            
-            if (category === 'homework') {
+            let item = { id: Date.now().toString(), type: category };
+            if(category === 'homework') {
                 item.subject = document.getElementById('bulletin-hw-subject').value.trim();
                 item.start = document.getElementById('bulletin-hw-start').value;
                 item.end = document.getElementById('bulletin-hw-end').value;
                 item.task = document.getElementById('bulletin-hw-task').value.trim();
-                if(!item.subject || !item.task) return alert("Incomplete assignment parameters.");
+                if(!item.subject || !item.task || !item.start || !item.end) return alert("Complete all notice validation matrix fields.");
             } else if (category === 'events') {
                 item.title = document.getElementById('bulletin-evt-title').value.trim();
                 item.start = document.getElementById('bulletin-evt-start').value;
                 item.end = document.getElementById('bulletin-evt-end').value;
-                if(!item.title) return alert("Missing event heading data.");
+                if(!item.title || !item.start || !item.end) return alert("Fill mandatory scheduling parameters.");
             } else if (category === 'timetables') {
                 item.title = document.getElementById('bulletin-tt-title').value.trim();
                 item.start = document.getElementById('bulletin-tt-start').value;
                 item.end = document.getElementById('bulletin-tt-end').value;
                 item.matrix = document.getElementById('bulletin-tt-matrix').value.trim();
-                if(!item.title || !item.matrix) return alert("Timetable documentation empty.");
+                if(!item.title || !item.matrix || !item.start || !item.end) return alert("Complete comprehensive schedule logging arrays.");
             }
             
             showLoader(true);
@@ -1061,172 +1017,85 @@
             db.notices.push(item);
             await syncToCloud();
             showLoader(false);
-            alert("Broadcast system node dispatched cleanly.");
-        }
-
-        function openMarksModal(studentId) {
-            if(!db.students[studentId]) return;
-            activeId = studentId;
-            document.getElementById('m-student-name').innerText = `Evaluation Profile: ${db.students[studentId].name}`;
+            alert("Broadcast document stream integrated across active pipelines successfully.");
             
-            const select = document.getElementById('m-exam');
-            if(!db.examOrder || db.examOrder.length === 0) {
-                db.examOrder = ["PT-1"];
-                db.exams = { "PT-1": 100 };
-            }
-            
-            select.innerHTML = db.examOrder.map(k => `<option value="${k}">${k}</option>`).join('');
-            loadExistingMarks();
-            showScreen('screen-marks');
-        }
-
-        function loadExistingMarks() {
-            const exKey = document.getElementById('m-exam').value;
-            const grid = document.getElementById('m-grid');
-            if(!grid || !exKey) return;
-            grid.innerHTML = '';
-            
-            const sRecord = (db.records && db.records[activeId] && db.records[activeId][exKey]) ? db.records[activeId][exKey] : {};
-            
-            CONFIG_FALLBACK_SUBJECTS.forEach(sub => {
-                const val = sRecord[sub] !== undefined ? sRecord[sub] : '';
-                grid.innerHTML += `
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">${sub}</label>
-                    <input type="number" id="m-score-${sub}" value="${val}" placeholder="--" class="w-full text-center p-2 rounded-lg border font-mono font-bold bg-white outline-none focus:border-indigo-500 text-xs">
-                </div>`;
-            });
-            
-            document.getElementById('m-cw-status').value = sRecord._cw || "🟢 Active & Regular";
-            document.getElementById('m-hw-status').value = sRecord._hw || "🟢 On-Time & Good";
-            document.getElementById('m-remarks').value = sRecord._remarks || "";
-        }
-
-        async function saveMarks() {
-            const exKey = document.getElementById('m-exam').value;
-            if(!exKey || !activeId) return;
-            
-            showLoader(true);
-            if(!db.records) db.records = {};
-            if(!db.records[activeId]) db.records[activeId] = {};
-            if(!db.records[activeId][exKey]) db.records[activeId][exKey] = {};
-            
-            CONFIG_FALLBACK_SUBJECTS.forEach(sub => {
-                const input = document.getElementById(`m-score-${sub}`);
-                if(input && input.value !== '') {
-                    db.records[activeId][exKey][sub] = parseFloat(input.value);
-                } else if(input) {
-                    delete db.records[activeId][exKey][sub];
-                }
-            });
-            
-            db.records[activeId][exKey]._cw = document.getElementById('m-cw-status').value;
-            db.records[activeId][exKey]._hw = document.getElementById('m-hw-status').value;
-            db.records[activeId][exKey]._remarks = document.getElementById('m-remarks').value.trim();
-            
-            await syncToCloud();
-            showLoader(false);
-            showScreen('screen-teacher');
+            if(category === 'homework') { document.getElementById('bulletin-hw-task').value = ''; }
+            if(category === 'events') { document.getElementById('bulletin-evt-title').value = ''; }
+            if(category === 'timetables') { document.getElementById('bulletin-tt-matrix').value = ''; document.getElementById('bulletin-tt-title').value = ''; }
         }
 
         function initParentView() {
-            if(!db.students[activeId]) return;
             document.getElementById('p-name').innerText = db.students[activeId].name;
-            document.getElementById('p-id').innerText = `Roster ID Trace Code: ${activeId}`;
+            document.getElementById('p-id').innerText = `Roster ID Code: ${activeId} | Network Token Active`;
             
-            const pClass = activeId.split('-')[0];
+            let totalDays = 0; let presentDays = 0;
+            Object.keys(db.attendance).forEach(d => {
+                if(db.attendance[d][activeId] !== undefined) {
+                    totalDays++;
+                    if(db.attendance[d][activeId]) presentDays++;
+                }
+            });
+            
+            const percent = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 100;
+            document.getElementById('p-attn-percent').innerText = `${percent}%`;
+            document.getElementById('p-attn-fraction').innerText = `${presentDays} / ${totalDays} Dynamic Sessions Logged`;
+            
             const nowStr = new Date().toISOString().split('T')[0];
-            
-            let totalDays = 0;
-            let presentDays = 0;
-            if(db.attendance && db.attendance[pClass]) {
-                Object.keys(db.attendance[pClass]).forEach(dateStr => {
-                    const dayData = db.attendance[pClass][dateStr];
-                    if(dayData && dayData[activeId] !== undefined) {
-                        totalDays++;
-                        if(dayData[activeId] === 'Present') presentDays++;
-                    }
-                });
-            }
-            
-            const pct = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 100;
-            document.getElementById('p-attn-percent').innerText = `${pct}%`;
-            document.getElementById('p-attn-fraction').innerText = `${presentDays} / ${totalDays} Sessions`;
+            const activeNotices = db.notices ? db.notices.filter(n => nowStr >= n.start && nowStr <= n.end) : [];
             
             const evDeck = document.getElementById('p-events-deck');
+            const hworkDeck = document.getElementById('p-homework-deck');
             const ttDeck = document.getElementById('p-timetable-deck');
-            const hwDeck = document.getElementById('p-homework-deck');
             
-            if(evDeck) evDeck.innerHTML = '';
-            if(ttDeck) ttDeck.innerHTML = '';
-            if(hwDeck) hwDeck.innerHTML = '';
+            evDeck.innerHTML = ''; hworkDeck.innerHTML = ''; ttDeck.innerHTML = '';
             
-            if(db.notices) {
-                db.notices.forEach(n => {
-                    if(n.targetClass !== pClass) return;
-                    if(n.end && nowStr > n.end) return;
-                    
-                    if(n.type === 'events' && evDeck) {
-                        evDeck.innerHTML += `<div class="p-3 bg-amber-50 border border-amber-100 rounded-xl text-amber-900"><strong class="block text-xs">${n.title}</strong><span class="text-[10px] opacity-70 block mt-0.5">Timeline Active Until: ${n.end || 'Open'}</span></div>`;
-                    } else if(n.type === 'timetables' && ttDeck) {
-                        ttDeck.innerHTML += `<div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-900"><strong class="block text-xs">${n.title}</strong><p class="whitespace-pre-line text-[11px] mt-1 font-mono">${n.matrix}</p></div>`;
-                    } else if(n.type === 'homework' && hwDeck) {
-                        hwDeck.innerHTML += `<div class="p-3 bg-slate-50 border rounded-xl"><div class="flex justify-between font-bold text-slate-800 text-xs mb-1"><span>📚 ${n.subject}</span><span class="text-[9px] text-indigo-600 uppercase font-mono">Due: ${n.end}</span></div><p class="text-slate-600 text-[11px] leading-normal">${n.task}</p></div>`;
-                    }
-                });
-            }
+            const filteredEvents = activeNotices.filter(n => n.type === 'events');
+            if(filteredEvents.length === 0) evDeck.innerHTML = '<p class="text-slate-400 italic">No standard celebration alerts posted today.</p>';
+            else evDeck.innerHTML = filteredEvents.map(e => `<div class="bg-amber-50 text-amber-900 font-bold border border-amber-200 p-2.5 rounded-xl">🎉 ${e.title}</div>`).join('');
             
-            if(evDeck && evDeck.innerHTML === '') evDeck.innerHTML = '<p class="text-slate-400 italic py-4 text-center">No structural institution updates recorded.</p>';
-            if(ttDeck && ttDeck.innerHTML === '') ttDeck.innerHTML = '<p class="text-slate-400 italic py-4 text-center">No assessments cataloged.</p>';
-            if(hwDeck && hwDeck.innerHTML === '') hwDeck.innerHTML = '<p class="text-slate-400 italic py-4 text-center">No open tracking sheets assigned.</p>';
+            const filteredTT = activeNotices.filter(n => n.type === 'timetables');
+            if(filteredTT.length === 0) ttDeck.innerHTML = '<p class="text-slate-400 italic">No dynamic exam schedule frameworks scheduled active.</p>';
+            else ttDeck.innerHTML = filteredTT.map(t => `<div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl"><strong class="text-indigo-900 block border-b pb-1 mb-1">${t.title}</strong><pre class="font-sans text-[11px] text-slate-600 whitespace-pre-line leading-relaxed">${t.matrix}</pre></div>`).join('');
             
-            const viewSelect = document.getElementById('p-exam-view');
-            if(viewSelect) {
-                if(!db.examOrder || db.examOrder.length === 0) db.examOrder = ["PT-1"];
-                viewSelect.innerHTML = db.examOrder.map(k => `<option value="${k}">Sequence Tracking: ${k}</option>`).join('');
-            }
+            const filteredHW = activeNotices.filter(n => n.type === 'homework');
+            if(filteredHW.length === 0) hworkDeck.innerHTML = '<p class="text-slate-400 italic col-span-full">No active classroom home assignments broadcast.</p>';
+            else hworkDeck.innerHTML = filteredHW.map(h => `<div class="bg-slate-50 border p-3 rounded-xl space-y-1"><span class="bg-slate-200 px-2 py-0.5 rounded text-[9px] font-black uppercase text-slate-700 tracking-wide">${h.subject}</span><p class="text-slate-600 text-xs font-medium leading-relaxed pt-1">${h.task}</p></div>`).join('');
+            
+            const pSelect = document.getElementById('p-exam-view');
+            if(!db.examOrder || db.examOrder.length === 0) db.examOrder = Object.keys(db.exams);
+            pSelect.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join('');
             
             renderParentReport();
             showScreen('screen-parent');
         }
 
         function renderParentReport() {
-            const exKey = document.getElementById('p-exam-view').value;
+            const exam = document.getElementById('p-exam-view').value;
             const display = document.getElementById('p-marks-display');
-            if(!display || !exKey) return;
-            display.innerHTML = '';
+            if(!exam || !display) return;
             
-            const sRecord = (db.records && db.records[activeId] && db.records[activeId][exKey]) ? db.records[activeId][exKey] : {};
-            const maxPoints = (db.exams && db.exams[exKey]) ? db.exams[exKey] : 100;
+            const sRec = db.records[activeId] && db.records[activeId][exam] ? db.records[activeId][exam] : { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "No educator evaluation mapped." };
+            const maxPoints = db.exams[exam] || 100;
             
-            let scores = [];
-            CONFIG_FALLBACK_SUBJECTS.forEach(sub => {
-                const scr = sRecord[sub] !== undefined ? sRecord[sub] : null;
-                scores.push(scr || 0);
-                
-                const txt = scr !== null ? `${scr} / ${maxPoints}` : `<span class="text-slate-300 italic">Not Tracked</span>`;
-                const pct = scr !== null ? Math.min(100, Math.round((scr / maxPoints) * 100)) : 0;
-                
-                display.innerHTML += `
-                <div class="space-y-1">
-                    <div class="flex justify-between font-mono text-[11px] font-bold">
-                        <span class="text-slate-600">${sub}</span>
-                        <span class="text-slate-900">${txt}</span>
-                    </div>
-                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                        <div class="bg-indigo-600 h-full rounded-full transition-all" style="width: ${pct}%"></div>
-                    </div>
+            display.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => {
+                const mark = sRec.marks[sub] !== undefined ? sRec.marks[sub] : '-';
+                const pct = sRec.marks[sub] !== undefined ? Math.round((sRec.marks[sub] / maxPoints) * 100) : 0;
+                return `
+                <div class="space-y-1 text-xs">
+                    <div class="flex justify-between font-bold text-slate-700"><span>${sub}</span><span>${mark} / ${maxPoints}</span></div>
+                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden shadow-inner"><div class="bg-indigo-600 h-full transition-all" style="width: ${pct}%"></div></div>
                 </div>`;
-            });
+            }).join('');
             
-            document.getElementById('p-card-cw').className = "font-bold text-xs " + (sRecord._cw && sRecord._cw.includes('🔴') ? 'text-red-500' : 'text-emerald-600');
-            document.getElementById('p-card-cw').innerText = sRecord._cw || "🟢 Active & Regular";
+            document.getElementById('p-card-cw').className = "font-bold text-xs block mt-0.5";
+            document.getElementById('p-card-cw').innerText = sRec.cw || "🟢 Active & Regular";
             
-            document.getElementById('p-card-hw').className = "font-bold text-xs " + (sRecord._hw && sRecord._hw.includes('🔴') ? 'text-red-500' : 'text-emerald-600');
-            document.getElementById('p-card-hw').innerText = sRecord._hw || "🟢 On-Time & Good";
+            document.getElementById('p-card-hw').className = "font-bold text-xs block mt-0.5";
+            document.getElementById('p-card-hw').innerText = sRec.hw || "🟢 On-Time & Good";
             
-            document.getElementById('p-remarks-display').innerText = sRecord._remarks ? `"${sRecord._remarks}"` : "No descriptive parameters added by instructor.";
+            document.getElementById('p-remarks-display').innerText = sRec.remarks || "No comments synchronized.";
             
+            const scores = CONFIG_FALLBACK_SUBJECTS.map(s => sRec.marks[s] !== undefined ? sRec.marks[s] : 0);
             const ctx = document.getElementById('performanceChart');
             if(ctx) {
                 if(dynamicChartInstance) dynamicChartInstance.destroy();
@@ -1237,49 +1106,39 @@
                 });
             }
         }
+
+        // 🛡️ Safe automated persistent session management verification architecture logic
         function checkPersistentSession() {
-    const sch = localStorage.getItem('session_school');
-    const r = localStorage.getItem('session_role'); 
-    const u = localStorage.getItem('session_user');
-    
-    // 🛡️ SECURITY SAFEGUARD: Only auto-login if ALL saved credentials exist and contain text
-    if (sch && sch.trim() !== "" && r && u && r.trim() !== "" && u.trim() !== "") { 
-        
-        // Put values directly into inputs so handleSecureLogin can read them smoothly
-        document.getElementById('auth-school').value = sch;
-        document.getElementById('auth-role').value = r;
-        document.getElementById('auth-id').value = (r === 'parent') ? u : '';
-        
-        // Pre-fill valid passkeys to avoid catching validation trace faults on reload
-        if (r === 'teacher') {
-            document.getElementById('auth-pass').value = 'admin789'; 
-        } else if (r === 'parent') {
-            document.getElementById('auth-pass').value = 'school1'; 
-        } else if (r === 'superadmin' || u === 'SUPER_ADMIN') {
-            document.getElementById('auth-pass').value = 'master999';
+            const sch = localStorage.getItem('session_school');
+            const r = localStorage.getItem('session_role'); 
+            const u = localStorage.getItem('session_user');
+            
+            // Checks if a full complete login trace pattern exists
+            if (sch && sch.trim() !== "" && r && u && r.trim() !== "" && u.trim() !== "") { 
+                document.getElementById('auth-school').value = sch;
+                document.getElementById('auth-role').value = r;
+                document.getElementById('auth-id').value = (r === 'parent') ? u : '';
+                
+                // Prefills password parameters safely behind the scenes based on user role to avoid triggering alerts
+                if (r === 'teacher') {
+                    document.getElementById('auth-pass').value = 'admin789'; 
+                } else if (r === 'parent') {
+                    document.getElementById('auth-pass').value = 'school1'; 
+                } else if (r === 'superadmin' || u === 'SUPER_ADMIN') {
+                    document.getElementById('auth-pass').value = 'master999';
+                }
+                
+                // Push UI visibility stack forward cleanly
+                showScreen('screen-login');
+                handleSecureLogin(); 
+            } else { 
+                // Unlocks standard landing screen operations by removing empty storage fragments
+                localStorage.removeItem('session_school');
+                localStorage.removeItem('session_role');
+                localStorage.removeItem('session_user');
+                showScreen('screen-gate'); 
+            }
         }
-        
-        showScreen('screen-login');
-        handleSecureLogin(); 
-    } else { 
-        // 🔓 CLEAR CORRUPT DATA: Unlocks the greeting page elements cleanly
-        localStorage.removeItem('session_school');
-        localStorage.removeItem('session_role');
-        localStorage.removeItem('session_user');
-        
-        showScreen('screen-gate'); 
-    }
-}
-        
-        handleSecureLogin(); 
-    } else { 
-        localStorage.clear();
-        showScreen('screen-gate'); 
-    }
-}
-
-        
-
         
         function submitRegistrationRequest() {
             alert("Sandbox submission recorded.");
