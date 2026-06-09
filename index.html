@@ -30,7 +30,6 @@
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* Processing Indicator Styling */
         #global-processing-loader {
             display: none;
             position: fixed;
@@ -482,13 +481,11 @@
     </main>
 
     <script>
-        // Core fallbacks
         const CONFIG_FALLBACK_SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
         let db = { students: {}, records: {}, attendance: {}, exams: {}, history: [], examOrder: [], notices: [], allocatedClasses: [] };
         let currentSchool = null; let currentUser = null; let activeId = null; let dynamicChartInstance = null; let currentTeacherTab = "students";
         let localAttendanceBuffer = {};
 
-        // Replace these keys with your unique Firebase Dashboard connection properties
         const firebaseConfig = { 
             apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70", 
             authDomain: "eduflow-pro-f6d04.firebaseapp.com", 
@@ -498,7 +495,6 @@
             appId: "1:961305546473:web:71db6c4d8da6c4950a6a78" 
         };
         
-        // 🛡️bulletproof production firestore initialization wrapper
         try { 
             firebase.initializeApp(firebaseConfig); 
             window.cloudStorage = firebase.firestore(); 
@@ -621,7 +617,6 @@
             
             if(!school) return alert("School authentication code required.");
             
-            // 🔒 Guard check for Educator Security Passkey
             if (role === 'teacher' && pass !== 'admin789') {
                 showLoader(false);
                 return alert("Invalid Educator Verification Key Code.");
@@ -655,7 +650,12 @@
             try { 
                 const docRef = window.cloudStorage.collection("schools").doc(school);
                 const docSnap = await docRef.get(); 
+                
                 if (!docSnap.exists) { 
+                    if (role === 'parent') {
+                        showLoader(false);
+                        return alert("This School Code does not exist or has no recorded data yet.");
+                    }
                     currentSchool = school; 
                     verifyAndSeedDefaultClasses(); 
                     db.students = {}; 
@@ -674,9 +674,9 @@
                 document.getElementById('nav-school-display').innerText = `Workspace Environment: ${currentSchool}`; 
                 
                 if (role === 'parent') {
-                    if (!db.students[id] || db.students[id].pass !== pass) {
+                    if (!db.students || !db.students[id] || db.students[id].pass !== pass) {
                         showLoader(false);
-                        return alert("Invalid parent student credentials allocation parameters.");
+                        return alert("Invalid student roll identifier or matching parent passkey credentials.");
                     }
                     activeId = id;
                     commitSession(currentSchool, id, 'parent');
@@ -775,14 +775,13 @@
             if(!tbody) return;
             
             let html = '';
-            // Seed a default mock structure value node array set if zero rows are active
-            const studentsArr = Object.keys(db.students).filter(k => k.startsWith(currentClass));
+            const studentsArr = Object.keys(db.students || {}).filter(k => k.startsWith(currentClass));
             if(studentsArr.length === 0 && query === "") {
                 html = `<tr><td colspan="4" class="p-8 text-center text-slate-400">No active students enrolled under class stream node ${currentClass}. Click the green button below to inject records manually.</td></tr>`;
             } else {
                 studentsArr.forEach(id => {
                     const s = db.students[id];
-                    if(s.name.toLowerCase().includes(query)) {
+                    if(s && s.name.toLowerCase().includes(query)) {
                         html += `
                         <tr class="hover:bg-slate-50 transition-colors">
                             <td class="p-4 font-mono font-bold text-indigo-600">${id}</td>
@@ -815,9 +814,10 @@
             
             if(!roll || !name || !pass) return alert("All student registration cells are mandatory.");
             const fullId = `${currentClass}-${roll}`;
-            if(db.students[fullId]) return alert("This sequence identity code string already exists.");
+            if(db.students && db.students[fullId]) return alert("This sequence identity code string already exists.");
             
             showLoader(true);
+            if(!db.students) db.students = {};
             db.students[fullId] = { name: name, pass: pass };
             await syncToCloud();
             renderTeacherList();
@@ -828,7 +828,7 @@
             if(!confirm(`Erase structural profile and data matrix permanently for ${id}?`)) return;
             showLoader(true);
             delete db.students[id];
-            if(db.records[id]) delete db.records[id];
+            if(db.records && db.records[id]) delete db.records[id];
             await syncToCloud();
             renderTeacherList();
             showLoader(false);
@@ -840,12 +840,13 @@
             const tbody = document.getElementById('attendance-table-body');
             if(!tbody || !date) return;
             
-            const studentsArr = Object.keys(db.students).filter(k => k.startsWith(currentClass));
+            const studentsArr = Object.keys(db.students || {}).filter(k => k.startsWith(currentClass));
             if(studentsArr.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400">No student target sets discovered.</td></tr>`;
                 return;
             }
             
+            if(!db.attendance) db.attendance = {};
             if(!db.attendance[date]) db.attendance[date] = {};
             localAttendanceBuffer = { ...db.attendance[date] };
             
@@ -883,6 +884,7 @@
             const date = document.getElementById('attendance-date').value;
             if(!date) return alert("Select standard timeline sequence.");
             showLoader(true);
+            if(!db.attendance) db.attendance = {};
             db.attendance[date] = { ...localAttendanceBuffer };
             await syncToCloud();
             showLoader(false);
@@ -892,7 +894,7 @@
         function renderExamConfigurationPanel() {
             const container = document.getElementById('exam-config-rows');
             if(!container) return;
-            if(!db.examOrder) db.examOrder = Object.keys(db.exams);
+            if(!db.examOrder) db.examOrder = Object.keys(db.exams || {});
             
             container.innerHTML = db.examOrder.map(ex => `
             <div class="flex items-center justify-between p-3 bg-slate-50 border rounded-xl text-xs font-bold">
@@ -906,7 +908,9 @@
             const max = parseInt(document.getElementById('new-exam-max').value);
             if(!name || isNaN(max)) return alert("Specify legitimate module focus text metrics.");
             
+            if(!db.exams) db.exams = {};
             db.exams[name] = max;
+            if(!db.examOrder) db.examOrder = [];
             if(!db.examOrder.includes(name)) db.examOrder.push(name);
             renderExamConfigurationPanel();
             document.getElementById('new-exam-name').value = '';
@@ -914,8 +918,8 @@
         }
 
         function purgeExamModule(name) {
-            delete db.exams[name];
-            db.examOrder = db.examOrder.filter(x => x !== name);
+            if(db.exams) delete db.exams[name];
+            db.examOrder = (db.examOrder || []).filter(x => x !== name);
             renderExamConfigurationPanel();
         }
 
@@ -931,7 +935,7 @@
             document.getElementById('m-student-name').innerText = `Evaluation: ${db.students[studentId].name} (${studentId})`;
             const select = document.getElementById('m-exam');
             
-            if(!db.examOrder || db.examOrder.length === 0) db.examOrder = Object.keys(db.exams);
+            if(!db.examOrder || db.examOrder.length === 0) db.examOrder = Object.keys(db.exams || {});
             select.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join('');
             
             loadExistingMarks();
@@ -943,12 +947,13 @@
             const container = document.getElementById('m-grid');
             if(!exam || !container) return;
             
+            if(!db.records) db.records = {};
             if(!db.records[activeId]) db.records[activeId] = {};
             if(!db.records[activeId][exam]) db.records[activeId][exam] = { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "" };
             
             const currentRecord = db.records[activeId][exam];
             container.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => {
-                const val = currentRecord.marks[sub] !== undefined ? currentRecord.marks[sub] : '';
+                const val = (currentRecord.marks && currentRecord.marks[sub] !== undefined) ? currentRecord.marks[sub] : '';
                 return `
                 <div class="bg-slate-50 p-2 rounded-xl border">
                     <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">${sub}</label>
@@ -980,6 +985,8 @@
             }
             
             showLoader(true);
+            if(!db.records) db.records = {};
+            if(!db.records[activeId]) db.records[activeId] = {};
             db.records[activeId][exam] = {
                 marks: targetMarks,
                 cw: document.getElementById('m-cw-status').value,
@@ -1025,12 +1032,13 @@
         }
 
         function initParentView() {
+            if(!db.students || !db.students[activeId]) return;
             document.getElementById('p-name').innerText = db.students[activeId].name;
             document.getElementById('p-id').innerText = `Roster ID Code: ${activeId} | Network Token Active`;
             
             let totalDays = 0; let presentDays = 0;
-            Object.keys(db.attendance).forEach(d => {
-                if(db.attendance[d][activeId] !== undefined) {
+            Object.keys(db.attendance || {}).forEach(d => {
+                if(db.attendance[d] && db.attendance[d][activeId] !== undefined) {
                     totalDays++;
                     if(db.attendance[d][activeId]) presentDays++;
                 }
@@ -1062,7 +1070,7 @@
             else hworkDeck.innerHTML = filteredHW.map(h => `<div class="bg-slate-50 border p-3 rounded-xl space-y-1"><span class="bg-slate-200 px-2 py-0.5 rounded text-[9px] font-black uppercase text-slate-700 tracking-wide">${h.subject}</span><p class="text-slate-600 text-xs font-medium leading-relaxed pt-1">${h.task}</p></div>`).join('');
             
             const pSelect = document.getElementById('p-exam-view');
-            if(!db.examOrder || db.examOrder.length === 0) db.examOrder = Object.keys(db.exams);
+            if(!db.examOrder || db.examOrder.length === 0) db.examOrder = Object.keys(db.exams || {});
             pSelect.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join('');
             
             renderParentReport();
@@ -1074,12 +1082,12 @@
             const display = document.getElementById('p-marks-display');
             if(!exam || !display) return;
             
-            const sRec = db.records[activeId] && db.records[activeId][exam] ? db.records[activeId][exam] : { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "No educator evaluation mapped." };
-            const maxPoints = db.exams[exam] || 100;
+            const sRec = db.records && db.records[activeId] && db.records[activeId][exam] ? db.records[activeId][exam] : { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "No educator evaluation mapped." };
+            const maxPoints = (db.exams && db.exams[exam]) || 100;
             
             display.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => {
-                const mark = sRec.marks[sub] !== undefined ? sRec.marks[sub] : '-';
-                const pct = sRec.marks[sub] !== undefined ? Math.round((sRec.marks[sub] / maxPoints) * 100) : 0;
+                const mark = (sRec.marks && sRec.marks[sub] !== undefined) ? sRec.marks[sub] : '-';
+                const pct = (sRec.marks && sRec.marks[sub] !== undefined) ? Math.round((sRec.marks[sub] / maxPoints) * 100) : 0;
                 return `
                 <div class="space-y-1 text-xs">
                     <div class="flex justify-between font-bold text-slate-700"><span>${sub}</span><span>${mark} / ${maxPoints}</span></div>
@@ -1095,7 +1103,7 @@
             
             document.getElementById('p-remarks-display').innerText = sRec.remarks || "No comments synchronized.";
             
-            const scores = CONFIG_FALLBACK_SUBJECTS.map(s => sRec.marks[s] !== undefined ? sRec.marks[s] : 0);
+            const scores = CONFIG_FALLBACK_SUBJECTS.map(s => (sRec.marks && sRec.marks[s] !== undefined) ? sRec.marks[s] : 0);
             const ctx = document.getElementById('performanceChart');
             if(ctx) {
                 if(dynamicChartInstance) dynamicChartInstance.destroy();
@@ -1107,19 +1115,16 @@
             }
         }
 
-        // 🛡️ Safe automated persistent session management verification architecture logic
         function checkPersistentSession() {
             const sch = localStorage.getItem('session_school');
             const r = localStorage.getItem('session_role'); 
             const u = localStorage.getItem('session_user');
             
-            // Checks if a full complete login trace pattern exists
             if (sch && sch.trim() !== "" && r && u && r.trim() !== "" && u.trim() !== "") { 
                 document.getElementById('auth-school').value = sch;
                 document.getElementById('auth-role').value = r;
                 document.getElementById('auth-id').value = (r === 'parent') ? u : '';
                 
-                // Prefills password parameters safely behind the scenes based on user role to avoid triggering alerts
                 if (r === 'teacher') {
                     document.getElementById('auth-pass').value = 'admin789'; 
                 } else if (r === 'parent') {
@@ -1128,11 +1133,9 @@
                     document.getElementById('auth-pass').value = 'master999';
                 }
                 
-                // Push UI visibility stack forward cleanly
                 showScreen('screen-login');
                 handleSecureLogin(); 
             } else { 
-                // Unlocks standard landing screen operations by removing empty storage fragments
                 localStorage.removeItem('session_school');
                 localStorage.removeItem('session_role');
                 localStorage.removeItem('session_user');
