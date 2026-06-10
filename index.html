@@ -30,7 +30,6 @@
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* Processing Indicator Styling */
         #global-processing-loader {
             display: none;
             position: fixed;
@@ -174,26 +173,29 @@
                 </div>
                 <hr>
                 <div class="space-y-3">
-                    <div>
+                    <div id="field-container-school">
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">School Code</label>
                         <input id="auth-school" type="text" placeholder="Enter School Code" class="w-full border rounded-xl p-3 text-xs font-mono uppercase bg-slate-50 outline-none focus:border-indigo-500">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Access Authorization Profile</label>
-                        <select id="auth-role" class="w-full border rounded-xl p-3 text-xs bg-slate-50 font-bold outline-none focus:border-indigo-500">
-                            <option value="admin">Principal / School Admin</option>
-                            <option value="teacher">Classroom Teacher</option>
+                        <select id="auth-role" onchange="adaptLoginFormLayout(this.value)" class="w-full border rounded-xl p-3 text-xs bg-slate-50 font-bold outline-none focus:border-indigo-500">
                             <option value="parent">Parent / Student Viewer</option>
-                            <option value="superadmin">👑 Network Super Administrator</option>
+                            <option value="teacher">Classroom Teacher</option>
+                            <option value="admin">Principal / School Admin</option>
+                            <option value="superadmin">👑 Network Super Administrator (Master)</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Student Roll Identifier (Parents Only)</label>
+                    <div id="field-container-id">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Student Roll Identifier</label>
                         <input id="auth-id" type="text" placeholder="e.g., 10A-5" class="w-full border rounded-xl p-3 text-xs outline-none focus:border-indigo-500">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Secure Passkey</label>
-                        <input id="auth-pass" type="password" placeholder="••••••••" class="w-full border rounded-xl p-3 text-xs outline-none focus:border-indigo-500">
+                        <div class="relative flex items-center">
+                            <input id="auth-pass" type="password" placeholder="••••••••" class="w-full border rounded-xl p-3 pr-12 text-xs outline-none focus:border-indigo-500">
+                            <button type="button" onclick="togglePasskeyValueField()" class="absolute right-3 text-[10px] font-bold uppercase tracking-wider text-indigo-600 hover:text-indigo-800">Show</button>
+                        </div>
                     </div>
                     <button id="btn-login-submit" type="button" onclick="handleSecureLogin()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold hover:bg-indigo-700 shadow-md text-xs transition-colors">
                         Authenticate Credentials
@@ -205,20 +207,26 @@
 
         <section id="screen-superadmin" class="screen w-full max-w-6xl space-y-6">
             <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between items-center">
-                <h2 class="text-2xl font-black tracking-tight text-indigo-400">Network Operations Dashboard</h2>
+                <h2 class="text-2xl font-black tracking-tight text-indigo-400">Platform Infrastructure Hub</h2>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active Deployments</span>
-                    <h3 id="stat-schools" class="text-2xl font-black text-indigo-600 mt-1">Loading System Status...</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
+                    <h3 class="font-black text-xs uppercase tracking-wider text-indigo-600">Active Inbound Registrations</h3>
+                    <div id="super-request-deck" class="space-y-3 max-h-[400px] overflow-y-auto text-xs divide-y">
+                        <p class="text-slate-400 italic p-2">No verification logs submitted yet.</p>
+                    </div>
                 </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Inbound Requests</span>
-                    <h3 id="stat-requests" class="text-2xl font-black text-amber-600 mt-1">0 Pending</h3>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Platform Actions</span>
-                    <h3 id="stat-visitors" class="text-2xl font-black text-blue-600 mt-1">System Operational</h3>
+                <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
+                    <h3 class="font-black text-xs uppercase tracking-wider text-indigo-600">Deploy Global System Parameter</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400">Initialize New School Document Token ID</label>
+                            <input id="super-new-school" type="text" placeholder="e.g., DPS_INDORE" class="w-full border rounded-xl p-2.5 text-xs font-mono uppercase mt-1">
+                        </div>
+                        <button type="button" onclick="provisionNewSchoolEnvironment()" class="w-full bg-indigo-600 text-white font-bold p-3 rounded-xl text-xs hover:bg-indigo-700 transition-colors">
+                            Provision School Core Document Node
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -482,13 +490,12 @@
     </main>
 
     <script>
-        // Core fallbacks
         const CONFIG_FALLBACK_SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
-        let db = { students: {}, records: {}, attendance: {}, exams: {}, history: [], examOrder: [], notices: [], allocatedClasses: [] };
+        let db = { students: {}, records: {}, attendance: {}, exams: {}, examOrder: [], notices: [], allocatedClasses: [], config: {} };
         let currentSchool = null; let currentUser = null; let activeId = null; let dynamicChartInstance = null; let currentTeacherTab = "students";
         let localAttendanceBuffer = {};
 
-        // Replace these keys with your unique Firebase Dashboard connection properties
+        // Connected database configurations
         const firebaseConfig = { 
             apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70", 
             authDomain: "eduflow-pro-f6d04.firebaseapp.com", 
@@ -502,23 +509,46 @@
             firebase.initializeApp(firebaseConfig); 
             window.cloudStorage = firebase.firestore(); 
         } catch (e) { 
-            console.warn("Cloud infrastructure fallback activated. Interface locked to client session simulation sandbox.");
+            console.warn("Database fallback offline active.");
             window.cloudStorage = null; 
         }
 
-        // Toggle Processing Circle Spinner Visibility
         function showLoader(isVisible) { 
             const loader = document.getElementById('global-processing-loader');
             if (loader) loader.style.display = isVisible ? 'flex' : 'none'; 
         }
 
-        // Sync helper dropdown with custom text field
+        function togglePasskeyValueField() {
+            const passField = document.getElementById('auth-pass');
+            if(passField.type === 'password') {
+                passField.type = 'text';
+            } else {
+                passField.type = 'password';
+            }
+        }
+
+        // Layout Adaptability Layer
+        function adaptLoginFormLayout(role) {
+            const schoolContainer = document.getElementById('field-container-school');
+            const idContainer = document.getElementById('field-container-id');
+            
+            if(role === 'superadmin') {
+                schoolContainer.style.display = 'none';
+                idContainer.style.display = 'none';
+            } else if(role === 'parent') {
+                schoolContainer.style.display = 'block';
+                idContainer.style.display = 'block';
+            } else {
+                schoolContainer.style.display = 'block';
+                idContainer.style.display = 'none';
+            }
+        }
+
         function syncSubjectCustomField(value) { 
             const inputField = document.getElementById('bulletin-hw-subject');
             if(inputField) inputField.value = value; 
         }
 
-        // Generate classes array fallback if database is empty
         function verifyAndSeedDefaultClasses() { 
             if (!db.allocatedClasses || db.allocatedClasses.length === 0) { 
                 db.allocatedClasses = [];
@@ -528,22 +558,6 @@
                 } 
             } 
             buildClassSelectOptions();
-        }
-
-        // Auto sorting class matrix algorithm
-        async function triggerAutoSort() { 
-            if (!db.allocatedClasses) return; 
-            showLoader(true);
-            db.allocatedClasses.sort((x, y) => { 
-                const numX = parseInt(x); 
-                const numY = parseInt(y); 
-                if (numX !== numY) return numX - numY; 
-                return x.localeCompare(y); 
-            });
-            buildClassSelectOptions(); 
-            await syncToCloud(); 
-            refreshCurrentTeacherTab(); 
-            showLoader(false); 
         }
 
         function buildClassSelectOptions(preserveSelectedValue = null) { 
@@ -556,96 +570,52 @@
             } 
         }
 
-        async function addNewClassStream() { 
-            const input = document.getElementById('new-class-input');
-            const targetVal = input.value.trim().toUpperCase(); 
-            if(!targetVal) return alert("Please specify a valid Class Code label."); 
-            if(db.allocatedClasses.includes(targetVal)) return alert("This stream node already exists.");
-            showLoader(true); 
-            if (!db.allocatedClasses || db.allocatedClasses.length === 0) { 
-                verifyAndSeedDefaultClasses(); 
-            } 
-            db.allocatedClasses.push(targetVal); 
-            buildClassSelectOptions(targetVal); 
-            await syncToCloud(); 
-            input.value = ''; 
-            refreshCurrentTeacherTab(); 
-            showLoader(false);
-        }
-
-        async function moveSelectedClass(direction) { 
-            const select = document.getElementById('class-select'); 
-            const currentSelected = select.value; 
-            if(!currentSelected) return; 
-            const index = db.allocatedClasses.indexOf(currentSelected);
-            if(index === -1) return; 
-            showLoader(true); 
-            if (direction === 'up' && index > 0) { 
-                let temp = db.allocatedClasses[index - 1];
-                db.allocatedClasses[index - 1] = db.allocatedClasses[index]; 
-                db.allocatedClasses[index] = temp; 
-            } else if (direction === 'down' && index < db.allocatedClasses.length - 1) { 
-                let temp = db.allocatedClasses[index + 1];
-                db.allocatedClasses[index + 1] = db.allocatedClasses[index]; 
-                db.allocatedClasses[index] = temp; 
-            } else { 
-                showLoader(false); 
-                return; 
-            } 
-            buildClassSelectOptions(currentSelected); 
-            await syncToCloud(); 
-            refreshCurrentTeacherTab(); 
-            showLoader(false);
-        }
-
-        async function deleteSelectedClassStream() { 
-            const currentSelected = document.getElementById('class-select').value; 
-            if(!currentSelected) return;
-            if(!confirm(`Are you sure you want to completely erase Class Code ${currentSelected}?`)) return; 
-            showLoader(true); 
-            db.allocatedClasses = db.allocatedClasses.filter(c => c !== currentSelected);
-            buildClassSelectOptions(); 
-            await syncToCloud(); 
-            refreshCurrentTeacherTab(); 
-            showLoader(false); 
-        }
-
-        function showScreen(screenId) { 
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); 
-            const target = document.getElementById(screenId); 
-            if(target) target.classList.add('active');
-        }
-
-        // AUTH ENGINE: Patched to dynamically build structural layout nodes automatically on new codes
+        // AUTH ENGINE: Patched to remove hardcoded master credentials
         async function handleSecureLogin() { 
             const school = document.getElementById('auth-school').value.trim().toUpperCase();
             const role = document.getElementById('auth-role').value; 
             const id = document.getElementById('auth-id').value.trim(); 
             const pass = document.getElementById('auth-pass').value.trim(); 
-            if(!school) return alert("School authentication code required.");
             
-            if (role === 'superadmin' && pass === 'master999') { 
-                commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin'); 
-                showScreen('screen-superadmin'); 
-                return; 
-            } 
             showLoader(true);
+
+            // Master Profile Validation Flow (No hardcoded code strings)
+            if (role === 'superadmin') {
+                if(!window.cloudStorage) {
+                    showLoader(false);
+                    return alert("Superadmin requires an active Firebase backend configuration connection.");
+                }
+                try {
+                    const masterSnap = await window.cloudStorage.collection("platform_config").doc("master").get();
+                    if(masterSnap.exists && masterSnap.data().masterPass === pass) {
+                        commitSession('MASTER_SYSTEM', 'SUPER_ADMIN', 'superadmin');
+                        document.getElementById('nav-school-display').innerText = "PLATFORM ROOT CONTROL NODE";
+                        loadSuperadminDashboardPanel();
+                        showScreen('screen-superadmin');
+                        showLoader(false);
+                    } else {
+                        showLoader(false);
+                        alert("Invalid Global Superadmin Master Passkey Token.");
+                    }
+                } catch(err) {
+                    showLoader(false);
+                    alert("Master collection access error: " + err.message);
+                }
+                return;
+            }
+
+            if(!school) {
+                showLoader(false);
+                return alert("School identifier code input required.");
+            }
             
             if (!window.cloudStorage) { 
                 currentSchool = school; 
                 verifyAndSeedDefaultClasses(); 
-                db.students["10A-1"] = { name: "Demo Student", pass: "school1" };
-                db.exams = { "PT-1": 50 }; 
-                db.examOrder = ["PT-1"]; 
+                db.students["10A-1"] = { name: "Demo Student", pass: "123" };
                 showLoader(false); 
-                if (role === 'parent') { 
-                    activeId = "10A-1";
-                    commitSession(currentSchool, "10A-1", 'parent'); 
-                    initParentView(); 
-                } else { 
-                    commitSession(currentSchool, 'teacher', 'teacher'); 
-                    initTeacherView(); 
-                } 
+                if (role === 'parent') { activeId = "10A-1"; commitSession(currentSchool, "10A-1", 'parent'); initParentView(); } 
+                else { commitSession(currentSchool, 'teacher', 'teacher'); initTeacherView(); } 
                 return; 
             } 
             
@@ -653,64 +623,35 @@
                 const docRef = window.cloudStorage.collection("schools").doc(school);
                 const docSnap = await docRef.get(); 
                 if (!docSnap.exists) { 
-                    currentSchool = school; 
-                    verifyAndSeedDefaultClasses(); 
-                    db.students = {}; 
-                    db.records = {};
-                    db.attendance = {}; 
-                    db.exams = { "PT-1": 100 }; 
-                    db.examOrder = ["PT-1"]; 
-                    db.notices = []; 
-                    await docRef.set(db);
+                    showLoader(false);
+                    return alert("This school environment identifier code does not exist. Apply via registration tab.");
                 } 
+                
                 currentSchool = school; 
                 document.getElementById('nav-school-display').innerText = `Workspace Environment: ${currentSchool}`; 
                 
-                docRef.onSnapshot(doc => { 
-                    if(doc.exists) { 
-                        const incomingData = doc.data(); 
-                        db.allocatedClasses = incomingData.allocatedClasses || []; 
-                        if(db.allocatedClasses.length === 0) verifyAndSeedDefaultClasses(); 
-                        db.students = incomingData.students || {}; 
-                        db.records = incomingData.records || {}; 
-                        db.attendance = incomingData.attendance || {}; 
-                        db.exams = incomingData.exams || {}; 
-                        db.examOrder = incomingData.examOrder || Object.keys(db.exams); 
-                        db.notices = incomingData.notices || [];
-                        
-                        // Populate custom option menus inside the notice workspace contextually
-                        const noticeSubSelect = document.getElementById('bulletin-hw-subject-select');
-                        if (noticeSubSelect) {
-                            noticeSubSelect.innerHTML = '<option value="">-- Custom Input --</option>' + 
-                                CONFIG_FALLBACK_SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
-                        }
-                    } 
-                });
+                const incomingData = docSnap.data(); 
+                db = incomingData;
+                if(!db.config) db.config = { adminPass: "admin123", teacherPass: "teacher123" };
 
-                // Post initialization latency buffer check
-                await new Promise(res => setTimeout(res, 800));
+                docRef.onSnapshot(doc => { if(doc.exists) db = doc.data(); });
                 showLoader(false);
 
                 if (role === 'admin') { 
-                    if(pass === 'admin123') { 
+                    if(db.config.adminPass === pass) { 
                         commitSession(currentSchool, 'Principal', 'admin'); 
-                        alert("Principal profile loaded successfully."); 
-                        location.reload(); 
+                        alert("Principal configuration unlocked."); 
                     } else { 
                         alert("Invalid Administrative Passkey credentials."); 
                     } 
                 } else if (role === 'teacher') { 
-                    if(pass === 'teacher123') { 
+                    if(db.config.teacherPass === pass) { 
                         commitSession(currentSchool, 'Teacher', 'teacher'); 
                         initTeacherView(); 
                     } else { 
                         alert("Invalid Educator Token verification."); 
                     } 
                 } else if (role === 'parent') { 
-                    if(!id) { 
-                        alert("Please specify a Student Roll ID."); 
-                        return; 
-                    } 
                     if(db.students && db.students[id] && db.students[id].pass === pass) { 
                         activeId = id; 
                         commitSession(currentSchool, id, 'parent'); 
@@ -721,7 +662,97 @@
                 }
             } catch(e) { 
                 showLoader(false); 
-                alert("Database node request rejected. Reason: " + e.message); 
+                alert("Database request error: " + e.message); 
+            }
+        }
+
+        // Global Registration Form Pipeline Logic
+        async function submitRegistrationRequest() {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            
+            if(!name || !email || !phone) return alert("Please fill out all registration application criteria items.");
+            showLoader(true);
+            
+            if(!window.cloudStorage) {
+                showLoader(false);
+                alert("Database connection offline. Application simulated safely.");
+                showScreen('screen-gate');
+                return;
+            }
+            
+            try {
+                await window.cloudStorage.collection("platform_requests").add({
+                    schoolName: name, adminEmail: email, adminPhone: phone, timestamp: Date.now()
+                });
+                showLoader(false);
+                alert("Your deployment application has been submitted to Master Superadmin review arrays successfully.");
+                document.getElementById('reg-name').value = "";
+                document.getElementById('reg-email').value = "";
+                document.getElementById('reg-phone').value = "";
+                showScreen('screen-gate');
+            } catch(e) {
+                showLoader(false);
+                alert("Registration pipeline block error: " + e.message);
+            }
+        }
+
+        // Superadmin Operation Controllers
+        async function loadSuperadminDashboardPanel() {
+            const deck = document.getElementById('super-request-deck');
+            if(!deck || !window.cloudStorage) return;
+            
+            window.cloudStorage.collection("platform_requests").orderBy("timestamp", "desc").onSnapshot(snap => {
+                if(snap.empty) {
+                    deck.innerHTML = '<p class="text-slate-400 italic p-2">No inbound setup configurations logged.</p>';
+                    return;
+                }
+                deck.innerHTML = snap.docs.map(doc => {
+                    const data = doc.data();
+                    return `
+                    <div class="p-3 bg-slate-50 space-y-1 rounded-xl">
+                        <p class="font-bold text-slate-800 text-xs">${data.schoolName}</p>
+                        <p class="text-slate-500 text-[11px]">Email: ${data.adminEmail} | Contact: ${data.adminPhone}</p>
+                        <button type="button" onclick="deletePlatformRegistrationRequest('${doc.id}')" class="text-red-500 font-bold text-[10px] uppercase hover:underline">Clear Entry</button>
+                    </div>`;
+                }).join('');
+            });
+        }
+
+        async function deletePlatformRegistrationRequest(id) {
+            if(window.cloudStorage) {
+                await window.cloudStorage.collection("platform_requests").doc(id).delete();
+            }
+        }
+
+        async function provisionNewSchoolEnvironment() {
+            const code = document.getElementById('super-new-school').value.trim().toUpperCase();
+            if(!code) return alert("Provide a unique identification label key.");
+            showLoader(true);
+            
+            try {
+                const targetRef = window.cloudStorage.collection("schools").doc(code);
+                const check = await targetRef.get();
+                if(check.exists) {
+                    showLoader(false);
+                    return alert("This document workspace token node code has already been allocated on this platform branch.");
+                }
+                
+                let structureSeed = {
+                    allocatedClasses: ["1A", "1B", "2A", "2B", "10A"],
+                    students: {}, records: {}, attendance: {},
+                    exams: { "PT-1": 100 }, examOrder: ["PT-1"], notices: [],
+                    config: { adminPass: "admin123", teacherPass: "teacher123" }
+                };
+                
+                await targetRef.set(structureSeed);
+                showLoader(false);
+                alert(`Document cluster environment mapped and provisioned successfully for token node: ${code}`);
+                document.getElementById('super-new-school').value = "";
+            } catch(e) {
+                showLoader(false);
+                alert("Provisioning failed: " + e.message);
             }
         }
 
@@ -746,11 +777,11 @@
         }
 
         async function syncToCloud() { 
-            if(window.cloudStorage && currentSchool) { 
+            if(window.cloudStorage && currentSchool && currentSchool !== 'MASTER_SYSTEM') { 
                 try { 
                     await window.cloudStorage.collection("schools").doc(currentSchool).update(db); 
                 } catch(err) { 
-                    console.error("Cloud synchronization halted:", err); 
+                    console.error("Cloud synchronization mapping drop error:", err); 
                 } 
             } 
         }
@@ -780,9 +811,7 @@
             } else if(tabName === 'attendance') { 
                 document.getElementById('date-picker-container').classList.remove('hidden'); 
                 const inputDate = document.getElementById('attendance-date'); 
-                if(!inputDate.value) { 
-                    inputDate.value = new Date().toISOString().split('T')[0]; 
-                } 
+                if(!inputDate.value) { inputDate.value = new Date().toISOString().split('T')[0]; } 
             } 
             refreshCurrentTeacherTab(); 
         }
@@ -829,7 +858,6 @@
                 </tr>`; 
             }); 
             
-            // Render trailing option node element to dynamically append standard student allocations
             const nextIdx = matchedKeys.length > 0 ? parseInt(matchedKeys[matchedKeys.length - 1].split('-')[1]) + 1 : 1; 
             html += `
             <tr class="bg-indigo-50/40">
@@ -894,9 +922,7 @@
             let html = ''; 
             matchedKeys.forEach(k => { 
                 let isPresent = true; 
-                if(db.attendance && db.attendance[date] && db.attendance[date][k] !== undefined) { 
-                    isPresent = db.attendance[date][k]; 
-                } 
+                if(db.attendance && db.attendance[date] && db.attendance[date][k] !== undefined) { isPresent = db.attendance[date][k]; } 
                 localAttendanceBuffer[k] = isPresent; 
                 html += `
                 <tr class="hover:bg-slate-50 transition-colors">
@@ -928,12 +954,10 @@
             showLoader(true); 
             if(!db.attendance) db.attendance = {}; 
             db.attendance[date] = {}; 
-            Object.keys(localAttendanceBuffer).forEach(k => { 
-                db.attendance[date][k] = localAttendanceBuffer[k]; 
-            }); 
+            Object.keys(localAttendanceBuffer).forEach(k => { db.attendance[date][k] = localAttendanceBuffer[k]; }); 
             await syncToCloud(); 
             showLoader(false); 
-            alert(`Attendance register records synchronized successfully for target timeline code node: ${date}`); 
+            alert(`Attendance register records synchronized successfully.`); 
         }
 
         function renderExamConfigurationLayout() { 
@@ -941,11 +965,8 @@
             if(!rowsContainer) return; 
             rowsContainer.innerHTML = ''; 
             
-            // Defensive setup for evaluation items arrays
             if(!db.exams || typeof db.exams !== 'object') db.exams = { "PT-1": 100 };
-            if(!db.examOrder || !Array.isArray(db.examOrder) || db.examOrder.length === 0) {
-                db.examOrder = Object.keys(db.exams);
-            }
+            if(!db.examOrder || !Array.isArray(db.examOrder) || db.examOrder.length === 0) { db.examOrder = Object.keys(db.exams); }
             
             rowsContainer.innerHTML = db.examOrder.map(ex => `
             <div class="flex items-center gap-3 bg-slate-50 border p-3 rounded-xl">
@@ -982,7 +1003,7 @@
         }
 
         function purgeExamModuleNode(ex) { 
-            if(!confirm(`Erase testing evaluation module descriptor tag: ${ex}? This action resets grading structures.`)) return; 
+            if(!confirm(`Erase testing evaluation module descriptor tag: ${ex}?`)) return; 
             delete db.exams[ex]; 
             db.examOrder = db.examOrder.filter(o => o !== ex); 
             renderExamConfigurationLayout(); 
@@ -1008,7 +1029,7 @@
                 title = document.getElementById('bulletin-evt-title').value.trim(); 
                 start = document.getElementById('bulletin-evt-start').value; 
                 end = document.getElementById('bulletin-evt-end').value; 
-                if(!title || !start || !end) return alert("Complete metrics data bindings for active celebration structures."); 
+                if(!title || !start || !end) return alert("Complete metrics data bindings."); 
             } else if(type === 'timetables') { 
                 title = document.getElementById('bulletin-tt-title').value.trim(); 
                 start = document.getElementById('bulletin-tt-start').value; 
@@ -1021,11 +1042,6 @@
             if(!db.notices) db.notices = []; 
             db.notices.push({ type, title, start, end, matrix, subject, task, timestamp: Date.now() }); 
             await syncToCloud(); 
-            
-            if(type === 'homework') { document.getElementById('bulletin-hw-task').value = ''; document.getElementById('bulletin-hw-subject').value = ''; } 
-            else if(type === 'events') { document.getElementById('bulletin-evt-title').value = ''; } 
-            else if(type === 'timetables') { document.getElementById('bulletin-tt-title').value = ''; document.getElementById('bulletin-tt-matrix').value = ''; } 
-            
             showLoader(false); 
             alert("Dynamic operational notice board notification published successfully."); 
         }
@@ -1033,14 +1049,8 @@
         function launchEvaluationManager(studentId) { 
             activeId = studentId; 
             document.getElementById('m-student-name').innerText = `Evaluation Profile Node: ${db.students[studentId].name} (${studentId})`; 
-            
-            if(!db.exams || typeof db.exams !== 'object' || Object.keys(db.exams).length === 0) {
-                db.exams = { "PT-1": 100 };
-            }
-            if(!db.examOrder || !Array.isArray(db.examOrder) || db.examOrder.length === 0) {
-                db.examOrder = Object.keys(db.exams);
-            }
-            
+            if(!db.exams || typeof db.exams !== 'object' || Object.keys(db.exams).length === 0) { db.exams = { "PT-1": 100 }; }
+            if(!db.examOrder || !Array.isArray(db.examOrder) || db.examOrder.length === 0) { db.examOrder = Object.keys(db.exams); }
             const examSelect = document.getElementById('m-exam'); 
             examSelect.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join(''); 
             loadExistingMarks(); 
@@ -1072,12 +1082,8 @@
             const exam = document.getElementById('m-exam').value; 
             if(!exam) return; 
             showLoader(true); 
-            
             let sRec = db.records[activeId][exam]; 
-            CONFIG_FALLBACK_SUBJECTS.forEach(sub => { 
-                const val = document.getElementById(`m-score-${sub}`).value.trim(); 
-                sRec.marks[sub] = val; 
-            }); 
+            CONFIG_FALLBACK_SUBJECTS.forEach(sub => { sRec.marks[sub] = document.getElementById(`m-score-${sub}`).value.trim(); }); 
             sRec.cw = document.getElementById('m-cw-status').value; 
             sRec.hw = document.getElementById('m-hw-status').value; 
             sRec.remarks = document.getElementById('m-remarks').value.trim(); 
@@ -1088,23 +1094,15 @@
             refreshCurrentTeacherTab(); 
         }
 
-        // DYNAMIC FIX: Handled uninitialized objects safely when bootstrapping parent layouts
         function initParentView() { 
-            if (!db.students || !db.students[activeId]) { 
-                showLoader(false); 
-                return alert("Critical Error: Student allocation parameters mapping target identifier not located."); 
-            } 
-            
+            if (!db.students || !db.students[activeId]) { showLoader(false); return alert("Student allocation missing."); } 
             document.getElementById('p-name').innerText = db.students[activeId].name || "Registered Student Profile"; 
-            document.getElementById('p-id').innerText = `Roster ID Code: ${activeId} | Network Token Active`; 
+            document.getElementById('p-id').innerText = `Roster ID Code: ${activeId}`; 
             
             let totalDays = 0; let presentDays = 0; 
             if (db.attendance && typeof db.attendance === 'object') { 
                 Object.keys(db.attendance).forEach(d => { 
-                    if(db.attendance[d] && db.attendance[d][activeId] !== undefined) { 
-                        totalDays++; 
-                        if(db.attendance[d][activeId]) presentDays++; 
-                    } 
+                    if(db.attendance[d] && db.attendance[d][activeId] !== undefined) { totalDays++; if(db.attendance[d][activeId]) presentDays++; } 
                 }); 
             } 
             
@@ -1114,57 +1112,31 @@
             
             let nowStr = new Date().toISOString().split('T')[0]; 
             const activeNotices = Array.isArray(db.notices) ? db.notices.filter(n => n && nowStr >= n.start && nowStr <= n.end) : [];
-            
             const evDeck = document.getElementById('p-events-deck'); 
             const hworkDeck = document.getElementById('p-homework-deck'); 
             const ttDeck = document.getElementById('p-timetable-deck'); 
             
-            if(evDeck) evDeck.innerHTML = ''; 
-            if(hworkDeck) hworkDeck.innerHTML = ''; 
-            if(ttDeck) ttDeck.innerHTML = ''; 
+            if(evDeck) evDeck.innerHTML = ''; if(hworkDeck) hworkDeck.innerHTML = ''; if(ttDeck) ttDeck.innerHTML = ''; 
             
             const filteredEvents = activeNotices.filter(n => n && n.type === 'events'); 
             if(evDeck) { 
-                if(filteredEvents.length === 0) evDeck.innerHTML = '<p class="text-slate-400 italic">No standard institutional alerts posted today.</p>'; 
-                else evDeck.innerHTML = filteredEvents.map(e => `<div class="bg-amber-50 text-amber-900 font-bold border border-amber-200 p-2.5 rounded-xl">🎉 ${e.title || 'Event Notice'}</div>`).join(''); 
+                if(filteredEvents.length === 0) evDeck.innerHTML = '<p class="text-slate-400 italic">No announcements today.</p>'; 
+                else evDeck.innerHTML = filteredEvents.map(e => `<div class="bg-amber-50 text-amber-900 font-bold border border-amber-200 p-2.5 rounded-xl">🎉 ${e.title}</div>`).join(''); 
             } 
             
-            const filteredTT = activeNotices.filter(n => n && n.type === 'timetables'); 
-            if(ttDeck) { 
-                if(filteredTT.length === 0) ttDeck.innerHTML = '<p class="text-slate-400 italic">No active examination timetables found.</p>'; 
-                else ttDeck.innerHTML = filteredTT.map(t => `<div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl"><strong class="text-indigo-900 block border-b pb-1 mb-1">${t.title || 'Timetable'}</strong><pre class="font-sans text-[11px] text-slate-600 whitespace-pre-line leading-relaxed">${t.matrix || ''}</pre></div>`).join(''); 
-            } 
-            
-            const filteredHW = activeNotices.filter(n => n && n.type === 'homework'); 
-            if(hworkDeck) { 
-                if(filteredHW.length === 0) hworkDeck.innerHTML = '<p class="text-slate-400 italic col-span-full">No home assignments broadcasted today.</p>'; 
-                else hworkDeck.innerHTML = filteredHW.map(h => `<div class="bg-slate-50 border p-3 rounded-xl space-y-1"><span class="bg-slate-200 px-2 py-0.5 rounded text-[9px] font-black uppercase text-slate-700 tracking-wide">${h.subject || 'Subject'}</span><p class="text-slate-600 text-xs font-medium leading-relaxed pt-1">${h.task || ''}</p></div>`).join(''); 
-            } 
-            
-            // CRITICAL BUG FIX: Inject dynamic default collections to clear parsing locks
-            if (!db.exams || typeof db.exams !== 'object' || Object.keys(db.exams).length === 0) { 
-                db.exams = { "PT-1": 100 }; 
-            } 
-            if (!db.examOrder || !Array.isArray(db.examOrder) || db.examOrder.length === 0) { 
-                db.examOrder = Object.keys(db.exams); 
-            } 
+            if (!db.exams || typeof db.exams !== 'object' || Object.keys(db.exams).length === 0) { db.exams = { "PT-1": 100 }; } 
+            if (!db.examOrder || !Array.isArray(db.examOrder) || db.examOrder.length === 0) { db.examOrder = Object.keys(db.exams); } 
             
             const pSelect = document.getElementById('p-exam-view'); 
-            if (pSelect) { 
-                pSelect.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join(''); 
-            } 
+            if (pSelect) { pSelect.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join(''); } 
             
             renderParentReport(); 
             showScreen('screen-parent'); 
         }
 
-        // DYNAMIC FIX: Safeguarded points calculation evaluation mapping configurations safely
         function renderParentReport() { 
-            const pSelect = document.getElementById('p-exam-view'); 
-            if (!pSelect) return; 
-            const exam = pSelect.value; 
-            const display = document.getElementById('p-marks-display'); 
-            if (!exam || !display) return; 
+            const pSelect = document.getElementById('p-exam-view'); if (!pSelect) return; 
+            const exam = pSelect.value; const display = document.getElementById('p-marks-display'); if (!exam || !display) return; 
             
             if (!db.records || typeof db.records !== 'object') db.records = {}; 
             if (!db.records[activeId] || typeof db.records[activeId] !== 'object') db.records[activeId] = {}; 
@@ -1174,73 +1146,50 @@
             
             display.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => { 
                 let mark = '-'; let scoreValue = 0; 
-                if (sRec.marks && sRec.marks[sub] !== undefined && sRec.marks[sub] !== null && sRec.marks[sub] !== '') { 
-                    mark = sRec.marks[sub]; scoreValue = parseFloat(sRec.marks[sub]); 
-                } 
+                if (sRec.marks && sRec.marks[sub] !== undefined && sRec.marks[sub] !== null && sRec.marks[sub] !== '') { mark = sRec.marks[sub]; scoreValue = parseFloat(sRec.marks[sub]); } 
                 const pct = maxPoints > 0 ? Math.min(100, Math.max(0, Math.round((scoreValue / maxPoints) * 100))) : 0; 
                 return `
                 <div class="space-y-1 text-xs">
                     <div class="flex justify-between font-bold text-slate-700"><span>${sub}</span><span>${mark} / ${maxPoints}</span></div>
-                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden shadow-inner"><div class="bg-indigo-600 h-full transition-all" style="width: ${pct}%"></div></div>
+                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden shadow-inner"><div class="bg-indigo-600 h-full" style="width: ${pct}%"></div></div>
                 </div>`; 
             }).join(''); 
             
-            const cwElem = document.getElementById('p-card-cw'); if(cwElem) cwElem.innerText = sRec.cw || "🟢 Active & Regular"; 
-            const hwElem = document.getElementById('p-card-hw'); if(hwElem) hwElem.innerText = sRec.hw || "🟢 On-Time & Good"; 
-            const remElem = document.getElementById('p-remarks-display'); if(remElem) remElem.innerText = sRec.remarks || "No evaluation comments synchronized."; 
-            
             const scores = CONFIG_FALLBACK_SUBJECTS.map(s => { 
-                if (sRec.marks && sRec.marks[s] !== undefined && sRec.marks[s] !== null && sRec.marks[s] !== '') { 
-                    let parsed = parseFloat(sRec.marks[s]); return isNaN(parsed) ? 0 : parsed; 
-                } 
-                return 0; 
+                if (sRec.marks && sRec.marks[s] !== undefined && sRec.marks[s] !== null && sRec.marks[s] !== '') { return parseFloat(sRec.marks[s]) || 0; } return 0; 
             }); 
             
             const ctx = document.getElementById('performanceChart'); 
             if (ctx) { 
-                if (dynamicChartInstance) { 
-                    try { dynamicChartInstance.destroy(); } catch(e) { console.warn("Chart cleanup:", e); } 
-                } 
+                if (dynamicChartInstance) { try { dynamicChartInstance.destroy(); } catch(e) {} } 
                 try { 
                     dynamicChartInstance = new Chart(ctx, { 
                         type: 'bar', 
-                        data: { 
-                            labels: CONFIG_FALLBACK_SUBJECTS, 
-                            datasets: [{ label: 'Marks Distribution Profile', data: scores, backgroundColor: '#4f46e5', borderRadius: 4 }] 
-                        }, 
-                        options: { 
-                            responsive: true, 
-                            maintainAspectRatio: false, 
-                            scales: { y: { min: 0, max: maxPoints } } 
-                        } 
+                        data: { labels: CONFIG_FALLBACK_SUBJECTS, datasets: [{ label: 'Marks', data: scores, backgroundColor: '#4f46e5' }] }, 
+                        options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: maxPoints } } } 
                     }); 
-                } catch(chartError) { 
-                    console.error("Chart generation intercepted safely:", chartError); 
-                } 
+                } catch(err) {} 
             } 
         }
 
-        // AUTO-LOGIN BUG FIX: Directly apply the saved identifier string contextually without running conflicting conditionals
         function checkPersistentSession() { 
-            const sch = localStorage.getItem('session_school'); 
-            const r = localStorage.getItem('session_role'); 
-            const u = localStorage.getItem('session_user'); 
-            
-            if (sch && sch.trim() !== "" && r && u) { 
-                document.getElementById('auth-school').value = sch; 
-                document.getElementById('auth-role').value = r; 
-                document.getElementById('auth-id').value = u; 
-                
+            const sch = localStorage.getItem('session_school'); const r = localStorage.getItem('session_role'); const u = localStorage.getItem('session_user'); 
+            adaptLoginFormLayout('parent');
+            if (sch && r && u) { 
+                document.getElementById('auth-school').value = sch; document.getElementById('auth-role').value = r; document.getElementById('auth-id').value = u; 
+                adaptLoginFormLayout(r);
                 handleSecureLogin(); 
-            } else { 
-                localStorage.clear(); 
-                showScreen('screen-gate'); 
-            } 
+            } else { showScreen('screen-gate'); } 
         }
 
-        function submitRegistrationRequest() { 
-            alert("Sandbox submission recorded."); 
-        } 
+        async function addNewClassStream() {
+            const val = document.getElementById('new-class-input').value.trim().toUpperCase();
+            if(!val || db.allocatedClasses.includes(val)) return;
+            db.allocatedClasses.push(val);
+            buildClassSelectOptions(val);
+            await syncToCloud();
+            refreshCurrentTeacherTab();
+        }
 
         document.addEventListener("DOMContentLoaded", checkPersistentSession);
     </script>
