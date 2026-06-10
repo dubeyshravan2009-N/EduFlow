@@ -246,33 +246,27 @@
                             <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Target Class Allocation</label>
                             <select id="class-select" onchange="refreshCurrentTeacherTab()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold text-xs outline-none focus:border-indigo-500"></select>
                         </div>
-                
                         <div id="class-management-deck" class="border-t pt-3 space-y-2">
                             <span class="block text-[9px] font-bold text-indigo-500 uppercase tracking-wider">Dynamic Stream Manager</span>
                             <div class="flex gap-1">
                                 <input id="new-class-input" type="text" placeholder="e.g., 11A" class="border p-1.5 rounded-lg text-xs w-full bg-white outline-none uppercase font-mono focus:border-indigo-500">
                                 <button type="button" onclick="addNewClassStream()" class="bg-indigo-600 text-white text-[10px] font-bold px-2.5 rounded-lg hover:bg-indigo-700 transition-colors">Add</button>
                             </div>
-                    
                             <div class="grid grid-cols-2 gap-1 pt-1">
                                 <button type="button" onclick="moveSelectedClass('up')" class="bg-slate-100 text-slate-700 font-bold py-1 px-2 rounded-lg text-[10px] hover:bg-slate-200 transition-colors">🔼 Move Up</button>
                                 <button type="button" onclick="moveSelectedClass('down')" class="bg-slate-100 text-slate-700 font-bold py-1 px-2 rounded-lg text-[10px] hover:bg-slate-200 transition-colors">🔽 Move Down</button>
                             </div>
-                       
                             <button type="button" onclick="triggerAutoSort()" class="w-full bg-indigo-50 text-indigo-700 font-bold py-1 rounded-lg text-[10px] hover:bg-indigo-100 transition-colors">
                                 🔢 Reset to Auto-Sort Order
                             </button>
-                  
                             <button type="button" onclick="deleteSelectedClassStream()" class="w-full bg-red-50 text-red-600 border border-red-100 font-bold py-1 rounded-lg text-[10px] hover:bg-red-100 transition-colors">
                                 🗑️ Delete Selected Class
                             </button>
                         </div>
-
                         <div id="search-container" class="border-t pt-3">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Live Filter Search</label>
                             <input id="search-input" type="text" onkeyup="renderTeacherList()" placeholder="Search student name..." class="w-full border p-2 rounded-lg text-xs outline-none focus:border-indigo-500">
                         </div>
-
                         <div id="date-picker-container" class="hidden border-t pt-3">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Attendance Timeline</label>
                             <input id="attendance-date" type="date" onchange="renderAttendancePanel()" class="w-full border p-2 rounded-lg text-xs bg-indigo-50/50 font-bold outline-none">
@@ -282,10 +276,6 @@
 
                 <div class="lg:col-span-3 bg-white rounded-2xl border shadow-sm overflow-hidden">
                     <div id="tab-pane-students" class="max-h-[70vh] overflow-y-auto">
-                        <div class="p-4 bg-slate-50 border-b flex justify-between items-center">
-                            <span class="text-xs font-bold text-slate-700 uppercase">Class List Workspace</span>
-                            <button type="button" onclick="injectNewBlankStudentNode()" class="bg-indigo-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">+ Register Student</button>
-                        </div>
                         <table class="w-full text-left text-xs">
                             <thead class="bg-slate-50 border-b sticky top-0 shadow-sm z-10 text-slate-500 uppercase text-[10px] font-bold">
                                 <tr>
@@ -489,91 +479,111 @@
                     </div>
                 </div>
             </div>
-        </section> 
+        </section>
     </main>
 
     <script>
         const CONFIG_FALLBACK_SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
         let db = { students: {}, records: {}, attendance: {}, exams: {}, examOrder: [], notices: [], allocatedClasses: [], config: {} };
-        
-        let currentSchool = null; 
-        let currentUser = null; 
-        let activeId = null; 
-        let dynamicChartInstance = null; 
-        let currentTeacherTab = "students";
-        let localAttendanceBuffer = {}; 
+        let currentSchool = null; let currentUser = null; let activeId = null; let dynamicChartInstance = null; let currentTeacherTab = "students";
+        let localAttendanceBuffer = {};
 
-        // Firebase Setup Engine
+        // Connected database configurations
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZSP7ezrRRGL...", 
+            authDomain: "academ-iq.firebaseapp.com",
+            projectId: "academ-iq",
+            storageBucket: "academ-iq.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:12345:web:12345"
+        };
+
+        // Secure Multi-Environment Cloud Orchestration Architecture
         try {
-            if (typeof firebase !== 'undefined') {
-                const firebaseConfig = {
-                    apiKey: "AIzaSyFakeKey_ForStructureIntactnessChecking",
-                    authDomain: "academiq-portal.firebaseapp.com",
-                    projectId: "academiq-portal",
-                    storageBucket: "academiq-portal.appspot.com",
-                    messagingSenderId: "1234567890",
-                    appId: "1:1234567890:web:abcdef"
-                };
-                firebase.initializeApp(firebaseConfig);
-                window.cloudStorage = firebase.firestore();
+            if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("...")) {
+                const app = firebase.initializeApp(firebaseConfig);
+                window.cloudStorage = firebase.firestore(app);
+                
+                // CRITICAL FIX: Enable multi-tab offline persistence settings safely
+                window.cloudStorage.enablePersistence({synchronizeTabs: true})
+                .catch(function(err) {
+                    if (err.code == 'failed-precondition') {
+                        console.warn("Persistence failed: Multiple tabs open.");
+                    } else if (err.code == 'unimplemented') {
+                        console.warn("Persistence is not supported by this browser architecture.");
+                    }
+                });
             } else {
+                console.warn("Running in local simulation configuration. No real Firebase endpoint was targeted.");
                 window.cloudStorage = null;
             }
         } catch(e) {
+            console.error("Firebase Initialization Failure Chain Context Array Node Block Error: ", e);
             window.cloudStorage = null;
-            console.warn("Firestore framework array detached. Running structural local environment mapping.");
         }
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             const target = document.getElementById(id);
             if(target) target.classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function showLoader(show) {
-            document.getElementById('global-processing-loader').style.display = show ? 'flex' : 'none';
+        function showLoader(visible) {
+            document.getElementById('global-processing-loader').style.display = visible ? 'flex' : 'none';
         }
 
         function togglePasskeyValueField() {
             const field = document.getElementById('auth-pass');
-            if(field) {
-                field.type = field.type === 'password' ? 'text' : 'password';
-            }
+            if(field) field.type = field.type === 'password' ? 'text' : 'password';
         }
 
         function adaptLoginFormLayout(role) {
             const idField = document.getElementById('field-container-id');
             const schoolField = document.getElementById('field-container-school');
-            const idLabel = idField ? idField.querySelector('label') : null;
-            const idInput = document.getElementById('auth-id');
-
-            if (!idField || !schoolField) return;
-
-            schoolField.style.display = (role === 'superadmin') ? 'none' : 'block';
-            idField.style.display = (role === 'superadmin' || role === 'admin' || role === 'teacher') ? 'none' : 'block';
-
-            if (role === 'parent') {
-                if (idLabel) idLabel.innerText = "Student Roll Identifier";
-                if (idInput) idInput.placeholder = "e.g., 10A-5";
+            if(!idField || !schoolField) return;
+            
+            if (role === 'superadmin') {
+                schoolField.classList.add('hidden');
+                idField.classList.add('hidden');
+            } else if (role === 'admin' || role === 'teacher') {
+                schoolField.classList.remove('hidden');
+                idField.classList.add('hidden');
+            } else {
+                schoolField.classList.remove('hidden');
+                idField.classList.remove('hidden');
             }
         }
 
-        function syncSubjectCustomField(value) {
-            const customInput = document.getElementById('bulletin-hw-subject');
-            if(customInput && value !== "") {
-                customInput.value = value;
-            }
+        function commitSession(school, id, role) {
+            localStorage.setItem('session_school', school);
+            localStorage.setItem('session_role', role);
+            localStorage.setItem('session_user', id);
         }
 
-        function buildNoticeSubjectOptions() {
-            const sel = document.getElementById('bulletin-hw-subject-select');
-            if(!sel) return;
-            let optionsHtml = '<option value="">-- Custom Input --</option>';
-            CONFIG_FALLBACK_SUBJECTS.forEach(sub => {
-                optionsHtml += `<option value="${sub}">${sub}</option>`;
-            });
-            sel.innerHTML = optionsHtml;
+        function configureNavigationHeader(role) {
+            const badge = document.getElementById('role-badge');
+            const logout = document.getElementById('logout-btn');
+            document.getElementById('nav-school-display').innerText = `Workspace Environment Branch ID Node: ${currentSchool}`;
+            if(badge) { badge.innerText = role; badge.classList.remove('hidden'); }
+            if(logout) logout.classList.remove('hidden');
+        }
+
+        function triggerSessionLogout() {
+            localStorage.clear();
+            currentSchool = null; currentUser = null; activeId = null;
+            document.getElementById('role-badge').classList.add('hidden');
+            document.getElementById('logout-btn').classList.add('hidden');
+            document.getElementById('nav-school-display').innerText = "Secure Network Workspace";
+            showScreen('screen-gate');
+        }
+
+        async function syncToCloud() {
+            if(!window.cloudStorage || !currentSchool) return;
+            try {
+                await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
+            } catch(e) {
+                console.error("Database cloud compilation failure synchronization warning state: ", e.message);
+            }
         }
 
         function verifyAndSeedDefaultClasses() {
@@ -597,58 +607,7 @@
             }
         }
 
-        // DYNAMIC STREAM SORT AND MOVE LOGIC
-        function moveSelectedClass(direction) {
-            const select = document.getElementById('class-select');
-            if(!select || !select.value) return;
-            const targetVal = select.value;
-            const idx = db.allocatedClasses.indexOf(targetVal);
-            if(idx === -1) return;
-
-            if(direction === 'up' && idx > 0) {
-                db.allocatedClasses[idx] = db.allocatedClasses[idx - 1];
-                db.allocatedClasses[idx - 1] = targetVal;
-            } else if(direction === 'down' && idx < db.allocatedClasses.length - 1) {
-                db.allocatedClasses[idx] = db.allocatedClasses[idx + 1];
-                db.allocatedClasses[idx + 1] = targetVal;
-            }
-            buildClassSelectOptions(targetVal);
-            syncToCloud().then(() => refreshCurrentTeacherTab());
-        }
-
-        function triggerAutoSort() {
-            db.allocatedClasses.sort((a, b) => {
-                const numA = parseInt(a) || 0;
-                const numB = parseInt(b) || 0;
-                if(numA !== numB) return numA - numB;
-                return a.localeCompare(b);
-            });
-            buildClassSelectOptions();
-            syncToCloud().then(() => refreshCurrentTeacherTab());
-        }
-
-        async function deleteSelectedClassStream() {
-            const select = document.getElementById('class-select');
-            if(!select || !select.value) return;
-            const targetVal = select.value;
-            if(!confirm(`Are you sure you want to completely erase the entire class array for ${targetVal}?`)) return;
-            
-            db.allocatedClasses = db.allocatedClasses.filter(c => c !== targetVal);
-            
-            // Clean up student mappings belonging to that stream node cleanly
-            Object.keys(db.students || {}).forEach(k => {
-                if(k.startsWith(targetVal + '-')) {
-                    delete db.students[k];
-                    if(db.records && db.records[k]) delete db.records[k];
-                }
-            });
-
-            buildClassSelectOptions();
-            await syncToCloud();
-            refreshCurrentTeacherTab();
-        }
-
-        // AUTH CONTROL ENGINE LOGIC
+        // AUTH ENGINE WITH IMPROVED OFFLINE AND CACHE HANDLING
         async function handleSecureLogin() {
             const school = document.getElementById('auth-school').value.trim().toUpperCase();
             const role = document.getElementById('auth-role').value;
@@ -663,7 +622,14 @@
                     return alert("Superadmin requires an active Firebase backend configuration connection.");
                 }
                 try {
-                    const masterSnap = await window.cloudStorage.collection("platform_config").doc("master").get();
+                    // Try to get live network resource, fallback gracefully if cached
+                    let masterSnap;
+                    try {
+                        masterSnap = await window.cloudStorage.collection("platform_config").doc("master").get();
+                    } catch(offlineErr) {
+                        masterSnap = await window.cloudStorage.collection("platform_config").doc("master").get({ source: 'cache' });
+                    }
+
                     if(masterSnap.exists && masterSnap.data().masterPass === pass) {
                         commitSession('MASTER_SYSTEM', 'SUPER_ADMIN', 'superadmin');
                         document.getElementById('nav-school-display').innerText = "PLATFORM ROOT CONTROL NODE";
@@ -704,50 +670,50 @@
 
             try {
                 const docRef = window.cloudStorage.collection("schools").doc(school);
-                const docSnap = await docRef.get();
+                let docSnap;
+                
+                // CRITICAL OFFLINE RESILIENCE FALLBACK FOR GET DOCUMENT CALLS
+                try {
+                    docSnap = await docRef.get();
+                } catch(netErr) {
+                    console.warn("Client offline status caught. Trying to fetch document from localized cache buffers...");
+                    docSnap = await docRef.get({ source: 'cache' });
+                }
+
                 if (!docSnap.exists) {
                     showLoader(false);
                     return alert("This school environment identifier code does not exist.");
                 }
-                
-                const remoteData = docSnap.data();
-                if(role === 'admin') {
-                    if(remoteData.config && remoteData.config.adminPass === pass) {
-                        currentSchool = school;
-                        db = remoteData;
+
+                db = docSnap.data();
+                currentSchool = school;
+                verifyAndSeedDefaultClasses();
+
+                if (role === 'admin') {
+                    if (db.config && db.config.adminPass === pass) {
                         commitSession(currentSchool, 'admin', 'admin');
                         initTeacherView();
-                        showLoader(false);
                     } else {
                         showLoader(false);
-                        alert("Invalid Institutional Administrative Passkey.");
+                        alert("Access Denied: Administrative passkey array verification failed.");
                     }
-                    return;
-                } else if(role === 'teacher') {
-                    if(remoteData.config && remoteData.config.teacherPass === pass) {
-                        currentSchool = school;
-                        db = remoteData;
+                } else if (role === 'teacher') {
+                    if (db.config && db.config.teacherPass === pass) {
                         commitSession(currentSchool, 'teacher', 'teacher');
                         initTeacherView();
-                        showLoader(false);
                     } else {
                         showLoader(false);
-                        alert("Invalid Classroom Educator Passkey Allocation.");
+                        alert("Access Denied: Teacher passkey mapping failure.");
                     }
-                    return;
-                } else if(role === 'parent') {
-                    if(remoteData.students && remoteData.students[id] && remoteData.students[id].pass === pass) {
-                        currentSchool = school;
-                        db = remoteData;
+                } else if (role === 'parent') {
+                    if (db.students && db.students[id] && db.students[id].pass === pass) {
                         activeId = id;
                         commitSession(currentSchool, id, 'parent');
                         initParentView();
-                        showLoader(false);
                     } else {
                         showLoader(false);
-                        alert("Student Roll ID or Passkey array mismatch.");
+                        alert("Access Denied: Invalid student profile roll key identity parameters.");
                     }
-                    return;
                 }
             } catch(e) {
                 showLoader(false);
@@ -755,58 +721,11 @@
             }
         }
 
-        function commitSession(school, user, role) {
-            currentSchool = school;
-            currentUser = user;
-            localStorage.setItem('session_school', school);
-            localStorage.setItem('session_user', user);
-            localStorage.setItem('session_role', role);
-            
-            const badge = document.getElementById('role-badge');
-            const logout = document.getElementById('logout-btn');
-            if(badge) {
-                badge.innerText = role;
-                badge.classList.remove('hidden');
-            }
-            if(logout) logout.classList.remove('hidden');
-            document.getElementById('nav-school-display').innerText = `Workspace Environment: ${school}`;
-        }
-
-        function triggerSessionLogout() {
-            localStorage.clear();
-            currentSchool = null;
-            currentUser = null;
-            activeId = null;
-            db = { students: {}, records: {}, attendance: {}, exams: {}, examOrder: [], notices: [], allocatedClasses: [], config: {} };
-            
-            document.getElementById('role-badge').classList.add('hidden');
-            document.getElementById('logout-btn').classList.add('hidden');
-            document.getElementById('nav-school-display').innerText = "Secure Network Workspace";
-            
-            document.getElementById('auth-school').value = "";
-            document.getElementById('auth-id').value = "";
-            document.getElementById('auth-pass').value = "";
-            
-            adaptLoginFormLayout('parent');
-            showScreen('screen-gate');
-        }
-
-        async function syncToCloud() {
-            if(!window.cloudStorage || !currentSchool) return;
-            try {
-                await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
-            } catch(e) {
-                console.error("Database streaming delay encountered:", e.message);
-            }
-        }
-
         async function submitRegistrationRequest() {
             const name = document.getElementById('reg-name').value.trim();
             const email = document.getElementById('reg-email').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
-            
             if(!name || !email || !phone) return alert("Please fill out all registration application criteria items.");
-            
             showLoader(true);
             if(!window.cloudStorage) {
                 showLoader(false);
@@ -815,14 +734,10 @@
                 return;
             }
             try {
-                await window.cloudStorage.collection("platform_requests").add({
-                    schoolName: name, adminEmail: email, adminPhone: phone, timestamp: Date.now()
-                });
+                await window.cloudStorage.collection("platform_requests").add({ schoolName: name, adminEmail: email, adminPhone: phone, timestamp: Date.now() });
                 showLoader(false);
-                alert("Your deployment application has been submitted successfully.");
-                document.getElementById('reg-name').value = "";
-                document.getElementById('reg-email').value = "";
-                document.getElementById('reg-phone').value = "";
+                alert("Your deployment application has been submitted to Master Superadmin review arrays successfully.");
+                document.getElementById('reg-name').value = ""; document.getElementById('reg-email').value = ""; document.getElementById('reg-phone').value = "";
                 showScreen('screen-gate');
             } catch(e) {
                 showLoader(false);
@@ -847,6 +762,8 @@
                         <button type="button" onclick="deletePlatformRegistrationRequest('${doc.id}')" class="text-red-500 font-bold text-[10px] uppercase hover:underline">Clear Entry</button>
                     </div>`;
                 }).join('');
+            }, err => {
+                console.warn("Snapshot listener tracking bypass error: " + err.message);
             });
         }
 
@@ -862,55 +779,56 @@
             showLoader(true);
             try {
                 const targetRef = window.cloudStorage.collection("schools").doc(code);
-                const check = await targetRef.get();
+                let check;
+                try {
+                    check = await targetRef.get();
+                } catch(cErr) {
+                    check = await targetRef.get({source: 'cache'});
+                }
                 if(check.exists) {
                     showLoader(false);
-                    return alert("This document workspace token node code has already been allocated.");
+                    return alert("This document workspace token node code has already been allocated on this platform branch.");
                 }
                 let structureSeed = {
                     allocatedClasses: ["1A", "1B", "2A", "2B", "10A"],
-                    students: {}, records: {}, attendance: {},
-                    exams: { "PT-1": 100 }, examOrder: ["PT-1"], notices: [],
+                    students: {}, records: {}, attendance: {}, exams: { "PT-1": 100 }, examOrder: ["PT-1"], notices: [],
                     config: { adminPass: "admin123", teacherPass: "teacher123" }
                 };
                 await targetRef.set(structureSeed);
                 showLoader(false);
-                alert(`Node matrix allocation complete. School Code initialized: ${code}`);
-                document.getElementById('super-new-school').value = "";
+                alert(`School environment node code [${code}] safely initialized.`);
+                document.getElementById('super-new-school').value = '';
             } catch(e) {
                 showLoader(false);
-                alert("Provision error: " + e.message);
+                alert("Infrastructure creation array logic failure: " + e.message);
             }
         }
 
         function initTeacherView() {
+            configureNavigationHeader(localStorage.getItem('session_role'));
             verifyAndSeedDefaultClasses();
-            buildNoticeSubjectOptions();
             switchTeacherTab('students');
             showScreen('screen-teacher');
         }
 
         function switchTeacherTab(tabName) {
             currentTeacherTab = tabName;
-            document.querySelectorAll('[id^="tab-btn-"]').forEach(b => b.className = "px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-600 transition-colors");
+            document.querySelectorAll('[id^="tab-btn-"]').forEach(b => b.className = "px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-600 transition-colors" );
             document.getElementById(`tab-btn-${tabName}`).className = "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white transition-colors";
             
             document.getElementById('date-picker-container').classList.add('hidden');
             document.getElementById('search-container').classList.add('hidden');
             document.getElementById('class-management-deck').classList.add('hidden');
-            
             document.querySelectorAll('[id^="tab-pane-"]').forEach(p => p.classList.add('hidden'));
+            
             document.getElementById(`tab-pane-${tabName}`).classList.remove('hidden');
-
             if(tabName === 'students') {
                 document.getElementById('search-container').classList.remove('hidden');
                 document.getElementById('class-management-deck').classList.remove('hidden');
             } else if(tabName === 'attendance') {
                 document.getElementById('date-picker-container').classList.remove('hidden');
                 const inputDate = document.getElementById('attendance-date');
-                if(!inputDate.value) {
-                    inputDate.value = new Date().toISOString().split('T')[0];
-                }
+                if(!inputDate.value) { inputDate.value = new Date().toISOString().split('T')[0]; }
             }
             refreshCurrentTeacherTab();
         }
@@ -932,20 +850,12 @@
             const tbody = document.getElementById('teacher-table-body');
             if(!tbody) return;
             tbody.innerHTML = '';
-
             if(!targetClass) {
                 tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center italic text-slate-400">Create a class stream allocation to begin registry tracking.</td></tr>';
                 return;
             }
-
             let matchedKeys = Object.keys(db.students || {}).filter(k => k.startsWith(targetClass + '-'));
             matchedKeys.sort((x, y) => parseInt(x.split('-')[1]) - parseInt(y.split('-')[1]));
-
-            if(matchedKeys.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center italic text-slate-400">No active student profiles mapped to this allocation. Click "+ Register Student" above.</td></tr>';
-                return;
-            }
-
             let html = '';
             matchedKeys.forEach(k => {
                 const s = db.students[k];
@@ -953,39 +863,35 @@
                 html += `
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="p-4 font-mono font-bold text-indigo-600">${k}</td>
-                    <td class="p-4">
-                        <input type="text" value="${s.name}" onchange="updateStudentMetaName('${k}', this.value)" class="bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 font-medium text-slate-800 outline-none transition-all px-1 py-0.5 w-full max-w-xs">
-                    </td>
-                    <td class="p-4 text-center font-mono text-slate-500 font-semibold">${s.pass}</td>
-                    <td class="p-4 text-center space-x-1 whitespace-nowrap">
-                        <button type="button" onclick="openMarksEntryView('${k}')" class="bg-indigo-50 text-indigo-600 font-bold px-3 py-1.5 rounded-lg text-[11px] hover:bg-indigo-100 transition-colors">📊 Report Grade</button>
-                        <button type="button" onclick="purgeStudentProfileNode('${k}')" class="text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-colors">🗑️</button>
+                    <td class="p-4"><input type="text" value="${s.name}" onchange="updateStudentMetaName('${k}', this.value)" class="bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 font-bold outline-none text-slate-800 py-1 px-2 rounded-lg"></td>
+                    <td class="p-4 text-center font-mono font-semibold text-slate-500">${s.pass}</td>
+                    <td class="p-4 text-center space-x-2">
+                        <button type="button" onclick="initializeMarksScreen('${k}')" class="bg-indigo-50 text-indigo-600 font-bold px-3 py-1.5 rounded-lg text-[11px] hover:bg-indigo-100 transition-colors">📝 Grade</button>
+                        <button type="button" onclick="purgeStudentProfileNode('${k}')" class="bg-red-50 text-red-500 font-bold px-3 py-1.5 rounded-lg text-[11px] hover:bg-red-100 transition-colors">🗑️ Remove</button>
                     </td>
                 </tr>`;
             });
-            tbody.innerHTML = html || '<tr><td colspan="4" class="p-4 text-center italic text-slate-400">No matching search entries found.</td></tr>';
+            tbody.innerHTML = html || '<tr><td colspan="4" class="p-4 text-center italic text-slate-400">No matching student profiles located on this structural stream.</td></tr>';
         }
 
-        async function updateStudentMetaName(key, value) {
-            const val = value.trim();
-            if(!val) return;
-            db.students[key].name = val;
+        async function updateStudentMetaName(key, newName) {
+            if(!newName.trim()) return;
+            db.students[key].name = newName.trim();
             await syncToCloud();
         }
 
-        async function injectNewBlankStudentNode() {
+        async function createNewStudentEntry() {
             const cls = getActiveSelectedClass();
-            if(!cls) return alert("Select a working target class parameter node array.");
-            const namePrompt = prompt("Enter new student full registry name identity:");
-            const n = namePrompt ? namePrompt.trim() : null;
-            if(!n) return;
-
-            let idx = 1;
-            while(db.students[`${cls}-${idx}`] !== undefined) { idx++; }
-            const p = String(Math.floor(100 + Math.random() * 900));
-            
+            if(!cls) return alert("Verify core allocation structures first.");
+            const n = prompt("Enter Student Profile Registration Full Name:");
+            if(!n || !n.trim()) return;
+            let matched = Object.keys(db.students || {}).filter(k => k.startsWith(cls + '-'));
+            let max = 0;
+            matched.forEach(k => { const num = parseInt(k.split('-')[1]); if(num > max) max = num; });
+            const idx = max + 1;
+            const p = Math.floor(100 + Math.random() * 900);
             showLoader(true);
-            db.students[`${cls}-${idx}`] = { name: n, pass: p };
+            db.students[`${cls}-${idx}`] = { name: n, pass: p.toString() };
             await syncToCloud();
             renderTeacherList();
             showLoader(false);
@@ -996,16 +902,6 @@
             showLoader(true);
             delete db.students[key];
             if(db.records && db.records[key]) delete db.records[key];
-            
-            // Clean up attendance references for this student completely
-            if(db.attendance) {
-                Object.keys(db.attendance).forEach(date => {
-                    if(db.attendance[date] && db.attendance[date][key] !== undefined) {
-                        delete db.attendance[date][key];
-                    }
-                });
-            }
-
             await syncToCloud();
             renderTeacherList();
             showLoader(false);
@@ -1017,20 +913,16 @@
             const tbody = document.getElementById('attendance-table-body');
             if(!tbody) return;
             tbody.innerHTML = '';
-
             if(!targetClass || !date) {
                 tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center italic text-slate-400">Configure target metrics parameters above.</td></tr>';
                 return;
             }
-
             let matchedKeys = Object.keys(db.students || {}).filter(k => k.startsWith(targetClass + '-'));
             matchedKeys.sort((x, y) => parseInt(x.split('-')[1]) - parseInt(y.split('-')[1]));
-
             if(matchedKeys.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center italic text-slate-400">No active student profiles mapped to this class allocation block.</td></tr>';
                 return;
             }
-
             localAttendanceBuffer = {};
             let html = '';
             matchedKeys.forEach(k => {
@@ -1058,7 +950,7 @@
             localAttendanceBuffer[key] = state;
             const btn = document.getElementById(`attn-toggle-${key}`);
             if(btn) {
-                btn.className = `w-28 font-bold text-xs py-2 rounded-xl transition-all shadow-sm ${state ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`;
+                btn.className = `w-28 font-bold text-xs py-2 rounded-xl transition-all shadow-sm ${state ? 'bg-emerald-500 text-white':'bg-red-500 text-white'}`;
                 btn.innerText = state ? '🟢 Present' : '🔴 Absent';
             }
         }
@@ -1068,36 +960,24 @@
             if(!date) return;
             showLoader(true);
             if(!db.attendance) db.attendance = {};
-            if(!db.attendance[date]) db.attendance[date] = {};
-
-            Object.keys(localAttendanceBuffer).forEach(k => {
-                db.attendance[date][k] = localAttendanceBuffer[k];
-            });
-
+            db.attendance[date] = Object.assign({}, db.attendance[date] || {}, localAttendanceBuffer);
             await syncToCloud();
             showLoader(false);
-            alert("Attendance timeline node mapped and saved successfully.");
+            alert("Attendance state matrix configuration sequence logged to environment ecosystem safely.");
         }
 
         function renderExamConfigurationLayout() {
             const container = document.getElementById('exam-config-rows');
             if(!container) return;
-            if(!db.exams) db.exams = {};
-            if(!db.examOrder) db.examOrder = Object.keys(db.exams);
-
-            if(db.examOrder.length === 0) {
-                container.innerHTML = '<p class="text-slate-400 text-xs italic">No exam modules registered yet.</p>';
+            if(!db.exams || Object.keys(db.exams).length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 italic">No structural module schema sets deployed yet.</p>';
                 return;
             }
-
-            container.innerHTML = db.examOrder.map(ex => `
-            <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border">
-                <span class="font-mono font-bold text-xs text-slate-700 min-w-[100px]">${ex}</span>
-                <div class="flex items-center gap-1">
-                    <span class="text-[10px] text-slate-400 font-bold uppercase">Max Scale:</span>
-                    <input type="number" value="${db.exams[ex]}" onchange="updateExamMaxPoints('${ex}', this.value)" class="border p-1 rounded-lg text-xs w-20 text-center font-bold">
-                </div>
-                <button type="button" onclick="purgeExamModuleNode('${ex}')" class="text-red-500 text-xs font-bold p-1 rounded-lg hover:bg-red-50 ml-auto">🗑️</button>
+            container.innerHTML = (db.examOrder || Object.keys(db.exams)).map(ex => `
+            <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <span class="font-mono font-bold text-xs text-slate-700 w-1/3">${ex}</span>
+                <input type="number" value="${db.exams[ex]}" onchange="updateExamMaxPoints('${ex}', this.value)" class="border p-2 rounded-lg bg-white text-xs font-bold text-center w-1/3 outline-none">
+                <button type="button" onclick="purgeExamModuleNode('${ex}')" class="text-red-500 hover:text-red-700 font-bold text-xs w-1/3 text-right py-1 rounded-lg hover:bg-red-50">🗑️ Drop</button>
             </div>`).join('');
         }
 
@@ -1110,17 +990,13 @@
         function createNewExamModule() {
             const name = document.getElementById('new-exam-name').value.trim().toUpperCase();
             let maxPoints = parseFloat(document.getElementById('new-exam-max').value);
-            
             if(!name) return alert("Please clarify exam sequencing identifier code string description targets.");
             if(isNaN(maxPoints) || maxPoints <= 0) maxPoints = 100;
-
             if(!db.exams) db.exams = {};
             if(!db.examOrder) db.examOrder = [];
             if(db.exams[name] !== undefined) return alert("This testing framework assessment tag sequence node has already been allocated.");
-
             db.exams[name] = maxPoints;
             db.examOrder.push(name);
-            
             document.getElementById('new-exam-name').value = '';
             document.getElementById('new-exam-max').value = '';
             renderExamConfigurationLayout();
@@ -1142,7 +1018,6 @@
 
         async function publishNoticeItem(type) {
             let title = "", start = "", end = "", matrix = "", subject = "", task = "";
-            
             if(type === 'homework') {
                 subject = document.getElementById('bulletin-hw-subject').value.trim();
                 start = document.getElementById('bulletin-hw-start').value;
@@ -1160,43 +1035,26 @@
                 start = document.getElementById('bulletin-tt-start').value;
                 end = document.getElementById('bulletin-tt-end').value;
                 matrix = document.getElementById('bulletin-tt-matrix').value.trim();
-                if(!title || !start || !end || !matrix) return alert("Complete matrix configuration parameters.");
+                if(!title || !matrix || !start || !end) return alert("Populate matrix schema timelines completely.");
             }
-
             if(!db.notices) db.notices = [];
-            db.notices.push({ id: String(Date.now()), type, title, start, end, task, matrix, subject });
-            
+            db.notices.push({ id: Math.random().toString(36).substring(2,7), type, title, start, end, task, matrix, timestamp: Date.now() });
             await syncToCloud();
-            alert("Notice broadcast published into network arrays safely.");
-
-            // Clear respective fields gracefully
-            if(type === 'homework') {
-                document.getElementById('bulletin-hw-subject').value = "";
-                document.getElementById('bulletin-hw-task').value = "";
-            } else if(type === 'events') {
-                document.getElementById('bulletin-evt-title').value = "";
-            } else if(type === 'timetables') {
-                document.getElementById('bulletin-tt-title').value = "";
-                document.getElementById('bulletin-tt-matrix').value = "";
-            }
+            alert("Bulletin parameters synchronized safely.");
+            if(type==='homework'){ document.getElementById('bulletin-hw-subject').value=''; document.getElementById('bulletin-hw-task').value=''; }
+            else if(type==='events') document.getElementById('bulletin-evt-title').value='';
+            else if(type==='timetables') document.getElementById('bulletin-tt-matrix').value='';
         }
 
-        // MARKS VIEW HANDLING
-        function openMarksEntryView(key) {
-            activeId = key;
-            const student = db.students[key];
-            if(!student) return;
-
-            document.getElementById('m-student-name').innerText = `Evaluation Summary: ${student.name} (${key})`;
+        function initializeMarksScreen(studentId) {
+            activeId = studentId;
+            const s = db.students[studentId];
+            if(!s) return;
+            document.getElementById('m-student-name').innerText = `Evaluation Entry Profile: ${s.name} (${studentId})`;
             const select = document.getElementById('m-exam');
-            if(!select) return;
-
-            if(!db.exams || Object.keys(db.exams).length === 0) {
-                alert("Configure evaluation schema sequencing filters inside 'Assessment Control' before logging points.");
-                return;
-            }
-
-            select.innerHTML = (db.examOrder || Object.keys(db.exams)).map(e => `<option value="${e}">${e}</option>`).join('');
+            const options = db.examOrder || Object.keys(db.exams || {});
+            if(options.length === 0) return alert("Initialize testing evaluation configuration schema arrays first.");
+            select.innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
             loadExistingMarks();
             showScreen('screen-marks');
         }
@@ -1205,20 +1063,15 @@
             const exam = document.getElementById('m-exam').value;
             const grid = document.getElementById('m-grid');
             if(!exam || !grid) return;
-
             if(!db.records) db.records = {};
             if(!db.records[activeId]) db.records[activeId] = {};
-            if(!db.records[activeId][exam]) {
-                db.records[activeId][exam] = { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "" };
-            }
-
+            if(!db.records[activeId][exam]) db.records[activeId][exam] = { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "" };
             const sRec = db.records[activeId][exam];
             grid.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => `
             <div class="bg-slate-50 border p-3 rounded-xl flex flex-col justify-between">
                 <span class="font-bold text-xs text-slate-700 tracking-tight block mb-1">${sub}</span>
                 <input type="text" id="m-score-${sub}" value="${sRec.marks[sub] !== undefined ? sRec.marks[sub] : ''}" placeholder="-" class="w-full border rounded-lg p-2 text-center text-xs font-mono font-bold outline-none bg-white focus:border-indigo-500">
             </div>`).join('');
-
             document.getElementById('m-cw-status').value = sRec.cw || "🟢 Active & Regular";
             document.getElementById('m-hw-status').value = sRec.hw || "🟢 On-Time & Good";
             document.getElementById('m-remarks').value = sRec.remarks || "";
@@ -1229,207 +1082,122 @@
             if(!exam) return;
             showLoader(true);
             let sRec = db.records[activeId][exam];
-
-            CONFIG_FALLBACK_SUBJECTS.forEach(sub => {
-                sRec.marks[sub] = document.getElementById(`m-score-${sub}`).value.trim();
-            });
+            CONFIG_FALLBACK_SUBJECTS.forEach(sub => { sRec.marks[sub] = document.getElementById(`m-score-${sub}`).value.trim(); });
             sRec.cw = document.getElementById('m-cw-status').value;
             sRec.hw = document.getElementById('m-hw-status').value;
             sRec.remarks = document.getElementById('m-remarks').value.trim();
-
             await syncToCloud();
             showLoader(false);
             showScreen('screen-teacher');
             refreshCurrentTeacherTab();
         }
 
-        // PARENT VIEW LOGIC LAYER
         function initParentView() {
-            if (!db.students || !db.students[activeId]) {
-                showLoader(false);
-                return alert("Student allocation missing.");
-            }
-
+            if (!db.students || !db.students[activeId]) { showLoader(false); return alert("Student allocation missing."); }
             document.getElementById('p-name').innerText = db.students[activeId].name || "Registered Student Profile";
             document.getElementById('p-id').innerText = `Roster ID Code: ${activeId}`;
             
-            // Generate attendance metrics breakdown
-            let totalDays = 0;
-            let presentDays = 0;
-            if (db.attendance) {
-                Object.keys(db.attendance).forEach(date => {
-                    if (db.attendance[date] && db.attendance[date][activeId] !== undefined) {
-                        totalDays++;
-                        if (db.attendance[date][activeId]) presentDays++;
+            let totalDays = 0; let presentDays = 0;
+            if(db.attendance) {
+                Object.keys(db.attendance).forEach(d => {
+                    if(db.attendance[d][activeId] !== undefined) {
+                        totalDays++; if(db.attendance[d][activeId]) presentDays++;
                     }
                 });
             }
-
-            const percentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 100;
-            document.getElementById('p-attn-percent').innerText = `${percentage}%`;
-            document.getElementById('p-attn-fraction').innerText = `Tracked Logging Matrix: ${presentDays} / ${totalDays} Active Days`;
-
-            // Render matching notice board timeline arrays
-            const parentClass = activeId.split('-')[0];
-            const activeNotices = (db.notices || []).filter(n => {
-                const today = new Date().toISOString().split('T')[0];
-                return (today >= n.start && today <= n.end);
-            });
+            const rate = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 100;
+            document.getElementById('p-attn-percent').innerText = `${rate}%`;
+            document.getElementById('p-attn-fraction').innerText = `Calculated Arrays: (${presentDays}/${totalDays} Session Days)`;
 
             const evDeck = document.getElementById('p-events-deck');
             const ttDeck = document.getElementById('p-timetable-deck');
             const hwDeck = document.getElementById('p-homework-deck');
+            const todayStr = new Date().toISOString().split('T')[0];
 
-            if(evDeck) evDeck.innerHTML = '';
-            if(ttDeck) ttDeck.innerHTML = '';
-            if(hwDeck) hwDeck.innerHTML = '';
+            let activeNotices = (db.notices || []).filter(n => todayStr >= n.start && todayStr <= n.end);
+            
+            evDeck.innerHTML = activeNotices.filter(n => n.type === 'events').map(n => `<div class="p-3 bg-amber-50 text-amber-900 border border-amber-100 rounded-xl font-bold">${n.title}</div>`).join('') || '<p class="text-slate-400 italic">No scheduled activities tracked.</p>';
+            ttDeck.innerHTML = activeNotices.filter(n => n.type === 'timetables').map(n => `<div class="p-3 bg-emerald-50 text-emerald-900 border border-emerald-100 rounded-xl whitespace-pre-line font-mono text-[11px]"><strong>${n.title}</strong>\n${n.matrix}</div>`).join('') || '<p class="text-slate-400 italic">No test sequence timetables live.</p>';
+            hwDeck.innerHTML = activeNotices.filter(n => n.type === 'homework').map(n => `<div class="p-4 bg-slate-50 border rounded-xl space-y-1"><span class="font-black text-indigo-600 block uppercase tracking-wider text-[10px]">${n.title}</span><p class="text-slate-600 leading-normal">${n.task}</p></div>`).join('') || '<p class="text-slate-400 italic sm:col-span-2">No assignment data logged.</p>';
 
-            let evCount = 0, ttCount = 0, hwCount = 0;
-
-            activeNotices.forEach(n => {
-                if(n.type === 'events') {
-                    evCount++;
-                    if(evDeck) evDeck.innerHTML += `
-                    <div class="p-3 bg-amber-50/60 border border-amber-100 rounded-xl">
-                        <p class="font-black text-amber-900">${n.title}</p>
-                        <p class="text-[10px] text-amber-600 font-mono mt-0.5">Timeline span: Active until ${n.end}</p>
-                    </div>`;
-                } else if(n.type === 'timetables') {
-                    ttCount++;
-                    if(ttDeck) ttDeck.innerHTML += `
-                    <div class="p-3 bg-emerald-50/60 border border-emerald-100 rounded-xl space-y-1">
-                        <p class="font-black text-emerald-900">${n.title}</p>
-                        <p class="whitespace-pre-line font-medium text-slate-700 bg-white/80 p-2 rounded-lg text-[11px] border border-emerald-200/40">${n.matrix}</p>
-                    </div>`;
-                } else if(n.type === 'homework') {
-                    hwCount++;
-                    if(hwDeck) hwDeck.innerHTML += `
-                    <div class="p-3 bg-slate-50 border rounded-xl space-y-1">
-                        <div class="flex justify-between items-center"><span class="font-bold text-indigo-600 uppercase text-[10px] tracking-wide">${n.subject}</span><span class="text-[9px] font-mono text-slate-400">Due: ${n.end}</span></div>
-                        <p class="text-slate-700 text-[11px] leading-relaxed font-medium">${n.task}</p>
-                    </div>`;
-                }
-            });
-
-            if(evCount === 0 && evDeck) evDeck.innerHTML = '<p class="text-slate-400 italic">No synchronized event matrix blocks scheduled.</p>';
-            if(ttCount === 0 && ttDeck) ttDeck.innerHTML = '<p class="text-slate-400 italic">No institutional assessment timetables broadcasted.</p>';
-            if(hwCount === 0 && hwDeck) hwDeck.innerHTML = '<p class="text-slate-400 italic col-span-full">No outstanding curriculum subject tasks posted for this block.</p>';
-
-            // Load parent diagnostics exam view metrics dropdown safely
-            const examSelect = document.getElementById('p-exam-view');
-            if(examSelect) {
-                if(db.exams && Object.keys(db.exams).length > 0) {
-                    examSelect.innerHTML = (db.examOrder || Object.keys(db.exams)).map(e => `<option value="${e}">${e} Examination Profile</option>`).join('');
-                    renderParentReport();
-                } else {
-                    examSelect.innerHTML = '<option value="">No Active Matrix Registered</option>';
-                }
+            const pViewSelect = document.getElementById('p-exam-view');
+            const examsAvailable = db.examOrder || Object.keys(db.exams || {});
+            if(examsAvailable.length > 0) {
+                pViewSelect.innerHTML = examsAvailable.map(e => `<option value="${e}">${e}</option>`).join('');
+                renderParentReport();
+            } else {
+                pViewSelect.innerHTML = '<option value="">None Allocated</option>';
             }
             showScreen('screen-parent');
+            showLoader(false);
         }
 
         function renderParentReport() {
             const exam = document.getElementById('p-exam-view').value;
             const display = document.getElementById('p-marks-display');
             if(!exam || !display) return;
-
+            
             if (!db.records || typeof db.records !== 'object') db.records = {};
             if (!db.records[activeId] || typeof db.records[activeId] !== 'object') db.records[activeId] = {};
-
             const sRec = db.records[activeId][exam] || { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "No assessment remarks logged yet." };
             const maxPoints = (db.exams && db.exams[exam]) ? parseFloat(db.exams[exam]) : 100;
 
-            let scores = [];
             display.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => {
-                let mark = '-';
-                let scoreValue = 0;
+                let mark = '-'; let scoreValue = 0;
                 if (sRec.marks && sRec.marks[sub] !== undefined && sRec.marks[sub] !== null && sRec.marks[sub] !== '') {
-                    mark = sRec.marks[sub];
-                    scoreValue = parseFloat(mark) || 0;
+                    mark = sRec.marks[sub]; scoreValue = parseFloat(mark) || 0;
                 }
-                scores.push(scoreValue);
-
+                const pct = maxPoints > 0 ? Math.round((scoreValue / maxPoints) * 100) : 0;
                 return `
-                <div class="flex justify-between items-center text-xs py-1.5 border-b border-slate-200/60">
-                    <span class="font-bold text-slate-700">${sub}</span>
-                    <span class="font-mono font-bold bg-white px-2 py-0.5 rounded border shadow-sm">${mark} <span class="text-slate-300 font-light text-[10px]">/ ${maxPoints}</span></span>
+                <div class="space-y-1">
+                    <div class="flex justify-between font-bold text-[11px]">
+                        <span class="text-slate-700">${sub}</span>
+                        <span class="text-indigo-600 font-mono">${mark} / ${maxPoints}</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                        <div class="bg-indigo-600 h-full rounded-full" style="width: ${Math.min(pct, 100)}%"></div>
+                    </div>
                 </div>`;
             }).join('');
 
             document.getElementById('p-card-cw').innerText = sRec.cw || "🟢 Active & Regular";
             document.getElementById('p-card-hw').innerText = sRec.hw || "🟢 On-Time & Good";
-            document.getElementById('p-remarks-display').innerText = sRec.remarks || "No assessment remarks logged yet.";
+            document.getElementById('p-remarks-display').innerText = sRec.remarks || "No comments compiled.";
 
-            // Render or update ChartJS Performance Tracking Layer
+            let scores = CONFIG_FALLBACK_SUBJECTS.map(sub => {
+                if(sRec.marks && sRec.marks[sub] !== undefined) return parseFloat(sRec.marks[sub]) || 0;
+                return 0;
+            });
+
+            if(dynamicChartInstance) dynamicChartInstance.destroy();
             const ctx = document.getElementById('performanceChart');
             if(ctx) {
-                if(dynamicChartInstance) {
-                    dynamicChartInstance.destroy();
-                }
                 try {
-                    dynamicChartInstance = new Chart(ctx, {
+                    dynamicChartInstance = new Chart(ctx.getContext('2d'), {
                         type: 'bar',
-                        data: {
-                            labels: CONFIG_FALLBACK_SUBJECTS,
-                            datasets: [{
-                                label: 'Obtained Score Points',
-                                data: scores,
-                                backgroundColor: 'rgba(79, 70, 229, 0.85)',
-                                hoverBackgroundColor: 'rgba(79, 70, 229, 1)',
-                                borderRadius: 6,
-                                borderSkipped: false
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false }
-                            },
-                            scales: {
-                                y: {
-                                    min: 0,
-                                    max: maxPoints,
-                                    ticks: { font: { size: 9, family: 'Mono' } },
-                                    grid: { color: '#f1f5f9' }
-                                },
-                                x: {
-                                    ticks: { font: { size: 10, weight: 'bold' } },
-                                    grid: { display: false }
-                                }
-                            }
-                        }
+                        data: { labels: CONFIG_FALLBACK_SUBJECTS, datasets: [{ label: 'Marks', data: scores, backgroundColor: '#4f46e5' }] },
+                        options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: maxPoints } } }
                     });
-                } catch(err) {
-                    console.error("Chart layout engine rendering fault: ", err);
-                }
+                } catch(err) {}
             }
         }
 
         function checkPersistentSession() {
-            const sch = localStorage.getItem('session_school');
-            const r = localStorage.getItem('session_role');
-            const u = localStorage.getItem('session_user');
-            
+            const sch = localStorage.getItem('session_school'); const r = localStorage.getItem('session_role'); const u = localStorage.getItem('session_user');
             adaptLoginFormLayout('parent');
             if (sch && r && u) {
-                document.getElementById('auth-school').value = sch;
-                document.getElementById('auth-role').value = r;
-                document.getElementById('auth-id').value = u;
+                document.getElementById('auth-school').value = sch; document.getElementById('auth-role').value = r; document.getElementById('auth-id').value = u;
                 adaptLoginFormLayout(r);
                 handleSecureLogin();
-            } else {
-                showScreen('screen-gate');
-            }
+            } else { showScreen('screen-gate'); }
         }
 
         async function addNewClassStream() {
             const val = document.getElementById('new-class-input').value.trim().toUpperCase();
-            if(!val || db.allocatedClasses.includes(val)) return alert("Invalid stream or duplicate code detected.");
+            if(!val || db.allocatedClasses.includes(val)) return;
             db.allocatedClasses.push(val);
             buildClassSelectOptions(val);
             await syncToCloud();
-            document.getElementById('new-class-input').value = "";
             refreshCurrentTeacherTab();
         }
 
