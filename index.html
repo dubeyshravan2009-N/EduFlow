@@ -30,6 +30,7 @@
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* Processing Indicator Styling */
         #global-processing-loader {
             display: none;
             position: fixed;
@@ -237,14 +238,14 @@
                             <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Target Class Allocation</label>
                             <select id="class-select" onchange="refreshCurrentTeacherTab()" class="w-full border p-2 rounded-lg bg-slate-50 font-bold text-xs outline-none focus:border-indigo-500"></select>
                         </div>
-                        
+                
                         <div id="class-management-deck" class="border-t pt-3 space-y-2">
                             <span class="block text-[9px] font-bold text-indigo-500 uppercase tracking-wider">Dynamic Stream Manager</span>
                             <div class="flex gap-1">
-                                <input id="new-class-input" type="text" placeholder="e.g. 11A" class="border p-1.5 rounded-lg text-xs w-full bg-white outline-none uppercase font-mono focus:border-indigo-500">
+                                <input id="new-class-input" type="text" placeholder="e.g., 11A" class="border p-1.5 rounded-lg text-xs w-full bg-white outline-none uppercase font-mono focus:border-indigo-500">
                                 <button type="button" onclick="addNewClassStream()" class="bg-indigo-600 text-white text-[10px] font-bold px-2.5 rounded-lg hover:bg-indigo-700 transition-colors">Add</button>
                             </div>
-                            
+                    
                             <div class="grid grid-cols-2 gap-1 pt-1">
                                 <button type="button" onclick="moveSelectedClass('up')" class="bg-slate-100 text-slate-700 font-bold py-1 px-2 rounded-lg text-[10px] hover:bg-slate-200 transition-colors">🔼 Move Up</button>
                                 <button type="button" onclick="moveSelectedClass('down')" class="bg-slate-100 text-slate-700 font-bold py-1 px-2 rounded-lg text-[10px] hover:bg-slate-200 transition-colors">🔽 Move Down</button>
@@ -253,7 +254,7 @@
                             <button type="button" onclick="triggerAutoSort()" class="w-full bg-indigo-50 text-indigo-700 font-bold py-1 rounded-lg text-[10px] hover:bg-indigo-100 transition-colors">
                                 🔢 Reset to Auto-Sort Order
                             </button>
-                            
+                  
                             <button type="button" onclick="deleteSelectedClassStream()" class="w-full bg-red-50 text-red-600 border border-red-100 font-bold py-1 rounded-lg text-[10px] hover:bg-red-100 transition-colors">
                                 🗑️ Delete Selected Class
                             </button>
@@ -481,11 +482,13 @@
     </main>
 
     <script>
+        // Core fallbacks
         const CONFIG_FALLBACK_SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
         let db = { students: {}, records: {}, attendance: {}, exams: {}, history: [], examOrder: [], notices: [], allocatedClasses: [] };
         let currentSchool = null; let currentUser = null; let activeId = null; let dynamicChartInstance = null; let currentTeacherTab = "students";
         let localAttendanceBuffer = {};
 
+        // Replace these keys with your unique Firebase Dashboard connection properties
         const firebaseConfig = { 
             apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqagFoUdCy7gBYM70", 
             authDomain: "eduflow-pro-f6d04.firebaseapp.com", 
@@ -494,27 +497,28 @@
             messagingSenderId: "961305546473", 
             appId: "1:961305546473:web:71db6c4d8da6c4950a6a78" 
         };
-        
+
         try { 
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
+            firebase.initializeApp(firebaseConfig); 
             window.cloudStorage = firebase.firestore(); 
         } catch (e) { 
-            console.warn("Cloud connection block. Running local sandbox model simulation.");
+            console.warn("Cloud infrastructure fallback activated. Interface locked to client session simulation sandbox.");
             window.cloudStorage = null; 
         }
 
+        // Toggle Processing Circle Spinner Visibility
         function showLoader(isVisible) { 
             const loader = document.getElementById('global-processing-loader');
             if (loader) loader.style.display = isVisible ? 'flex' : 'none'; 
         }
 
+        // Sync helper dropdown with custom text field
         function syncSubjectCustomField(value) { 
             const inputField = document.getElementById('bulletin-hw-subject');
             if(inputField) inputField.value = value; 
         }
 
+        // Generate classes array fallback if database is empty
         function verifyAndSeedDefaultClasses() { 
             if (!db.allocatedClasses || db.allocatedClasses.length === 0) { 
                 db.allocatedClasses = [];
@@ -526,6 +530,7 @@
             buildClassSelectOptions();
         }
 
+        // Auto sorting class matrix algorithm
         async function triggerAutoSort() { 
             if (!db.allocatedClasses) return; 
             showLoader(true);
@@ -611,28 +616,19 @@
             if(target) target.classList.add('active');
         }
 
+        // AUTH ENGINE: Patched to dynamically build structural layout nodes automatically on new codes
         async function handleSecureLogin() { 
             const school = document.getElementById('auth-school').value.trim().toUpperCase();
             const role = document.getElementById('auth-role').value; 
             const id = document.getElementById('auth-id').value.trim(); 
             const pass = document.getElementById('auth-pass').value.trim(); 
+            if(!school) return alert("School authentication code required.");
             
-            if(!school) {
-                localStorage.clear();
-                return alert("School authentication code required.");
-            }
-            
-            if (role === 'teacher' && pass !== 'admin789') {
-                showLoader(false);
-                localStorage.clear();
-                return alert("Invalid Educator Verification Key Code.");
-            }
             if (role === 'superadmin' && pass === 'master999') { 
                 commitSession('MASTER_NODE', 'SUPER_ADMIN', 'superadmin'); 
                 showScreen('screen-superadmin'); 
                 return; 
             } 
-            
             showLoader(true);
             
             if (!window.cloudStorage) { 
@@ -656,13 +652,7 @@
             try { 
                 const docRef = window.cloudStorage.collection("schools").doc(school);
                 const docSnap = await docRef.get(); 
-                
                 if (!docSnap.exists) { 
-                    if (role === 'parent') {
-                        showLoader(false);
-                        localStorage.clear();
-                        return alert("This School Code does not exist or has no recorded data yet.");
-                    }
                     currentSchool = school; 
                     verifyAndSeedDefaultClasses(); 
                     db.students = {}; 
@@ -672,488 +662,586 @@
                     db.examOrder = ["PT-1"]; 
                     db.notices = []; 
                     await docRef.set(db);
-                } else {
-                    db = docSnap.data();
-                    if(!db.allocatedClasses) verifyAndSeedDefaultClasses();
-                }
-                
+                } 
                 currentSchool = school; 
                 document.getElementById('nav-school-display').innerText = `Workspace Environment: ${currentSchool}`; 
                 
-                if (role === 'parent') {
-                    if (!db.students || !db.students[id] || db.students[id].pass !== pass) {
-                        showLoader(false);
-                        localStorage.clear();
-                        return alert("Invalid student roll identifier or matching parent passkey credentials.");
-                    }
-                    activeId = id;
-                    commitSession(currentSchool, id, 'parent');
-                    initParentView();
-                } else {
-                    commitSession(currentSchool, 'teacher', 'teacher');
-                    initTeacherView();
-                }
-                showLoader(false);
-            } catch(err) {
-                showLoader(false);
-                localStorage.clear();
-                console.error(err);
-                alert("Database Engine Authentication Fault Trace. Check internet settings or Firestore console rules schema setup options.");
-            }
-        }
-
-        function commitSession(school, user, role) {
-            localStorage.setItem('session_school', school);
-            localStorage.setItem('session_user', user);
-            localStorage.setItem('session_role', role);
-            
-            const badge = document.getElementById('role-badge');
-            const logout = document.getElementById('logout-btn');
-            if(badge) { badge.innerText = role; badge.classList.remove('hidden'); }
-            if(logout) logout.classList.remove('hidden');
-        }
-
-        function triggerSessionLogout() {
-            localStorage.clear();
-            
-            const badge = document.getElementById('role-badge');
-            const logout = document.getElementById('logout-btn');
-            if(badge) badge.classList.add('hidden');
-            if(logout) logout.classList.add('hidden');
-            
-            document.getElementById('nav-school-display').innerText = "Secure Network Workspace";
-            currentSchool = null; currentUser = null; activeId = null;
-            showScreen('screen-gate');
-        }
-
-        async function syncToCloud() {
-            if(!window.cloudStorage || !currentSchool) return;
-            try {
-                await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
-            } catch(e) {
-                console.error("Cloud synchronization mismatch error:", e);
-            }
-        }
-
-        function initTeacherView() {
-            verifyAndSeedDefaultClasses();
-            const subjectSelect = document.getElementById('bulletin-hw-subject-select');
-            if(subjectSelect) {
-                subjectSelect.innerHTML = '<option value="">-- Custom Input --</option>' + 
-                    CONFIG_FALLBACK_SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
-            }
-            switchTeacherTab('students');
-            showScreen('screen-teacher');
-        }
-
-        function switchTeacherTab(tabId) {
-            currentTeacherTab = tabId;
-            document.querySelectorAll("[id^='tab-pane-']").forEach(p => p.classList.add('hidden'));
-            document.querySelectorAll("[id^='tab-btn-']").forEach(b => b.className = "px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-600 transition-colors");
-            
-            const targetPane = document.getElementById(`tab-pane-${tabId}`);
-            if(targetPane) targetPane.classList.remove('hidden');
-            
-            const targetBtn = document.getElementById(`tab-btn-${tabId}`);
-            if(targetBtn) targetBtn.className = "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white transition-colors";
-            
-            const dp = document.getElementById('date-picker-container');
-            if(dp) dp.style.display = (tabId === 'attendance') ? 'block' : 'none';
-            
-            refreshCurrentTeacherTab();
-        }
-
-        function refreshCurrentTeacherTab() {
-            if(currentTeacherTab === 'students') renderTeacherList();
-            if(currentTeacherTab === 'attendance') {
-                const dateEl = document.getElementById('attendance-date');
-                if(dateEl && !dateEl.value) {
-                    dateEl.value = new Date().toISOString().split('T')[0];
-                }
-                renderAttendancePanel();
-            }
-            if(currentTeacherTab === 'config') renderExamConfigurationPanel();
-        }
-
-        function renderTeacherList() {
-            const currentClass = document.getElementById('class-select').value;
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const tbody = document.getElementById('teacher-table-body');
-            if(!tbody) return;
-            
-            let html = '';
-            const studentsArr = Object.keys(db.students || {}).filter(k => k.startsWith(currentClass));
-            if(studentsArr.length === 0 && query === "") {
-                html = `<tr><td colspan="4" class="p-8 text-center text-slate-400">No active students enrolled under class stream node ${currentClass}. Click the green button below to inject records manually.</td></tr>`;
-            } else {
-                studentsArr.forEach(id => {
-                    const s = db.students[id];
-                    if(s && s.name.toLowerCase().includes(query)) {
-                        html += `
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="p-4 font-mono font-bold text-indigo-600">${id}</td>
-                            <td class="p-4 font-bold text-slate-700">${s.name}</td>
-                            <td class="p-4 text-center font-mono text-slate-400">${s.pass}</td>
-                            <td class="p-4 text-center space-x-2">
-                                <button type="button" onclick="openEvaluationWindow('${id}')" class="bg-indigo-50 text-indigo-600 font-bold px-3 py-1.5 rounded-lg text-[11px] hover:bg-indigo-100">Grade Matrix</button>
-                                <button type="button" onclick="triggerRecordDeletion('${id}')" class="text-red-500 hover:text-red-700 text-xs font-bold font-mono">🗑️</button>
-                            </td>
-                        </tr>`;
-                    }
+                docRef.onSnapshot(doc => { 
+                    if(doc.exists) { 
+                        const incomingData = doc.data(); 
+                        db.allocatedClasses = incomingData.allocatedClasses || []; 
+                        if(db.allocatedClasses.length === 0) verifyAndSeedDefaultClasses(); 
+                        db.students = incomingData.students || {}; 
+                        db.records = incomingData.records || {}; 
+                        db.attendance = incomingData.attendance || {}; 
+                        db.exams = incomingData.exams || {}; 
+                        db.examOrder = incomingData.examOrder || Object.keys(db.exams); 
+                        db.notices = incomingData.notices || [];
+                        
+                        // Populate custom option menus inside the notice workspace contextually
+                        const noticeSubSelect = document.getElementById('bulletin-hw-subject-select');
+                        if (noticeSubSelect) {
+                            noticeSubSelect.innerHTML = '<option value="">-- Custom Input --</option>' + 
+                                CONFIG_FALLBACK_SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
+                        }
+                    } 
                 });
+
+                // Post initialization latency buffer check
+                await new Promise(res => setTimeout(res, 800));
+                showLoader(false);
+
+                if (role === 'admin') { 
+                    if(pass === 'admin123') { 
+                        commitSession(currentSchool, 'Principal', 'admin'); 
+                        alert("Principal profile loaded successfully."); 
+                        location.reload(); 
+                    } else { 
+                        alert("Invalid Administrative Passkey credentials."); 
+                    } 
+                } else if (role === 'teacher') { 
+                    if(pass === 'teacher123') { 
+                        commitSession(currentSchool, 'Teacher', 'teacher'); 
+                        initTeacherView(); 
+                    } else { 
+                        alert("Invalid Educator Token verification."); 
+                    } 
+                } else if (role === 'parent') { 
+                    if(!id) { 
+                        alert("Please specify a Student Roll ID."); 
+                        return; 
+                    } 
+                    if(db.students && db.students[id] && db.students[id].pass === pass) { 
+                        activeId = id; 
+                        commitSession(currentSchool, id, 'parent'); 
+                        initParentView(); 
+                    } else { 
+                        alert("Authentication credentials mismatch for target student roster node."); 
+                    } 
+                }
+            } catch(e) { 
+                showLoader(false); 
+                alert("Database node request rejected. Reason: " + e.message); 
             }
-            
-            html += `
-            <tr class="bg-slate-50/70">
-                <td class="p-4"><input id="new-roll" type="text" placeholder="Roll Num" class="border p-2 rounded-lg text-xs w-full bg-white font-mono uppercase"></td>
-                <td class="p-4"><input id="new-name" type="text" placeholder="Full Student Legal Name" class="border p-2 rounded-lg text-xs w-full bg-white font-bold"></td>
-                <td class="p-4"><input id="new-pass" type="text" placeholder="Passkey" class="border p-2 rounded-lg text-xs w-full bg-white font-mono text-center" value="school1"></td>
-                <td class="p-4 text-center"><button type="button" onclick="commitNewStudentToRoster()" class="bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm hover:bg-emerald-700 w-full">＋ Enroll Student</button></td>
-            </tr>`;
-            tbody.innerHTML = html;
         }
 
-        async function commitNewStudentToRoster() {
-            const currentClass = document.getElementById('class-select').value;
-            const roll = document.getElementById('new-roll').value.trim().toUpperCase();
-            const name = document.getElementById('new-name').value.trim();
-            const pass = document.getElementById('new-pass').value.trim();
-            
-            if(!roll || !name || !pass) return alert("All student registration cells are mandatory.");
-            const fullId = `${currentClass}-${roll}`;
-            if(db.students && db.students[fullId]) return alert("This sequence identity code string already exists.");
-            
-            showLoader(true);
-            if(!db.students) db.students = {};
-            db.students[fullId] = { name: name, pass: pass };
-            await syncToCloud();
-            renderTeacherList();
-            showLoader(false);
+        function commitSession(school, user, role) { 
+            localStorage.setItem('session_school', school); 
+            localStorage.setItem('session_user', user); 
+            localStorage.setItem('session_role', role); 
+            configureNavigationHeader(role); 
         }
 
-        async function triggerRecordDeletion(id) {
-            if(!confirm(`Erase structural profile and data matrix permanently for ${id}?`)) return;
-            showLoader(true);
-            delete db.students[id];
-            if(db.records && db.records[id]) delete db.records[id];
-            await syncToCloud();
-            renderTeacherList();
-            showLoader(false);
+        function configureNavigationHeader(role) { 
+            const badge = document.getElementById('role-badge'); 
+            const btn = document.getElementById('logout-btn'); 
+            if(badge) { badge.innerText = role; badge.classList.remove('hidden'); } 
+            if(btn) btn.classList.remove('hidden'); 
         }
 
-        function renderAttendancePanel() {
-            const currentClass = document.getElementById('class-select').value;
-            const date = document.getElementById('attendance-date').value;
-            const tbody = document.getElementById('attendance-table-body');
-            if(!tbody || !date) return;
+        function triggerSessionLogout() { 
+            localStorage.clear(); 
+            sessionStorage.clear();
+            location.reload(); 
+        }
+
+        async function syncToCloud() { 
+            if(window.cloudStorage && currentSchool) { 
+                try { 
+                    await window.cloudStorage.collection("schools").doc(currentSchool).update(db); 
+                } catch(err) { 
+                    console.error("Cloud synchronization halted:", err); 
+                } 
+            } 
+        }
+
+        function initTeacherView() { 
+            configureNavigationHeader('teacher'); 
+            verifyAndSeedDefaultClasses(); 
+            switchTeacherTab('students'); 
+            showScreen('screen-teacher'); 
+        }
+
+        function switchTeacherTab(tabName) { 
+            currentTeacherTab = tabName; 
+            document.querySelectorAll('[id^="tab-btn-"]').forEach(b => b.className = "px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-600 transition-colors" ); 
+            document.getElementById(`tab-btn-${tabName}`).className = "px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white transition-colors";
             
-            const studentsArr = Object.keys(db.students || {}).filter(k => k.startsWith(currentClass));
-            if(studentsArr.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400">No student target sets discovered.</td></tr>`;
-                return;
-            }
+            document.getElementById('date-picker-container').classList.add('hidden'); 
+            document.getElementById('search-container').classList.add('hidden'); 
+            document.getElementById('class-management-deck').classList.add('hidden');
             
-            if(!db.attendance) db.attendance = {};
-            if(!db.attendance[date]) db.attendance[date] = {};
-            localAttendanceBuffer = { ...db.attendance[date] };
+            document.querySelectorAll('[id^="tab-pane-"]').forEach(p => p.classList.add('hidden')); 
+            document.getElementById(`tab-pane-${tabName}`).classList.remove('hidden'); 
             
-            tbody.innerHTML = studentsArr.map(id => {
-                const status = localAttendanceBuffer[id] !== undefined ? localAttendanceBuffer[id] : true;
-                return `
+            if(tabName === 'students') { 
+                document.getElementById('search-container').classList.remove('hidden'); 
+                document.getElementById('class-management-deck').classList.remove('hidden'); 
+            } else if(tabName === 'attendance') { 
+                document.getElementById('date-picker-container').classList.remove('hidden'); 
+                const inputDate = document.getElementById('attendance-date'); 
+                if(!inputDate.value) { 
+                    inputDate.value = new Date().toISOString().split('T')[0]; 
+                } 
+            } 
+            refreshCurrentTeacherTab(); 
+        }
+
+        function refreshCurrentTeacherTab() { 
+            if(currentTeacherTab === 'students') renderTeacherList(); 
+            else if(currentTeacherTab === 'attendance') renderAttendancePanel(); 
+            else if(currentTeacherTab === 'config') renderExamConfigurationLayout(); 
+        }
+
+        function getActiveSelectedClass() { 
+            const sel = document.getElementById('class-select'); 
+            return sel ? sel.value : null; 
+        }
+
+        function renderTeacherList() { 
+            const targetClass = getActiveSelectedClass(); 
+            const query = document.getElementById('search-input').value.toLowerCase(); 
+            const tbody = document.getElementById('teacher-table-body'); 
+            if(!tbody) return; 
+            tbody.innerHTML = ''; 
+            
+            if(!targetClass) { 
+                tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center italic text-slate-400">Create a class stream allocation to begin registry tracking.</td></tr>'; 
+                return; 
+            } 
+            
+            let matchedKeys = Object.keys(db.students || {}).filter(k => k.startsWith(targetClass + '-')); 
+            matchedKeys.sort((x, y) => parseInt(x.split('-')[1]) - parseInt(y.split('-')[1])); 
+            
+            let html = ''; 
+            matchedKeys.forEach(k => { 
+                const s = db.students[k]; 
+                if(query && !s.name.toLowerCase().includes(query)) return; 
+                html += `
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-4 font-mono font-bold text-slate-500">${id}</td>
-                    <td class="p-4 font-bold text-slate-800">${db.students[id].name}</td>
+                    <td class="p-4 font-mono font-bold text-indigo-600">${k}</td>
+                    <td class="p-4"><input type="text" value="${s.name}" onchange="updateStudentMetaName('${k}', this.value)" class="bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 outline-none font-medium text-slate-800 py-0.5"></td>
+                    <td class="p-4 text-center font-mono text-slate-500">${s.pass}</td>
+                    <td class="p-4 flex justify-center gap-2">
+                        <button type="button" onclick="launchEvaluationManager('${k}')" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-xl font-bold hover:bg-indigo-100 transition-all">📝 Grade</button>
+                        <button type="button" onclick="purgeStudentProfileNode('${k}')" class="bg-red-50 text-red-500 px-2.5 py-1.5 rounded-xl hover:bg-red-100 transition-all">🗑️</button>
+                    </td>
+                </tr>`; 
+            }); 
+            
+            // Render trailing option node element to dynamically append standard student allocations
+            const nextIdx = matchedKeys.length > 0 ? parseInt(matchedKeys[matchedKeys.length - 1].split('-')[1]) + 1 : 1; 
+            html += `
+            <tr class="bg-indigo-50/40">
+                <td class="p-4 font-mono text-slate-400 font-bold">${targetClass}-${nextIdx}</td>
+                <td class="p-4"><input id="ghost-name" type="text" placeholder="Type new student name..." class="w-full bg-white border p-2 rounded-lg text-xs outline-none focus:border-indigo-500 font-medium"></td>
+                <td class="p-4 font-mono text-center"><input id="ghost-pass" type="text" placeholder="Passkey" class="w-20 bg-white border p-2 rounded-lg text-xs font-mono text-center outline-none focus:border-indigo-500"></td>
+                <td class="p-4 text-center"><button type="button" onclick="commitNewStudentToRegistry('${targetClass}', ${nextIdx})" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-xl shadow-sm hover:bg-indigo-700 transition-colors">➕ Insert Profile</button></td>
+            </tr>`; 
+            tbody.innerHTML = html; 
+        }
+
+        async function updateStudentMetaName(id, val) { 
+            if(!val.trim()) return; 
+            db.students[id].name = val.trim(); 
+            await syncToCloud(); 
+        }
+
+        async function commitNewStudentToRegistry(cls, idx) { 
+            const n = document.getElementById('ghost-name').value.trim(); 
+            let p = document.getElementById('ghost-pass').value.trim(); 
+            if(!n) return alert("Student profile name parameter structural target missing."); 
+            if(!p) p = "school" + Math.floor(100 + Math.random() * 900); 
+            
+            showLoader(true); 
+            db.students[`${cls}-${idx}`] = { name: n, pass: p }; 
+            await syncToCloud(); 
+            renderTeacherList(); 
+            showLoader(false); 
+        }
+
+        async function purgeStudentProfileNode(key) { 
+            if(!confirm(`Are you sure you want to drop profile entry ${key}?`)) return; 
+            showLoader(true); 
+            delete db.students[key]; 
+            if(db.records && db.records[key]) delete db.records[key]; 
+            await syncToCloud(); 
+            renderTeacherList(); 
+            showLoader(false); 
+        }
+
+        function renderAttendancePanel() { 
+            const targetClass = getActiveSelectedClass(); 
+            const date = document.getElementById('attendance-date').value; 
+            const tbody = document.getElementById('attendance-table-body'); 
+            if(!tbody) return; 
+            tbody.innerHTML = ''; 
+            
+            if(!targetClass || !date) { 
+                tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center italic text-slate-400">Configure target metrics parameters above.</td></tr>'; 
+                return; 
+            } 
+            
+            let matchedKeys = Object.keys(db.students || {}).filter(k => k.startsWith(targetClass + '-')); 
+            matchedKeys.sort((x, y) => parseInt(x.split('-')[1]) - parseInt(y.split('-')[1])); 
+            
+            if(matchedKeys.length === 0) { 
+                tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center italic text-slate-400">No active student profiles mapped to this class allocation block.</td></tr>'; 
+                return; 
+            } 
+            
+            localAttendanceBuffer = {}; 
+            let html = ''; 
+            matchedKeys.forEach(k => { 
+                let isPresent = true; 
+                if(db.attendance && db.attendance[date] && db.attendance[date][k] !== undefined) { 
+                    isPresent = db.attendance[date][k]; 
+                } 
+                localAttendanceBuffer[k] = isPresent; 
+                html += `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-4 font-mono font-bold text-indigo-600">${k}</td>
+                    <td class="p-4 font-medium text-slate-800">${db.students[k].name}</td>
                     <td class="p-4 text-center">
-                        <button type="button" onclick="toggleLocalAttendance('${id}')" id="attn-btn-${id}" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${status ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300'}">
-                            ${status ? '🟢 PRESENT' : '🔴 ABSENT'}
+                        <button type="button" id="attn-toggle-${k}" onclick="toggleAttendanceBufferNode('${k}')" class="w-28 font-bold text-xs py-2 rounded-xl transition-all shadow-sm ${isPresent ? 'bg-emerald-500 text-white':'bg-red-500 text-white'}">
+                            ${isPresent ? '🟢 Present':'🔴 Absent'}
                         </button>
                     </td>
-                </tr>`;
-            }).join('');
+                </tr>`; 
+            }); 
+            tbody.innerHTML = html; 
         }
 
-        function toggleLocalAttendance(id) {
-            const currentStatus = localAttendanceBuffer[id] !== undefined ? localAttendanceBuffer[id] : true;
-            localAttendanceBuffer[id] = !currentStatus;
-            const btn = document.getElementById(`attn-btn-${id}`);
-            if(btn) {
-                if(localAttendanceBuffer[id]) {
-                    btn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-green-100 text-green-700 border border-green-300";
-                    btn.innerText = "🟢 PRESENT";
-                } else {
-                    btn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-red-100 text-red-700 border border-red-300";
-                    btn.innerText = "🔴 ABSENT";
-                }
-            }
+        function toggleAttendanceBufferNode(key) { 
+            const state = !localAttendanceBuffer[key]; 
+            localAttendanceBuffer[key] = state; 
+            const btn = document.getElementById(`attn-toggle-${key}`); 
+            if(btn) { 
+                btn.className = `w-28 font-bold text-xs py-2 rounded-xl transition-all shadow-sm ${state ? 'bg-emerald-500 text-white':'bg-red-500 text-white'}`; 
+                btn.innerText = state ? '🟢 Present':'🔴 Absent'; 
+            } 
         }
 
-        async function commitAttendanceSheet() {
-            const date = document.getElementById('attendance-date').value;
-            if(!date) return alert("Select standard timeline sequence.");
-            showLoader(true);
-            if(!db.attendance) db.attendance = {};
-            db.attendance[date] = { ...localAttendanceBuffer };
-            await syncToCloud();
-            showLoader(false);
-            alert("Attendance timeline profile metrics locked successfully.");
+        async function commitAttendanceSheet() { 
+            const date = document.getElementById('attendance-date').value; 
+            if(!date) return; 
+            showLoader(true); 
+            if(!db.attendance) db.attendance = {}; 
+            db.attendance[date] = {}; 
+            Object.keys(localAttendanceBuffer).forEach(k => { 
+                db.attendance[date][k] = localAttendanceBuffer[k]; 
+            }); 
+            await syncToCloud(); 
+            showLoader(false); 
+            alert(`Attendance register records synchronized successfully for target timeline code node: ${date}`); 
         }
 
-        function renderExamConfigurationPanel() {
-            const container = document.getElementById('exam-config-rows');
-            if(!container) return;
-            if(!db.examOrder) db.examOrder = Object.keys(db.exams || {});
+        function renderExamConfigurationLayout() { 
+            const rowsContainer = document.getElementById('exam-config-rows'); 
+            if(!rowsContainer) return; 
+            rowsContainer.innerHTML = ''; 
             
-            container.innerHTML = db.examOrder.map(ex => `
-            <div class="flex items-center justify-between p-3 bg-slate-50 border rounded-xl text-xs font-bold">
-                <span class="text-slate-700">${ex} <span class="text-slate-400 font-normal">(${db.exams[ex]} Max Points)</span></span>
-                <button type="button" onclick="purgeExamModule('${ex}')" class="text-red-500 font-mono text-xs hover:underline">Remove Module</button>
-            </div>`).join('');
-        }
-
-        function createNewExamModule() {
-            const name = document.getElementById('new-exam-name').value.trim();
-            const max = parseInt(document.getElementById('new-exam-max').value);
-            if(!name || isNaN(max)) return alert("Specify legitimate module focus text metrics.");
-            
-            if(!db.exams) db.exams = {};
-            db.exams[name] = max;
-            if(!db.examOrder) db.examOrder = [];
-            if(!db.examOrder.includes(name)) db.examOrder.push(name);
-            renderExamConfigurationPanel();
-            document.getElementById('new-exam-name').value = '';
-            document.getElementById('new-exam-max').value = '';
-        }
-
-        function purgeExamModule(name) {
-            if(db.exams) delete db.exams[name];
-            db.examOrder = (db.examOrder || []).filter(x => x !== name);
-            renderExamConfigurationPanel();
-        }
-
-        async function saveExamConfiguration() {
-            showLoader(true);
-            await syncToCloud();
-            showLoader(false);
-            alert("Assessment structure rules synchronized safely.");
-        }
-
-        function openEvaluationWindow(studentId) {
-            activeId = studentId;
-            document.getElementById('m-student-name').innerText = `Evaluation: ${db.students[studentId].name} (${studentId})`;
-            const select = document.getElementById('m-exam');
-            
-            if(!db.examOrder || db.examOrder.length === 0) db.examOrder = Object.keys(db.exams || {});
-            select.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join('');
-            
-            loadExistingMarks();
-            showScreen('screen-marks');
-        }
-
-        function loadExistingMarks() {
-            const exam = document.getElementById('m-exam').value;
-            const container = document.getElementById('m-grid');
-            if(!exam || !container) return;
-            
-            if(!db.records) db.records = {};
-            if(!db.records[activeId]) db.records[activeId] = {};
-            if(!db.records[activeId][exam]) db.records[activeId][exam] = { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "" };
-            
-            const currentRecord = db.records[activeId][exam];
-            container.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => {
-                const val = (currentRecord.marks && currentRecord.marks[sub] !== undefined) ? currentRecord.marks[sub] : '';
-                return `
-                <div class="bg-slate-50 p-2 rounded-xl border">
-                    <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">${sub}</label>
-                    <input type="number" id="marks-${sub}" value="${val}" placeholder="0" max="${db.exams[exam]}" class="w-full border rounded-lg p-1.5 text-xs font-bold text-center bg-white outline-none focus:border-indigo-500">
-                </div>`;
-            }).join('');
-            
-            document.getElementById('m-cw-status').value = currentRecord.cw || "🟢 Active & Regular";
-            document.getElementById('m-hw-status').value = currentRecord.hw || "🟢 On-Time & Good";
-            document.getElementById('m-remarks').value = currentRecord.remarks || "";
-        }
-
-        async function saveMarks() {
-            const exam = document.getElementById('m-exam').value;
-            if(!exam) return;
-            
-            const maxPoints = db.exams[exam];
-            let targetMarks = {};
-            for(let i=0; i<CONFIG_FALLBACK_SUBJECTS.length; i++) {
-                const sub = CONFIG_FALLBACK_SUBJECTS[i];
-                const inputVal = document.getElementById(`marks-${sub}`).value;
-                if(inputVal !== '') {
-                    const numericVal = parseFloat(inputVal);
-                    if(numericVal < 0 || numericVal > maxPoints) {
-                        return alert(`Value entry boundary error for ${sub}. Must fall cleanly within 0 and ${maxPoints}.`);
-                    }
-                    targetMarks[sub] = numericVal;
-                }
+            // Defensive setup for evaluation items arrays
+            if(!db.exams || typeof db.exams !== 'object') db.exams = { "PT-1": 100 };
+            if(!db.examOrder || !Array.isArray(db.examOrder) || db.examOrder.length === 0) {
+                db.examOrder = Object.keys(db.exams);
             }
             
-            showLoader(true);
-            if(!db.records) db.records = {};
-            if(!db.records[activeId]) db.records[activeId] = {};
-            db.records[activeId][exam] = {
-                marks: targetMarks,
-                cw: document.getElementById('m-cw-status').value,
-                hw: document.getElementById('m-hw-status').value,
-                remarks: document.getElementById('m-remarks').value.trim()
-            };
-            await syncToCloud();
-            showScreen('screen-teacher');
-            showLoader(false);
+            rowsContainer.innerHTML = db.examOrder.map(ex => `
+            <div class="flex items-center gap-3 bg-slate-50 border p-3 rounded-xl">
+                <span class="font-mono font-bold text-xs text-indigo-600 flex-1">${ex}</span>
+                <div class="flex items-center gap-2">
+                    <label class="text-[10px] text-slate-400 uppercase font-bold">Max Marks</label>
+                    <input type="number" value="${db.exams[ex] || 100}" onchange="updateExamMaxPoints('${ex}', this.value)" class="w-20 border text-center p-1.5 bg-white rounded-lg text-xs font-bold outline-none">
+                </div>
+                <button type="button" onclick="purgeExamModuleNode('${ex}')" class="text-red-500 text-xs font-bold px-2 py-1 rounded-lg hover:bg-red-50">🗑️</button>
+            </div>` ).join(''); 
         }
 
-        async function publishNoticeItem(category) {
-            let item = { id: Date.now().toString(), type: category };
-            if(category === 'homework') {
-                item.subject = document.getElementById('bulletin-hw-subject').value.trim();
-                item.start = document.getElementById('bulletin-hw-start').value;
-                item.end = document.getElementById('bulletin-hw-end').value;
-                item.task = document.getElementById('bulletin-hw-task').value.trim();
-                if(!item.subject || !item.task || !item.start || !item.end) return alert("Complete all notice validation matrix fields.");
-            } else if (category === 'events') {
-                item.title = document.getElementById('bulletin-evt-title').value.trim();
-                item.start = document.getElementById('bulletin-evt-start').value;
-                item.end = document.getElementById('bulletin-evt-end').value;
-                if(!item.title || !item.start || !item.end) return alert("Fill mandatory scheduling parameters.");
-            } else if (category === 'timetables') {
-                item.title = document.getElementById('bulletin-tt-title').value.trim();
-                item.start = document.getElementById('bulletin-tt-start').value;
-                item.end = document.getElementById('bulletin-tt-end').value;
-                item.matrix = document.getElementById('bulletin-tt-matrix').value.trim();
-                if(!item.title || !item.matrix || !item.start || !item.end) return alert("Complete comprehensive schedule logging arrays.");
+        function updateExamMaxPoints(ex, value) { 
+            let parsed = parseFloat(value); 
+            if(isNaN(parsed) || parsed <= 0) parsed = 100; 
+            db.exams[ex] = parsed; 
+        }
+
+        function createNewExamModule() { 
+            const name = document.getElementById('new-exam-name').value.trim().toUpperCase(); 
+            let maxPoints = parseFloat(document.getElementById('new-exam-max').value); 
+            if(!name) return alert("Please clarify exam sequencing identifier code string description targets."); 
+            if(isNaN(maxPoints) || maxPoints <= 0) maxPoints = 100; 
+            
+            if(!db.exams) db.exams = {}; 
+            if(!db.examOrder) db.examOrder = []; 
+            if(db.exams[name] !== undefined) return alert("This testing framework assessment tag sequence node has already been allocated."); 
+            
+            db.exams[name] = maxPoints; 
+            db.examOrder.push(name); 
+            document.getElementById('new-exam-name').value = ''; 
+            document.getElementById('new-exam-max').value = ''; 
+            renderExamConfigurationLayout(); 
+        }
+
+        function purgeExamModuleNode(ex) { 
+            if(!confirm(`Erase testing evaluation module descriptor tag: ${ex}? This action resets grading structures.`)) return; 
+            delete db.exams[ex]; 
+            db.examOrder = db.examOrder.filter(o => o !== ex); 
+            renderExamConfigurationLayout(); 
+        }
+
+        async function saveExamConfiguration() { 
+            showLoader(true); 
+            await syncToCloud(); 
+            showLoader(false); 
+            alert("Assessment structural profiles synchronized safely with network workspace matrix storage."); 
+        }
+
+        async function publishNoticeItem(type) { 
+            let title = "", start = "", end = "", matrix = "", subject = "", task = ""; 
+            if(type === 'homework') { 
+                subject = document.getElementById('bulletin-hw-subject').value.trim(); 
+                start = document.getElementById('bulletin-hw-start').value; 
+                end = document.getElementById('bulletin-hw-end').value; 
+                task = document.getElementById('bulletin-hw-task').value.trim(); 
+                if(!subject || !task || !start || !end) return alert("Complete homework logging schema definition configurations."); 
+                title = `Homework: ${subject}`; 
+            } else if(type === 'events') { 
+                title = document.getElementById('bulletin-evt-title').value.trim(); 
+                start = document.getElementById('bulletin-evt-start').value; 
+                end = document.getElementById('bulletin-evt-end').value; 
+                if(!title || !start || !end) return alert("Complete metrics data bindings for active celebration structures."); 
+            } else if(type === 'timetables') { 
+                title = document.getElementById('bulletin-tt-title').value.trim(); 
+                start = document.getElementById('bulletin-tt-start').value; 
+                end = document.getElementById('bulletin-tt-end').value; 
+                matrix = document.getElementById('bulletin-tt-matrix').value.trim(); 
+                if(!title || !start || !end || !matrix) return alert("Complete examination testing data map schema bindings."); 
+            } 
+            
+            showLoader(true); 
+            if(!db.notices) db.notices = []; 
+            db.notices.push({ type, title, start, end, matrix, subject, task, timestamp: Date.now() }); 
+            await syncToCloud(); 
+            
+            if(type === 'homework') { document.getElementById('bulletin-hw-task').value = ''; document.getElementById('bulletin-hw-subject').value = ''; } 
+            else if(type === 'events') { document.getElementById('bulletin-evt-title').value = ''; } 
+            else if(type === 'timetables') { document.getElementById('bulletin-tt-title').value = ''; document.getElementById('bulletin-tt-matrix').value = ''; } 
+            
+            showLoader(false); 
+            alert("Dynamic operational notice board notification published successfully."); 
+        }
+
+        function launchEvaluationManager(studentId) { 
+            activeId = studentId; 
+            document.getElementById('m-student-name').innerText = `Evaluation Profile Node: ${db.students[studentId].name} (${studentId})`; 
+            
+            if(!db.exams || typeof db.exams !== 'object' || Object.keys(db.exams).length === 0) {
+                db.exams = { "PT-1": 100 };
+            }
+            if(!db.examOrder || !Array.isArray(db.examOrder) || db.examOrder.length === 0) {
+                db.examOrder = Object.keys(db.exams);
             }
             
-            showLoader(true);
-            if(!db.notices) db.notices = [];
-            db.notices.push(item);
-            await syncToCloud();
-            showLoader(false);
-            alert("Broadcast document stream integrated across active pipelines successfully.");
-            
-            if(category === 'homework') { document.getElementById('bulletin-hw-task').value = ''; }
-            if(category === 'events') { document.getElementById('bulletin-evt-title').value = ''; }
-            if(category === 'timetables') { document.getElementById('bulletin-tt-matrix').value = ''; document.getElementById('bulletin-tt-title').value = ''; }
+            const examSelect = document.getElementById('m-exam'); 
+            examSelect.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join(''); 
+            loadExistingMarks(); 
+            showScreen('screen-marks'); 
         }
 
-        function initParentView() {
-            if(!db.students || !db.students[activeId]) return;
-            document.getElementById('p-name').innerText = db.students[activeId].name;
-            document.getElementById('p-id').innerText = `Roster ID Code: ${activeId} | Network Token Active`;
+        function loadExistingMarks() { 
+            const exam = document.getElementById('m-exam').value; 
+            const grid = document.getElementById('m-grid'); 
+            if(!exam || !grid) return; 
             
-            let totalDays = 0; let presentDays = 0;
-            Object.keys(db.attendance || {}).forEach(d => {
-                if(db.attendance[d] && db.attendance[d][activeId] !== undefined) {
-                    totalDays++;
-                    if(db.attendance[d][activeId]) presentDays++;
-                }
-            });
+            if(!db.records) db.records = {}; 
+            if(!db.records[activeId]) db.records[activeId] = {}; 
+            if(!db.records[activeId][exam]) db.records[activeId][exam] = { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "" }; 
             
-            const percent = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 100;
-            document.getElementById('p-attn-percent').innerText = `${percent}%`;
-            document.getElementById('p-attn-fraction').innerText = `${presentDays} / ${totalDays} Dynamic Sessions Logged`;
+            const sRec = db.records[activeId][exam]; 
+            grid.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => `
+            <div class="bg-slate-50 border p-3 rounded-xl flex flex-col justify-between">
+                <span class="font-bold text-xs text-slate-700 tracking-tight block mb-1">${sub}</span>
+                <input type="text" id="m-score-${sub}" value="${sRec.marks[sub] !== undefined ? sRec.marks[sub] : ''}" placeholder="-" class="w-full border rounded-lg p-2 text-center text-xs font-mono font-bold outline-none bg-white focus:border-indigo-500">
+            </div>` ).join(''); 
             
-            const nowStr = new Date().toISOString().split('T')[0];
-            const activeNotices = db.notices ? db.notices.filter(n => nowStr >= n.start && nowStr <= n.end) : [];
-            
-            const evDeck = document.getElementById('p-events-deck');
-            const hworkDeck = document.getElementById('p-homework-deck');
-            const ttDeck = document.getElementById('p-timetable-deck');
-            
-            evDeck.innerHTML = ''; hworkDeck.innerHTML = ''; ttDeck.innerHTML = '';
-            
-            const filteredEvents = activeNotices.filter(n => n.type === 'events');
-            if(filteredEvents.length === 0) evDeck.innerHTML = '<p class="text-slate-400 italic">No standard celebration alerts posted today.</p>';
-            else evDeck.innerHTML = filteredEvents.map(e => `<div class="bg-amber-50 text-amber-900 font-bold border border-amber-200 p-2.5 rounded-xl">🎉 ${e.title}</div>`).join('');
-            
-            const filteredTT = activeNotices.filter(n => n.type === 'timetables');
-            if(filteredTT.length === 0) ttDeck.innerHTML = '<p class="text-slate-400 italic">No dynamic exam schedule frameworks scheduled active.</p>';
-            else ttDeck.innerHTML = filteredTT.map(t => `<div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl"><strong class="text-indigo-900 block border-b pb-1 mb-1">${t.title}</strong><pre class="font-sans text-[11px] text-slate-600 whitespace-pre-line leading-relaxed">${t.matrix}</pre></div>`).join('');
-            
-            const filteredHW = activeNotices.filter(n => n.type === 'homework');
-            if(filteredHW.length === 0) hworkDeck.innerHTML = '<p class="text-slate-400 italic col-span-full">No active classroom home assignments broadcast.</p>';
-            else hworkDeck.innerHTML = filteredHW.map(h => `<div class="bg-slate-50 border p-3 rounded-xl space-y-1"><span class="bg-slate-200 px-2 py-0.5 rounded text-[9px] font-black uppercase text-slate-700 tracking-wide">${h.subject}</span><p class="text-slate-600 text-xs font-medium leading-relaxed pt-1">${h.task}</p></div>`).join('');
-            
-            const pSelect = document.getElementById('p-exam-view');
-            if(!db.examOrder || db.examOrder.length === 0) db.examOrder = Object.keys(db.exams || {});
-            pSelect.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join('');
-            
-            renderParentReport();
-            showScreen('screen-parent');
+            document.getElementById('m-cw-status').value = sRec.cw || "🟢 Active & Regular"; 
+            document.getElementById('m-hw-status').value = sRec.hw || "🟢 On-Time & Good"; 
+            document.getElementById('m-remarks').value = sRec.remarks || ""; 
         }
 
-        function renderParentReport() {
-            const exam = document.getElementById('p-exam-view').value;
-            const display = document.getElementById('p-marks-display');
-            if(!exam || !display) return;
+        async function saveMarks() { 
+            const exam = document.getElementById('m-exam').value; 
+            if(!exam) return; 
+            showLoader(true); 
             
-            const sRec = db.records && db.records[activeId] && db.records[activeId][exam] ? db.records[activeId][exam] : { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "No educator evaluation mapped." };
-            const maxPoints = (db.exams && db.exams[exam]) || 100;
+            let sRec = db.records[activeId][exam]; 
+            CONFIG_FALLBACK_SUBJECTS.forEach(sub => { 
+                const val = document.getElementById(`m-score-${sub}`).value.trim(); 
+                sRec.marks[sub] = val; 
+            }); 
+            sRec.cw = document.getElementById('m-cw-status').value; 
+            sRec.hw = document.getElementById('m-hw-status').value; 
+            sRec.remarks = document.getElementById('m-remarks').value.trim(); 
             
-            display.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => {
-                const mark = (sRec.marks && sRec.marks[sub] !== undefined) ? sRec.marks[sub] : '-';
-                const scoreValue = (sRec.marks && sRec.marks[sub] !== undefined) ? parseFloat(sRec.marks[sub]) : 0;
-                const pct = Math.round((scoreValue / maxPoints) * 100);
+            await syncToCloud(); 
+            showLoader(false); 
+            showScreen('screen-teacher'); 
+            refreshCurrentTeacherTab(); 
+        }
+
+        // DYNAMIC FIX: Handled uninitialized objects safely when bootstrapping parent layouts
+        function initParentView() { 
+            if (!db.students || !db.students[activeId]) { 
+                showLoader(false); 
+                return alert("Critical Error: Student allocation parameters mapping target identifier not located."); 
+            } 
+            
+            document.getElementById('p-name').innerText = db.students[activeId].name || "Registered Student Profile"; 
+            document.getElementById('p-id').innerText = `Roster ID Code: ${activeId} | Network Token Active`; 
+            
+            let totalDays = 0; let presentDays = 0; 
+            if (db.attendance && typeof db.attendance === 'object') { 
+                Object.keys(db.attendance).forEach(d => { 
+                    if(db.attendance[d] && db.attendance[d][activeId] !== undefined) { 
+                        totalDays++; 
+                        if(db.attendance[d][activeId]) presentDays++; 
+                    } 
+                }); 
+            } 
+            
+            const percent = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 100; 
+            document.getElementById('p-attn-percent').innerText = `${percent}%`; 
+            document.getElementById('p-attn-fraction').innerText = `${presentDays} / ${totalDays} Total Sessions Recorded`; 
+            
+            let nowStr = new Date().toISOString().split('T')[0]; 
+            const activeNotices = Array.isArray(db.notices) ? db.notices.filter(n => n && nowStr >= n.start && nowStr <= n.end) : [];
+            
+            const evDeck = document.getElementById('p-events-deck'); 
+            const hworkDeck = document.getElementById('p-homework-deck'); 
+            const ttDeck = document.getElementById('p-timetable-deck'); 
+            
+            if(evDeck) evDeck.innerHTML = ''; 
+            if(hworkDeck) hworkDeck.innerHTML = ''; 
+            if(ttDeck) ttDeck.innerHTML = ''; 
+            
+            const filteredEvents = activeNotices.filter(n => n && n.type === 'events'); 
+            if(evDeck) { 
+                if(filteredEvents.length === 0) evDeck.innerHTML = '<p class="text-slate-400 italic">No standard institutional alerts posted today.</p>'; 
+                else evDeck.innerHTML = filteredEvents.map(e => `<div class="bg-amber-50 text-amber-900 font-bold border border-amber-200 p-2.5 rounded-xl">🎉 ${e.title || 'Event Notice'}</div>`).join(''); 
+            } 
+            
+            const filteredTT = activeNotices.filter(n => n && n.type === 'timetables'); 
+            if(ttDeck) { 
+                if(filteredTT.length === 0) ttDeck.innerHTML = '<p class="text-slate-400 italic">No active examination timetables found.</p>'; 
+                else ttDeck.innerHTML = filteredTT.map(t => `<div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl"><strong class="text-indigo-900 block border-b pb-1 mb-1">${t.title || 'Timetable'}</strong><pre class="font-sans text-[11px] text-slate-600 whitespace-pre-line leading-relaxed">${t.matrix || ''}</pre></div>`).join(''); 
+            } 
+            
+            const filteredHW = activeNotices.filter(n => n && n.type === 'homework'); 
+            if(hworkDeck) { 
+                if(filteredHW.length === 0) hworkDeck.innerHTML = '<p class="text-slate-400 italic col-span-full">No home assignments broadcasted today.</p>'; 
+                else hworkDeck.innerHTML = filteredHW.map(h => `<div class="bg-slate-50 border p-3 rounded-xl space-y-1"><span class="bg-slate-200 px-2 py-0.5 rounded text-[9px] font-black uppercase text-slate-700 tracking-wide">${h.subject || 'Subject'}</span><p class="text-slate-600 text-xs font-medium leading-relaxed pt-1">${h.task || ''}</p></div>`).join(''); 
+            } 
+            
+            // CRITICAL BUG FIX: Inject dynamic default collections to clear parsing locks
+            if (!db.exams || typeof db.exams !== 'object' || Object.keys(db.exams).length === 0) { 
+                db.exams = { "PT-1": 100 }; 
+            } 
+            if (!db.examOrder || !Array.isArray(db.examOrder) || db.examOrder.length === 0) { 
+                db.examOrder = Object.keys(db.exams); 
+            } 
+            
+            const pSelect = document.getElementById('p-exam-view'); 
+            if (pSelect) { 
+                pSelect.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join(''); 
+            } 
+            
+            renderParentReport(); 
+            showScreen('screen-parent'); 
+        }
+
+        // DYNAMIC FIX: Safeguarded points calculation evaluation mapping configurations safely
+        function renderParentReport() { 
+            const pSelect = document.getElementById('p-exam-view'); 
+            if (!pSelect) return; 
+            const exam = pSelect.value; 
+            const display = document.getElementById('p-marks-display'); 
+            if (!exam || !display) return; 
+            
+            if (!db.records || typeof db.records !== 'object') db.records = {}; 
+            if (!db.records[activeId] || typeof db.records[activeId] !== 'object') db.records[activeId] = {}; 
+            
+            const sRec = db.records[activeId][exam] || { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "No assessment remarks logged yet." }; 
+            const maxPoints = (db.exams && db.exams[exam]) ? parseFloat(db.exams[exam]) : 100; 
+            
+            display.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => { 
+                let mark = '-'; let scoreValue = 0; 
+                if (sRec.marks && sRec.marks[sub] !== undefined && sRec.marks[sub] !== null && sRec.marks[sub] !== '') { 
+                    mark = sRec.marks[sub]; scoreValue = parseFloat(sRec.marks[sub]); 
+                } 
+                const pct = maxPoints > 0 ? Math.min(100, Math.max(0, Math.round((scoreValue / maxPoints) * 100))) : 0; 
                 return `
                 <div class="space-y-1 text-xs">
                     <div class="flex justify-between font-bold text-slate-700"><span>${sub}</span><span>${mark} / ${maxPoints}</span></div>
                     <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden shadow-inner"><div class="bg-indigo-600 h-full transition-all" style="width: ${pct}%"></div></div>
-                </div>`;
-            }).join('');
+                </div>`; 
+            }).join(''); 
             
-            document.getElementById('p-card-cw').className = "font-bold text-xs block mt-0.5";
-            document.getElementById('p-card-cw').innerText = sRec.cw || "🟢 Active & Regular";
+            const cwElem = document.getElementById('p-card-cw'); if(cwElem) cwElem.innerText = sRec.cw || "🟢 Active & Regular"; 
+            const hwElem = document.getElementById('p-card-hw'); if(hwElem) hwElem.innerText = sRec.hw || "🟢 On-Time & Good"; 
+            const remElem = document.getElementById('p-remarks-display'); if(remElem) remElem.innerText = sRec.remarks || "No evaluation comments synchronized."; 
             
-            document.getElementById('p-card-hw').className = "font-bold text-xs block mt-0.5";
-            document.getElementById('p-card-hw').innerText = sRec.hw || "🟢 On-Time & Good";
+            const scores = CONFIG_FALLBACK_SUBJECTS.map(s => { 
+                if (sRec.marks && sRec.marks[s] !== undefined && sRec.marks[s] !== null && sRec.marks[s] !== '') { 
+                    let parsed = parseFloat(sRec.marks[s]); return isNaN(parsed) ? 0 : parsed; 
+                } 
+                return 0; 
+            }); 
             
-            document.getElementById('p-remarks-display').innerText = sRec.remarks || "No comments synchronized.";
-            
-            const scores = CONFIG_FALLBACK_SUBJECTS.map(s => {
-                if (sRec.marks && sRec.marks[s] !== undefined && sRec.marks[s] !== null && sRec.marks[s] !== '') {
-                    return parseFloat(sRec.marks[s]);
-                }
-                return 0;
-            });
-            
-            const ctx = document.getElementById('performanceChart');
-            if(ctx) {
-                if(dynamicChartInstance) dynamicChartInstance.destroy();
-                dynamicChartInstance = new Chart(ctx, {
-                    type: 'bar',
-                    data: { labels: CONFIG_FALLBACK_SUBJECTS, datasets: [{ label: 'Marks Distribution Profile', data: scores, backgroundColor: '#4f46e5', borderRadius: 4 }] },
-                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: maxPoints } } }
-                });
-            }
+            const ctx = document.getElementById('performanceChart'); 
+            if (ctx) { 
+                if (dynamicChartInstance) { 
+                    try { dynamicChartInstance.destroy(); } catch(e) { console.warn("Chart cleanup:", e); } 
+                } 
+                try { 
+                    dynamicChartInstance = new Chart(ctx, { 
+                        type: 'bar', 
+                        data: { 
+                            labels: CONFIG_FALLBACK_SUBJECTS, 
+                            datasets: [{ label: 'Marks Distribution Profile', data: scores, backgroundColor: '#4f46e5', borderRadius: 4 }] 
+                        }, 
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false, 
+                            scales: { y: { min: 0, max: maxPoints } } 
+                        } 
+                    }); 
+                } catch(chartError) { 
+                    console.error("Chart generation intercepted safely:", chartError); 
+                } 
+            } 
         }
-        function checkPersistentSession() {
-    const sch = localStorage.getItem('session_school');
-    const r = localStorage.getItem('session_role'); 
-    const u = localStorage.getItem('session_user');
-    
-    // Check if persistent session records exist safely
-    if (sch && sch.trim() !== "" && r && u) { 
-        document.getElementById('auth-school').value = sch;
-        document.getElementById('auth-role').value = r;
-        
-        // FIX: Directly apply the saved user string without running conflicting conditions
-        document.getElementById('auth-id').value = u;
-        
-        handleSecureLogin(); 
-    } else { 
-        // Clear corrupt or empty data structures safely
-        localStorage.clear();
-        showScreen('screen-gate'); 
-    }
-}
 
-        
-        function submitRegistrationRequest() {
-            alert("Sandbox submission recorded.");
+        // AUTO-LOGIN BUG FIX: Directly apply the saved identifier string contextually without running conflicting conditionals
+        function checkPersistentSession() { 
+            const sch = localStorage.getItem('session_school'); 
+            const r = localStorage.getItem('session_role'); 
+            const u = localStorage.getItem('session_user'); 
+            
+            if (sch && sch.trim() !== "" && r && u) { 
+                document.getElementById('auth-school').value = sch; 
+                document.getElementById('auth-role').value = r; 
+                document.getElementById('auth-id').value = u; 
+                
+                handleSecureLogin(); 
+            } else { 
+                localStorage.clear(); 
+                showScreen('screen-gate'); 
+            } 
         }
-        
+
+        function submitRegistrationRequest() { 
+            alert("Sandbox submission recorded."); 
+        } 
+
         document.addEventListener("DOMContentLoaded", checkPersistentSession);
     </script>
 </body>
