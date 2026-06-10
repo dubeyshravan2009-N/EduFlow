@@ -518,6 +518,17 @@
             if (loader) loader.style.display = isVisible ? 'flex' : 'none'; 
         }
 
+        // Screen Routing Engine Definition
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+            }
+        }
+
         function togglePasskeyValueField() {
             const passField = document.getElementById('auth-pass');
             if(passField.type === 'password') {
@@ -570,7 +581,7 @@
             } 
         }
 
-        // AUTH ENGINE: Patched to remove hardcoded master credentials
+        // AUTH ENGINE
         async function handleSecureLogin() { 
             const school = document.getElementById('auth-school').value.trim().toUpperCase();
             const role = document.getElementById('auth-role').value; 
@@ -579,7 +590,6 @@
             
             showLoader(true);
 
-            // Master Profile Validation Flow (No hardcoded code strings)
             if (role === 'superadmin') {
                 if(!window.cloudStorage) {
                     showLoader(false);
@@ -809,7 +819,7 @@
                 document.getElementById('search-container').classList.remove('hidden'); 
                 document.getElementById('class-management-deck').classList.remove('hidden'); 
             } else if(tabName === 'attendance') { 
-                document.getElementById('date-picker-container').classList.remove('hidden'); 
+                document.getElementById('date-picker-container').classList.add('hidden'); 
                 const inputDate = document.getElementById('attendance-date'); 
                 if(!inputDate.value) { inputDate.value = new Date().toISOString().split('T')[0]; } 
             } 
