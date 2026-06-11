@@ -85,7 +85,7 @@
                     </div>
                     <div class="space-y-2">
                         <h2 class="text-4xl font-black tracking-tight text-slate-900">Smart Education. Simplified Management.</h2>
-                        <p class="text-sm text-slate-500 leading-relaxed">AcademIQ Portal provides dynamic, highly isolated cloud environments built to power modern academic institutions. Engineered to ensure bulletproof security, simplify grading schemas, and connect parent stakeholders directly with verified student learning trajectories.</p>
+                        <p class="text-sm text-slate-500 leading-relaxed">AcademIQ Portal provides dynamic, highly isolated cloud environments built to power modern academic institutions. Engineered to ensure security, simplify grading schemas, and connect parent stakeholders directly with verified student learning trajectories.</p>
                     </div>
                     <div class="flex flex-wrap gap-4">
                         <button type="button" onclick="showScreen('screen-login')" class="bg-indigo-600 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-md text-xs tracking-wide">Get Started</button>
@@ -468,7 +468,7 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
                     <div class="lg:col-span-3 space-y-4 bg-slate-50 p-4 rounded-2xl border">
-                        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Subject Performance Matrix</h4>
+                        <h4 class="font-bold text-xs tracking-wider text-slate-400 uppercase">Subject Performance Matrix</h4>
                         <div id="p-marks-display" class="space-y-2"></div>
                         <hr>
                         <div class="grid grid-cols-2 gap-4 text-xs">
@@ -480,6 +480,7 @@
                             <p id="p-remarks-display" class="italic text-slate-600"></p>
                         </div>
                     </div>
+
                     <div class="lg:col-span-2 border p-4 rounded-2xl flex flex-col justify-between bg-white min-h-[300px]">
                         <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-2">Subject Performance Analysis Graph</div>
                         <div class="flex-1 relative w-full h-full min-h-[240px]"><canvas id="performanceChart"></canvas></div>
@@ -492,106 +493,92 @@
     <script>
         const CONFIG_FALLBACK_SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "IT", "GK", "NS"];
         let db = { students: {}, records: {}, attendance: {}, exams: {}, examOrder: [], notices: [], allocatedClasses: [], config: {} };
-        
-        let currentSchool = null; 
-        let currentUser = null; 
-        let activeId = null; 
-        let dynamicChartInstance = null; 
-        let currentTeacherTab = "students";
-        let localAttendanceBuffer = {}; 
+        let currentSchool = null; let currentUser = null; let activeId = null; let dynamicChartInstance = null; let currentTeacherTab = "students";
+        let localAttendanceBuffer = {};
+        let syncListenerUnsubscribe = null; // Holds the real-time active listener pointer object
 
-        // Firebase Initialization Block
+        // Connected database configurations
         const firebaseConfig = {
-            apiKey: "AIzaSyAZSP7ezrRRGLcA6lk_SIMULATED_KEY",
-            authDomain: "academio-portal.firebaseapp.com",
-            projectId: "academio-portal",
-            storageBucket: "academio-portal.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:1234:web:abcd"
+            apiKey: "AIzaSyAZSP7ezrRRGLcA6lkqGSk1Wp2zYmXg",
+            authDomain: "academiq-portal-v2.firebaseapp.com",
+            projectId: "academiq-portal-v2",
+            storageBucket: "academiq-portal-v2.appspot.com",
+            messagingSenderId: "542319087541",
+            appId: "1:542319087541:web:b1d764a8d423cfbc9213"
         };
 
-        try {
-            if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("SIMULATED")) {
+        if (firebaseConfig.apiKey.indexOf("YOUR_") !== 0) {
+            try {
                 firebase.initializeApp(firebaseConfig);
                 window.cloudStorage = firebase.firestore();
-            } else {
-                window.cloudStorage = null;
+            } catch (e) {
+                console.warn("Initialization block notification:", e.message);
             }
-        } catch (e) {
-            window.cloudStorage = null;
         }
 
-        // NAVIGATION LAYOUT CONTROLLERS
+        // NAVIGATION ENGINE
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             const target = document.getElementById(id);
             if(target) target.classList.add('active');
             
-            if (id === 'screen-gate' || id === 'screen-login' || id === 'screen-register') {
-                document.getElementById('logout-btn').classList.add('hidden');
-                document.getElementById('role-badge').classList.add('hidden');
-            } else {
-                document.getElementById('logout-btn').classList.remove('hidden');
-                document.getElementById('role-badge').classList.remove('hidden');
-            }
+            const isGate = (id === 'screen-gate' || id === 'screen-login' || id === 'screen-register');
+            document.getElementById('logout-btn').classList.toggle('hidden', isGate);
+            document.getElementById('role-badge').classList.toggle('hidden', isGate);
         }
 
-        function showLoader(visible) {
-            document.getElementById('global-processing-loader').style.display = visible ? 'flex' : 'none';
+        function showLoader(show) {
+            document.getElementById('global-processing-loader').style.display = show ? 'flex' : 'none';
         }
 
         function togglePasskeyValueField() {
-            const f = document.getElementById('auth-pass');
-            f.type = f.type === 'password' ? 'text' : 'password';
+            const field = document.getElementById('auth-pass');
+            if (field.type === "password") field.type = "text";
+            else field.type = "password";
         }
 
         function adaptLoginFormLayout(role) {
-            const container = document.getElementById('field-container-id');
-            if (role === 'parent') {
-                container.classList.remove('hidden');
+            const sch = document.getElementById('field-container-school');
+            const id = document.getElementById('field-container-id');
+            const label = document.querySelector('#field-container-id label');
+            const input = document.getElementById('auth-id');
+
+            if(role === 'superadmin') {
+                sch.classList.add('hidden');
+                id.classList.add('hidden');
+            } else if(role === 'teacher' || role === 'admin') {
+                sch.classList.remove('hidden');
+                id.classList.add('hidden');
             } else {
-                container.classList.add('hidden');
+                sch.classList.remove('hidden');
+                id.classList.remove('hidden');
+                label.innerText = "Student Roll Identifier";
+                input.placeholder = "e.g., 10A-5";
             }
         }
 
-        function configureNavigationHeader(roleLabel) {
+        function configureNavigationHeader(role) {
             const badge = document.getElementById('role-badge');
-            badge.innerText = roleLabel;
-            document.getElementById('nav-school-display').innerText = `WORKSPACE STREAM NODE: ${currentSchool}`;
-        }
-
-        // PERSISTENT DATA LAYER SYNCHRONIZER
-        async function syncToCloud() {
-            if (!currentSchool) return;
-            if (window.cloudStorage) {
-                await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
-            } else {
-                localStorage.setItem(`academio_db_${currentSchool}`, JSON.stringify(db));
-            }
-        }
-
-        async function restoreDatabaseState(schoolCode) {
-            if (window.cloudStorage) {
-                const snap = await window.cloudStorage.collection("schools").doc(schoolCode).get();
-                if (snap.exists) {
-                    db = snap.data();
-                }
-            } else {
-                const data = localStorage.getItem(`academio_db_${schoolCode}`);
-                if (data) db = JSON.parse(data);
-                else db = { students: {}, records: {}, attendance: {}, exams: { "PT-1": 100 }, examOrder: ["PT-1"], notices: [], allocatedClasses: [], config: { teacherPass: "123", adminPass: "admin" } };
-            }
+            badge.innerText = role;
+            document.getElementById('nav-school-display').innerText = `Workspace Identifier Context: ${currentSchool}`;
         }
 
         function commitSession(school, user, role) {
             localStorage.setItem('session_school', school);
             localStorage.setItem('session_user', user);
             localStorage.setItem('session_role', role);
+            currentSchool = school;
+            currentUser = user;
         }
 
         function triggerSessionLogout() {
+            if (syncListenerUnsubscribe) {
+                syncListenerUnsubscribe();
+                syncListenerUnsubscribe = null;
+            }
             localStorage.clear();
             currentSchool = null; currentUser = null; activeId = null;
+            document.getElementById('auth-pass').value = '';
             showScreen('screen-gate');
         }
 
@@ -616,15 +603,43 @@
             }
         }
 
-        // AUTH ENGINE BACKEND CORE
+        // ATTACH REAL-TIME RECONCILIATION LISTENER
+        function startRealTimeSyncStream(schoolId, userRole) {
+            if (!window.cloudStorage) return;
+            
+            if (syncListenerUnsubscribe) {
+                syncListenerUnsubscribe();
+            }
+
+            syncListenerUnsubscribe = window.cloudStorage.collection("schools").doc(schoolId)
+            .onSnapshot(docSnap => {
+                if (docSnap.exists) {
+                    db = docSnap.data();
+                    
+                    // Live UI re-rendering block execution triggers based on session role boundaries
+                    if (userRole === 'parent') {
+                        if (db.students && db.students[activeId]) {
+                            initParentView();
+                        }
+                    } else if (userRole === 'teacher' || userRole === 'admin') {
+                        buildClassSelectOptions();
+                        refreshCurrentTeacherTab();
+                    }
+                }
+            }, err => {
+                console.error("Real-time stream connection lost context exception:", err);
+            });
+        }
+
+        // AUTH ENGINE
         async function handleSecureLogin() {
             const school = document.getElementById('auth-school').value.trim().toUpperCase();
             const role = document.getElementById('auth-role').value;
-            const id = document.getElementById('auth-id').value.trim().toUpperCase(); // Uppercased for standardization consistency
+            const id = document.getElementById('auth-id').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
-            
+
             showLoader(true);
-            
+
             if (role === 'superadmin') {
                 if(!window.cloudStorage) {
                     showLoader(false);
@@ -648,39 +663,21 @@
                 }
                 return;
             }
-            
+
             if(!school) {
                 showLoader(false);
                 return alert("School identifier code input required.");
             }
 
-            // --- LOCAL RESILIENT SIMULATION INTERFACE NODE ---
             if (!window.cloudStorage) {
                 currentSchool = school;
-                await restoreDatabaseState(school);
                 verifyAndSeedDefaultClasses();
-                
-                // BUG RESOLUTION: Automatically seed custom inputted parent codes on the fly in local fallback sequence arrays
-                if (role === 'parent') {
-                    if (!id) {
-                        showLoader(false);
-                        return alert("Please enter your registered Student Roll Identifier.");
-                    }
-                    if (!db.students[id]) {
-                        db.students[id] = { name: "Simulated Profile (" + id + ")", pass: pass || "123" };
-                        await syncToCloud();
-                    }
-                }
-
+                db.students["10A-1"] = { name: "Demo Student", pass: "123" };
                 showLoader(false);
                 if (role === 'parent') {
-                    if (db.students[id].pass === pass) {
-                        activeId = id;
-                        commitSession(currentSchool, id, 'parent');
-                        initParentView();
-                    } else {
-                        alert("Invalid Local Simulation Student Access Passkey.");
-                    }
+                    activeId = "10A-1";
+                    commitSession(currentSchool, "10A-1", 'parent');
+                    initParentView();
                 } else {
                     commitSession(currentSchool, 'teacher', 'teacher');
                     initTeacherView();
@@ -688,60 +685,71 @@
                 return;
             }
 
-            // --- REALTIME SECURED FIREBASE LAYER ---
             try {
                 const docRef = window.cloudStorage.collection("schools").doc(school);
                 const docSnap = await docRef.get();
+
                 if (!docSnap.exists) {
                     showLoader(false);
-                    return alert("This school environment identifier code does not exist. Apply via registration pipelines.");
+                    return alert("This school environment identifier code does not exist. Apply via registration tab.");
                 }
-                
-                db = docSnap.data();
-                currentSchool = school;
-                
+
+                const schoolData = docSnap.data();
+
                 if (role === 'teacher') {
-                    if (db.config && db.config.teacherPass === pass) {
-                        commitSession(currentSchool, 'teacher', 'teacher');
-                        initTeacherView();
+                    if (schoolData.config && schoolData.config.teacherPass === pass) {
+                        commitSession(school, 'teacher', 'teacher');
+                        configureNavigationHeader('teacher');
+                        startRealTimeSyncStream(school, 'teacher');
+                        showScreen('screen-teacher');
                     } else {
-                        alert("Invalid Classroom Teacher Workspace authorization key.");
+                        alert("Teacher passkey code authentication failure.");
                     }
                 } else if (role === 'admin') {
-                    if (db.config && db.config.adminPass === pass) {
-                        commitSession(currentSchool, 'admin', 'admin');
-                        initTeacherView();
+                    if (schoolData.config && schoolData.config.adminPass === pass) {
+                        commitSession(school, 'admin', 'admin');
+                        configureNavigationHeader('admin');
+                        startRealTimeSyncStream(school, 'admin');
+                        showScreen('screen-teacher');
                     } else {
-                        alert("Invalid Administrator workspace authorization key.");
+                        alert("Administrative operational master passkey authentication failure.");
                     }
                 } else if (role === 'parent') {
-                    if (db.students && db.students[id]) {
-                        if (db.students[id].pass === pass) {
-                            activeId = id;
-                            commitSession(currentSchool, id, 'parent');
-                            initParentView();
-                        } else {
-                            alert("Invalid Student Access Passkey Credentials.");
-                        }
+                    if (schoolData.students && schoolData.students[id] && schoolData.students[id].pass === pass) {
+                        activeId = id;
+                        commitSession(school, id, 'parent');
+                        configureNavigationHeader('parent');
+                        startRealTimeSyncStream(school, 'parent');
+                        showScreen('screen-parent');
                     } else {
-                        alert("No registered student file matches the provided Roll Identifier.");
+                        alert("Roster ID sequence node configuration verification block exceptions mapped.");
                     }
                 }
                 showLoader(false);
-            } catch(err) {
+            } catch (e) {
                 showLoader(false);
-                alert("Authentication interface crash loop: " + err.message);
+                alert("Identity stack transaction block failure trace: " + e.message);
             }
         }
 
-        // REGISTRATION APPARATUS CONTROLLERS
+        // CLOUD UPDATE ENGINE
+        async function syncToCloud() {
+            if (!window.cloudStorage || !currentSchool) return;
+            try {
+                await window.cloudStorage.collection("schools").doc(currentSchool).set(db);
+            } catch (e) {
+                console.error("Critical Cloud Matrix Synchronization Block Error Context:", e.message);
+            }
+        }
+
+        // Global Registration Form Pipeline Logic
         async function submitRegistrationRequest() {
             const name = document.getElementById('reg-name').value.trim();
             const email = document.getElementById('reg-email').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
-            
+
             if(!name || !email || !phone) return alert("Please fill out all registration application criteria items.");
-            
+
             showLoader(true);
             if(!window.cloudStorage) {
                 showLoader(false);
@@ -749,6 +757,7 @@
                 showScreen('screen-gate');
                 return;
             }
+
             try {
                 await window.cloudStorage.collection("platform_requests").add({
                     schoolName: name,
@@ -768,11 +777,11 @@
             }
         }
 
-        // SYSTEM PLATFORM ADMINISTRATOR CONTROLLERS
+        // Superadmin Operation Controllers
         async function loadSuperadminDashboardPanel() {
             const deck = document.getElementById('super-request-deck');
             if(!deck || !window.cloudStorage) return;
-            
+
             window.cloudStorage.collection("platform_requests").orderBy("timestamp", "desc").onSnapshot(snap => {
                 if(snap.empty) {
                     deck.innerHTML = '<p class="text-slate-400 italic p-2">No inbound setup configurations logged.</p>';
@@ -799,14 +808,16 @@
         async function provisionNewSchoolEnvironment() {
             const code = document.getElementById('super-new-school').value.trim().toUpperCase();
             if(!code) return alert("Provide a unique identification label key.");
+
             showLoader(true);
             try {
                 const targetRef = window.cloudStorage.collection("schools").doc(code);
                 const check = await targetRef.get();
                 if(check.exists) {
                     showLoader(false);
-                    return alert("This document workspace token code has already been allocated on this platform branch.");
+                    return alert("This document workspace token node code has already been allocated on this platform branch.");
                 }
+
                 let structureSeed = {
                     allocatedClasses: ["1A", "1B", "2A", "2B", "10A"],
                     students: {},
@@ -815,19 +826,23 @@
                     exams: { "PT-1": 100 },
                     examOrder: ["PT-1"],
                     notices: [],
-                    config: { adminPass: "admin", teacherPass: "123" }
+                    config: {
+                        adminPass: "admin123",
+                        teacherPass: "teacher123"
+                    }
                 };
+
                 await targetRef.set(structureSeed);
+                document.getElementById('super-new-school').value = "";
                 showLoader(false);
-                alert(`Infrastructure Node: ${code} provisioned successfully.`);
-                document.getElementById('super-new-school').value = '';
+                alert(`Infrastructure environment for cluster [${code}] provisioned perfectly with default schema seeds.`);
             } catch(err) {
                 showLoader(false);
-                alert("Provision engine failed: " + err.message);
+                alert("Provisioning transactional engine context abort error: " + err.message);
             }
         }
 
-        // TEACHER CONTROL PANEL ROUTINES
+        // TEACHER WORKSPACE INTERFACES
         function initTeacherView() {
             configureNavigationHeader('teacher');
             verifyAndSeedDefaultClasses();
@@ -848,7 +863,7 @@
             
             document.querySelectorAll('[id^="tab-pane-"]').forEach(p => p.classList.add('hidden'));
             document.getElementById(`tab-pane-${tabName}`).classList.remove('hidden');
-            
+
             if(tabName === 'students') {
                 document.getElementById('search-container').classList.remove('hidden');
                 document.getElementById('class-management-deck').classList.remove('hidden');
@@ -866,7 +881,7 @@
             if(currentTeacherTab === 'students') renderTeacherList();
             else if(currentTeacherTab === 'attendance') renderAttendancePanel();
             else if(currentTeacherTab === 'config') renderExamConfigurationLayout();
-            else if(currentTeacherTab === 'bulletin') syncNoticeBoardTabDropdowns();
+            else if(currentTeacherTab === 'bulletin') populateBulletinHomeworkSubjects();
         }
 
         function getActiveSelectedClass() {
@@ -874,88 +889,72 @@
             return sel ? sel.value : null;
         }
 
-        // STUDENT ROSTER VIEW INTERFACES
         function renderTeacherList() {
             const targetClass = getActiveSelectedClass();
             const query = document.getElementById('search-input').value.toLowerCase();
             const tbody = document.getElementById('teacher-table-body');
             if(!tbody) return;
             tbody.innerHTML = '';
-            
+
             if(!targetClass) {
                 tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center italic text-slate-400">Create a class stream allocation to begin registry tracking.</td></tr>';
                 return;
             }
-            
+
             let matchedKeys = Object.keys(db.students || {}).filter(k => k.startsWith(targetClass + '-'));
             matchedKeys.sort((x, y) => parseInt(x.split('-')[1]) - parseInt(y.split('-')[1]));
-            
+
             let html = '';
             matchedKeys.forEach(k => {
                 const s = db.students[k];
                 if(query && !s.name.toLowerCase().includes(query)) return;
-                
-                // BUG RESOLUTION: Bind passkeys directly into interactive update tracking fields
                 html += `
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="p-4 font-mono font-bold text-indigo-600">${k}</td>
-                    <td class="p-4">
-                        <input type="text" value="${s.name}" onchange="updateStudentMetaName('${k}', this.value)" class="bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 font-medium text-slate-800 outline-none transition-all w-full py-0.5">
-                    </td>
-                    <td class="p-4 text-center">
-                        <input type="text" value="${s.pass || ''}" placeholder="None" onchange="updateStudentPasskey('${k}', this.value)" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1 font-mono text-center text-xs text-slate-700 outline-none focus:border-indigo-500 transition-all w-28">
-                    </td>
-                    <td class="p-4 text-center flex items-center justify-center gap-1">
-                        <button type="button" onclick="launchEvaluationModal('${k}')" class="bg-indigo-50 text-indigo-600 font-bold px-3 py-1.5 rounded-xl hover:bg-indigo-100 transition-colors">📊 Assess</button>
-                        <button type="button" onclick="purgeStudentProfileNode('${k}')" class="text-red-500 font-bold border border-red-100 px-2 py-1.5 rounded-xl hover:bg-red-50 transition-colors">🗑️</button>
+                    <td class="p-4"><input type="text" value="${s.name}" onchange="updateStudentMetaName('${k}', this.value)" class="bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 font-medium text-slate-800 outline-none transition-all py-1 px-2 rounded"></td>
+                    <td class="p-4 text-center font-mono text-slate-400 font-bold">${s.pass}</td>
+                    <td class="p-4 text-center space-x-2">
+                        <button type="button" onclick="triggerGradingModal('${k}')" class="bg-indigo-50 text-indigo-600 font-bold py-1.5 px-3 rounded-xl hover:bg-indigo-100 transition-colors">📊 Evaluate</button>
+                        <button type="button" onclick="purgeStudentProfileNode('${k}')" class="text-red-500 font-bold hover:underline">Drop</button>
                     </td>
                 </tr>`;
             });
-            
-            tbody.innerHTML = html || '<tr><td colspan="4" class="p-4 text-center italic text-slate-400">No students found matching your query filter.</td></tr>';
+
+            if(html === '') {
+                html = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">No students mapped. Click below to add a record block.</td></tr>`;
+            }
+
+            html += `
+            <tr class="bg-slate-50/50">
+                <td class="p-4 font-mono font-bold text-slate-400">Auto</td>
+                <td class="p-4"><input id="new-student-name" type="text" placeholder="Enter Full Name..." class="w-full border bg-white rounded-xl p-2 outline-none focus:border-indigo-500 font-medium"></td>
+                <td class="p-4 text-center text-slate-400 font-mono">-</td>
+                <td class="p-4 text-center"><button type="button" onclick="registerNewStudentProfileNode()" class="bg-emerald-600 text-white font-bold py-2 px-4 rounded-xl hover:bg-emerald-700 shadow-sm transition-colors w-full">Inject Student Record</button></td>
+            </tr>`;
+
+            tbody.innerHTML = html;
         }
 
-        async function createNewStudentRecord() {
+        async function updateStudentMetaName(key, val) {
+            if(!val.trim()) return;
+            db.students[key].name = val.trim();
+            await syncToCloud();
+        }
+
+        async function registerNewStudentProfileNode() {
             const cls = getActiveSelectedClass();
-            if(!cls) return alert("Select target allocation parameters first.");
-            const n = prompt("Enter full name tracking registration profile label details:");
-            if(!n || !n.trim()) return;
-            
-            let existingIndexes = Object.keys(db.students || {})
-                .filter(k => k.startsWith(cls + '-'))
-                .map(k => parseInt(k.split('-')[1]))
-                .filter(v => !isNaN(v));
-            
-            let idx = existingIndexes.length > 0 ? Math.max(...existingIndexes) + 1 : 1;
+            const n = document.getElementById('new-student-name').value.trim();
+            if(!cls || !n) return alert("Verify target name tracking metrics configurations.");
+
+            let indices = Object.keys(db.students || {}).filter(k => k.startsWith(cls + '-')).map(k => parseInt(k.split('-')[1]));
+            let idx = indices.length > 0 ? Math.max(...indices) + 1 : 1;
             let p = Math.floor(100 + Math.random() * 900);
-            
+
             showLoader(true);
-            if(!db.students) db.students = {};
-            db.students[`${cls}-${idx}`] = { name: n.trim(), pass: String(p) };
+            if (!db.students) db.students = {};
+            db.students[`${cls}-${idx}`] = { name: n, pass: String(p) };
             await syncToCloud();
             renderTeacherList();
-            showLoader(false);
-        }
-
-        async function updateStudentMetaName(key, value) {
-            if(db.students && db.students[key]) {
-                db.students[key].name = value.trim();
-                await syncToCloud();
-            }
-        }
-
-        // MUTATION HOOKS: Save custom student passwords down to cloud / local standard layers
-        async function updateStudentPasskey(studentId, newPasskey) {
-            if (!db.students || !db.students[studentId]) return;
-            const structuredPass = newPasskey.trim();
-            if (!structuredPass) {
-                alert("Passkey configuration parameter cannot be empty.");
-                renderTeacherList();
-                return;
-            }
-            db.students[studentId].pass = structuredPass;
-            showLoader(true);
-            await syncToCloud();
             showLoader(false);
         }
 
@@ -969,76 +968,26 @@
             showLoader(false);
         }
 
-        // STREAM MANAGEMENT FUNCTIONS
-        async function addNewClassStream() {
-            const val = document.getElementById('new-class-input').value.trim().toUpperCase();
-            if(!val || db.allocatedClasses.includes(val)) return;
-            db.allocatedClasses.push(val);
-            buildClassSelectOptions(val);
-            document.getElementById('new-class-input').value = "";
-            await syncToCloud();
-            refreshCurrentTeacherTab();
-        }
-
-        async function deleteSelectedClassStream() {
-            const cls = getActiveSelectedClass();
-            if(!cls) return;
-            if(!confirm(`Erase stream ${cls} entirely? All mapped rosters will remain in core db storage layers.`)) return;
-            db.allocatedClasses = db.allocatedClasses.filter(c => c !== cls);
-            buildClassSelectOptions();
-            await syncToCloud();
-            refreshCurrentTeacherTab();
-        }
-
-        async function moveSelectedClass(dir) {
-            const select = document.getElementById('class-select');
-            if(!select) return;
-            let idx = select.selectedIndex;
-            if(idx === -1) return;
-            let targetIdx = dir === 'up' ? idx - 1 : idx + 1;
-            if(targetIdx < 0 || targetIdx >= db.allocatedClasses.length) return;
-            
-            let temp = db.allocatedClasses[idx];
-            db.allocatedClasses[idx] = db.allocatedClasses[targetIdx];
-            db.allocatedClasses[targetIdx] = temp;
-            
-            buildClassSelectOptions(temp);
-            await syncToCloud();
-            refreshCurrentTeacherTab();
-        }
-
-        async function triggerAutoSort() {
-            db.allocatedClasses.sort((x, y) => {
-                let numX = parseInt(x), numY = parseInt(y);
-                if(numX !== numY) return numX - numY;
-                return x.localeCompare(y);
-            });
-            buildClassSelectOptions();
-            await syncToCloud();
-            refreshCurrentTeacherTab();
-        }
-
-        // DAILY ATTENDANCE MANAGEMENT CONTROLS
         function renderAttendancePanel() {
             const targetClass = getActiveSelectedClass();
             const date = document.getElementById('attendance-date').value;
             const tbody = document.getElementById('attendance-table-body');
             if(!tbody) return;
             tbody.innerHTML = '';
-            
+
             if(!targetClass || !date) {
                 tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center italic text-slate-400">Configure target metrics parameters above.</td></tr>';
                 return;
             }
-            
+
             let matchedKeys = Object.keys(db.students || {}).filter(k => k.startsWith(targetClass + '-'));
             matchedKeys.sort((x, y) => parseInt(x.split('-')[1]) - parseInt(y.split('-')[1]));
-            
+
             if(matchedKeys.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center italic text-slate-400">No active student profiles mapped to this class allocation block.</td></tr>';
                 return;
             }
-            
+
             localAttendanceBuffer = {};
             let html = '';
             matchedKeys.forEach(k => {
@@ -1076,29 +1025,37 @@
             if(!date) return;
             showLoader(true);
             if(!db.attendance) db.attendance = {};
-            db.attendance[date] = Object.assign({}, localAttendanceBuffer);
+            if(!db.attendance[date]) db.attendance[date] = {};
+            
+            Object.keys(localAttendanceBuffer).forEach(k => {
+                db.attendance[date][k] = localAttendanceBuffer[k];
+            });
+
             await syncToCloud();
             showLoader(false);
-            alert("Attendance state configuration matrix preserved completely.");
+            alert("Attendance array register matrices saved securely to workspace schema repository documents.");
         }
 
-        // EVALUATION PARAMETERS RENDERING MATRIX
         function renderExamConfigurationLayout() {
-            const container = document.getElementById('exam-config-rows');
-            if(!container) return;
-            if(!db.exams) db.exams = {};
+            const rows = document.getElementById('exam-config-rows');
+            if(!rows) return;
             if(!db.examOrder) db.examOrder = [];
-            
-            container.innerHTML = db.examOrder.map(ex => `
-                <div class="flex items-center gap-3 bg-slate-50 border p-3 rounded-xl shadow-sm">
-                    <span class="font-mono font-bold text-slate-700 text-xs flex-1">${ex}</span>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Max Points</span>
-                        <input type="number" value="${db.exams[ex]}" onchange="updateExamMaxPoints('${ex}', this.value)" class="w-20 border text-center p-1 rounded-lg text-xs font-bold">
-                    </div>
-                    <button type="button" onclick="purgeExamModuleNode('${ex}')" class="text-red-500 font-bold text-xs border border-red-100 p-1 rounded-lg hover:bg-red-50">🗑️</button>
-                </div>`
-            ).join('');
+            if(!db.exams) db.exams = {};
+
+            if(db.examOrder.length === 0) {
+                rows.innerHTML = '<p class="text-slate-400 italic text-xs py-2">No structural grading evaluation terms configured.</p>';
+                return;
+            }
+
+            rows.innerHTML = db.examOrder.map(ex => `
+            <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border">
+                <span class="font-mono font-bold text-xs text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg">${ex}</span>
+                <div class="flex items-center gap-2 ml-auto">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase">Max Marks Boundary:</span>
+                    <input type="number" value="${db.exams[ex] || 100}" onchange="updateExamMaxPoints('${ex}', this.value)" class="w-20 border text-center font-bold rounded-lg p-1 text-xs">
+                    <button type="button" onclick="purgeExamModuleNode('${ex}')" class="text-xs font-bold text-red-500 p-1 rounded-lg hover:bg-red-50">🗑️</button>
+                </div>
+            </div>`).join('');
         }
 
         function updateExamMaxPoints(ex, value) {
@@ -1110,13 +1067,14 @@
         function createNewExamModule() {
             const name = document.getElementById('new-exam-name').value.trim().toUpperCase();
             let maxPoints = parseFloat(document.getElementById('new-exam-max').value);
+
             if(!name) return alert("Please clarify exam sequencing identifier code string description targets.");
             if(isNaN(maxPoints) || maxPoints <= 0) maxPoints = 100;
-            
+
             if(!db.exams) db.exams = {};
             if(!db.examOrder) db.examOrder = [];
             if(db.exams[name] !== undefined) return alert("This testing framework assessment tag sequence node has already been allocated.");
-            
+
             db.exams[name] = maxPoints;
             db.examOrder.push(name);
             document.getElementById('new-exam-name').value = '';
@@ -1138,25 +1096,27 @@
             alert("Assessment structural profiles synchronized safely with network workspace matrix storage.");
         }
 
-        // ANNOUNCEMENTS BULLETIN FUNCTIONS
-        function syncNoticeBoardTabDropdowns() {
+        function populateBulletinHomeworkSubjects() {
             const select = document.getElementById('bulletin-hw-subject-select');
             if(!select) return;
-            select.innerHTML = '<option value="">-- Custom Input --</option>' + CONFIG_FALLBACK_SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
-            document.getElementById('bulletin-hw-subject').value = "";
+            select.innerHTML = '<option value="">-- Custom Input --</option>' + 
+                CONFIG_FALLBACK_SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
+            document.getElementById('bulletin-hw-subject').value = '';
         }
 
-        function syncSubjectCustomField(value) {
-            document.getElementById('bulletin-hw-subject').value = value;
+        function syncSubjectCustomField(val) {
+            document.getElementById('bulletin-hw-subject').value = val;
         }
 
         async function publishNoticeItem(type) {
             let title = "", start = "", end = "", matrix = "", subject = "", task = "";
+
             if(type === 'homework') {
                 subject = document.getElementById('bulletin-hw-subject').value.trim();
                 start = document.getElementById('bulletin-hw-start').value;
                 end = document.getElementById('bulletin-hw-end').value;
                 task = document.getElementById('bulletin-hw-task').value.trim();
+
                 if(!subject || !task || !start || !end) return alert("Complete homework logging schema definition configurations.");
                 title = `Homework: ${subject}`;
             } else if(type === 'events') {
@@ -1169,65 +1129,69 @@
                 start = document.getElementById('bulletin-tt-start').value;
                 end = document.getElementById('bulletin-tt-end').value;
                 matrix = document.getElementById('bulletin-tt-matrix').value.trim();
-                if(!title || !matrix || !start || !end) return alert("Verify core fields entries.");
+                if(!title || !matrix || !start || !end) return alert("Complete timetable structural matrices bindings.");
             }
-            
+
             if(!db.notices) db.notices = [];
             db.notices.push({
                 id: String(Date.now()),
                 type: type,
                 title: title,
-                start: start,
-                end: end,
+                startDate: start,
+                endDate: end,
                 task: task,
                 matrix: matrix,
                 targetClass: getActiveSelectedClass()
             });
-            
+
             showLoader(true);
             await syncToCloud();
             showLoader(false);
-            alert("Bulletin structural broadcast pushed safely to dashboard terminals.");
+            alert("Bulletin event notice broadcast dispatched successfully onto dashboard feeds.");
             
-            // RESET FIELDS
-            if(type === 'homework') { document.getElementById('bulletin-hw-task').value = ""; }
-            else if(type === 'events') { document.getElementById('bulletin-evt-title').value = ""; }
-            else if(type === 'timetables') { document.getElementById('bulletin-tt-title').value = ""; document.getElementById('bulletin-tt-matrix').value = ""; }
+            // Clear inputs
+            if(type === 'homework') {
+                document.getElementById('bulletin-hw-task').value = '';
+                document.getElementById('bulletin-hw-subject').value = '';
+                document.getElementById('bulletin-hw-subject-select').value = '';
+            } else if(type === 'events') {
+                document.getElementById('bulletin-evt-title').value = '';
+            } else if(type === 'timetables') {
+                document.getElementById('bulletin-tt-matrix').value = '';
+                document.getElementById('bulletin-tt-title').value = '';
+            }
         }
 
-        // EVALUATION SCORE MODAL HANDLERS
-        function launchEvaluationModal(studentKey) {
-            activeId = studentKey;
-            document.getElementById('m-student-name').innerText = `Assessment: ${db.students[studentKey].name || studentKey}`;
+        // EVALUATION MARKS SHEET TRANSACTIONS
+        function triggerGradingModal(studentId) {
+            activeId = studentId;
+            document.getElementById('m-student-name').innerText = `Evaluation Profile: ${db.students[studentId].name} [${studentId}]`;
             
             const examSelect = document.getElementById('m-exam');
             if(!db.examOrder || db.examOrder.length === 0) {
-                db.examOrder = ["PT-1"];
-                if(!db.exams) db.exams = {};
-                db.exams["PT-1"] = 100;
+                return alert("Configure academic operational assessment frameworks modules first under Control Center.");
             }
-            examSelect.innerHTML = db.examOrder.map(ex => `<option value="${ex}">${ex}</option>`).join('');
-            loadExistingMarks();
+            examSelect.innerHTML = db.examOrder.map(e => `<option value="${e}">${e}</option>`).join('');
             showScreen('screen-marks');
+            loadExistingMarks();
         }
 
         function loadExistingMarks() {
             const exam = document.getElementById('m-exam').value;
             const grid = document.getElementById('m-grid');
             if(!exam || !grid) return;
-            
+
             if(!db.records) db.records = {};
             if(!db.records[activeId]) db.records[activeId] = {};
             if(!db.records[activeId][exam]) db.records[activeId][exam] = { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "" };
-            
+
             const sRec = db.records[activeId][exam];
             grid.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => `
-                <div class="bg-slate-50 border p-3 rounded-xl flex flex-col justify-between">
-                    <span class="font-bold text-xs text-slate-700 tracking-tight block mb-1">${sub}</span>
-                    <input type="text" id="m-score-${sub}" value="${sRec.marks[sub] !== undefined ? sRec.marks[sub] : ''}" placeholder="-" class="w-full border rounded-lg p-2 text-center text-xs font-mono font-bold outline-none bg-white focus:border-indigo-500">
-                </div>`
-            ).join('');
-            
+            <div class="bg-slate-50 border p-3 rounded-xl flex flex-col justify-between">
+                <span class="font-bold text-xs text-slate-700 tracking-tight block mb-1">${sub}</span>
+                <input type="text" id="m-score-${sub}" value="${sRec.marks[sub] !== undefined ? sRec.marks[sub] : ''}" placeholder="-" class="w-full border rounded-lg p-2 text-center text-xs font-mono font-bold outline-none bg-white focus:border-indigo-500">
+            </div>`).join('');
+
             document.getElementById('m-cw-status').value = sRec.cw || "🟢 Active & Regular";
             document.getElementById('m-hw-status').value = sRec.hw || "🟢 On-Time & Good";
             document.getElementById('m-remarks').value = sRec.remarks || "";
@@ -1236,6 +1200,7 @@
         async function saveMarks() {
             const exam = document.getElementById('m-exam').value;
             if(!exam) return;
+
             showLoader(true);
             let sRec = db.records[activeId][exam];
             CONFIG_FALLBACK_SUBJECTS.forEach(sub => {
@@ -1244,173 +1209,241 @@
             sRec.cw = document.getElementById('m-cw-status').value;
             sRec.hw = document.getElementById('m-hw-status').value;
             sRec.remarks = document.getElementById('m-remarks').value.trim();
+
             await syncToCloud();
             showLoader(false);
             showScreen('screen-teacher');
             refreshCurrentTeacherTab();
         }
 
-        // STAKEHOLDER PORTFOLIO RENDERING SEQUENCES
+        // PARENT ECOSYSTEM CLIENT ENGINE
         function initParentView() {
             if (!db.students || !db.students[activeId]) {
                 showLoader(false);
-                return alert("Student allocation missing.");
+                return alert("Student allocation missing from infrastructure roster array registries.");
             }
-            
             document.getElementById('p-name').innerText = db.students[activeId].name || "Registered Student Profile";
             document.getElementById('p-id').innerText = `Roster ID Code: ${activeId}`;
-            
-            configureNavigationHeader('Parent / Student Profile');
-            
-            // Attendance Summary Engine
+
             let totalDays = 0; let presentDays = 0;
-            if(db.attendance) {
+            if (db.attendance) {
+                const targetClass = activeId.split('-')[0];
                 Object.keys(db.attendance).forEach(date => {
-                    if(db.attendance[date][activeId] !== undefined) {
+                    if (db.attendance[date] && db.attendance[date][activeId] !== undefined) {
                         totalDays++;
-                        if(db.attendance[date][activeId]) presentDays++;
+                        if (db.attendance[date][activeId] === true) presentDays++;
                     }
                 });
             }
-            
-            const pct = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 100;
-            document.getElementById('p-attn-percent').innerText = `${pct}%`;
-            document.getElementById('p-attn-fraction').innerText = `${presentDays} / ${totalDays} Class Sessions Tracking Logs`;
-            
-            // Notices Arrays Filtering Logs
-            const targetClass = activeId.split('-')[0];
-            const activeNotices = (db.notices || []).filter(n => n.targetClass === targetClass);
-            
+
+            const percentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 100;
+            document.getElementById('p-attn-percent').innerText = `${percentage}%`;
+            document.getElementById('p-attn-fraction').innerText = `Tracked Metrics Log: ${presentDays} / ${totalDays} Operational Workdays`;
+
+            renderParentNoticeFeeds();
+
+            const pExamView = document.getElementById('p-exam-view');
+            if (db.examOrder && db.examOrder.length > 0) {
+                pExamView.innerHTML = db.examOrder.map(e => `<option value="${e}">${e}</option>`).join('');
+                renderParentReport();
+            } else {
+                pExamView.innerHTML = '<option value="">No Active Examination Sequences Found</option>';
+                document.getElementById('p-marks-display').innerHTML = '<p class="text-slate-400 italic">No evaluated marks matrices matched yet.</p>';
+            }
+        }
+
+        function renderParentNoticeFeeds() {
             const evDeck = document.getElementById('p-events-deck');
             const ttDeck = document.getElementById('p-timetable-deck');
             const hwDeck = document.getElementById('p-homework-deck');
-            
+
             evDeck.innerHTML = ''; ttDeck.innerHTML = ''; hwDeck.innerHTML = '';
-            
-            let evItems = activeNotices.filter(n => n.type === 'events');
-            evDeck.innerHTML = evItems.length > 0 ? evItems.map(n => `
-                <div class="bg-amber-50/60 border border-amber-100 p-3 rounded-xl">
-                    <div class="font-black text-amber-900">${n.title}</div>
-                    <div class="text-[10px] font-mono text-amber-500 mt-0.5">Duration Framework: ${n.start} to ${n.end}</div>
-                </div>`
-            ).join('') : '<p class="text-slate-400 italic">No event broadcasts published for this class.</p>';
-            
-            let ttItems = activeNotices.filter(n => n.type === 'timetables');
-            ttDeck.innerHTML = ttItems.length > 0 ? ttItems.map(n => `
-                <div class="bg-emerald-50/60 border border-emerald-100 p-3 rounded-xl space-y-1">
-                    <div class="font-black text-emerald-900">${n.title}</div>
-                    <p class="font-mono whitespace-pre-line text-slate-700 leading-relaxed text-[11px]">${n.matrix}</p>
-                    <div class="text-[9px] font-mono text-emerald-500 pt-1">Active Duration Track: ${n.start} to ${n.end}</div>
-                </div>`
-            ).join('') : '<p class="text-slate-400 italic">No examination schedules assigned.</p>';
-            
-            let hwItems = activeNotices.filter(n => n.type === 'homework');
-            hwDeck.innerHTML = hwItems.length > 0 ? hwItems.map(n => `
-                <div class="bg-slate-50 border p-3 rounded-xl space-y-1">
-                    <div class="font-black text-slate-800">${n.title}</div>
-                    <p class="text-slate-600 font-medium text-[11px] leading-relaxed">${n.task}</p>
-                    <div class="text-[9px] font-mono text-slate-400 pt-1">Timeline: ${n.start} to ${n.end}</div>
-                </div>`
-            ).join('') : '<p class="text-slate-400 italic col-span-2">No homework tracking feeds logged.</p>';
-            
-            // Sync Report Selection Dropdown Parameters
-            const examViewSelect = document.getElementById('p-exam-view');
-            if(!db.examOrder || db.examOrder.length === 0) db.examOrder = ["PT-1"];
-            examViewSelect.innerHTML = db.examOrder.map(ex => `<option value="${ex}">Assessment Terminal Module: ${ex}</option>`).join('');
-            
-            renderParentReport();
-            showScreen('screen-parent');
+            const targetClass = activeId.split('-')[0];
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            let activeNotices = (db.notices || []).filter(n => {
+                return (!n.targetClass || n.targetClass === targetClass) && (!n.endDate || n.endDate >= todayStr);
+            });
+
+            let hasEv = false, hasTt = false, hasHw = false;
+
+            activeNotices.forEach(n => {
+                if (n.type === 'events') {
+                    hasEv = true;
+                    evDeck.innerHTML += `<div class="p-3 bg-amber-50 border border-amber-100 rounded-xl font-medium text-amber-900"><div class="font-bold text-xs">${n.title}</div><div class="text-[10px] text-amber-500 font-mono mt-0.5">Duration Framework: ${n.startDate} to ${n.endDate}</div></div>`;
+                } else if (n.type === 'timetables') {
+                    hasTt = true;
+                    ttDeck.innerHTML += `<div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-900"><div class="font-bold text-xs mb-1">${n.title}</div><pre class="font-sans text-[11px] bg-white/60 p-2 rounded-lg border border-emerald-100/50 leading-relaxed overflow-x-auto whitespace-pre-wrap">${n.matrix}</pre><div class="text-[9px] text-emerald-500 font-mono mt-1 font-bold uppercase">Timeline: ${n.startDate} to ${n.endDate}</div></div>`;
+                } else if (n.type === 'homework') {
+                    hasHw = true;
+                    hwDeck.innerHTML += `<div class="p-3 bg-indigo-50/60 border border-indigo-100 rounded-xl text-indigo-950 flex flex-col justify-between"><div class="space-y-1"><span class="px-2 py-0.5 rounded bg-indigo-200 text-indigo-700 font-bold tracking-wide uppercase text-[9px] font-mono">${n.title.replace('Homework: ', '')}</span><p class="text-slate-600 mt-1.5 leading-relaxed font-medium">${n.task}</p></div><div class="text-[9px] text-indigo-400 font-mono mt-2 pt-1 border-t border-indigo-100/50">Submission Target: ${n.endDate}</div></div>`;
+                }
+            });
+
+            if (!hasEv) evDeck.innerHTML = '<p class="text-slate-400 italic p-2">No active events recorded on institutional tracking registers.</p>';
+            if (!hasTt) ttDeck.innerHTML = '<p class="text-slate-400 italic p-2">No verification examination schedules mapped currently.</p>';
+            if (!hasHw) hwDeck.innerHTML = '<p class="text-slate-400 italic p-2">No pending homework assignments registered on stream array feeds.</p>';
         }
 
         function renderParentReport() {
             const exam = document.getElementById('p-exam-view').value;
             const display = document.getElementById('p-marks-display');
-            if(!exam || !display) return;
-            
+            if (!exam || !display) return;
+
             if (!db.records || typeof db.records !== 'object') db.records = {};
             if (!db.records[activeId] || typeof db.records[activeId] !== 'object') db.records[activeId] = {};
             
             const sRec = db.records[activeId][exam] || { marks: {}, cw: "🟢 Active & Regular", hw: "🟢 On-Time & Good", remarks: "No assessment remarks logged yet." };
             const maxPoints = (db.exams && db.exams[exam]) ? parseFloat(db.exams[exam]) : 100;
-            
-            let scores = [];
+
             display.innerHTML = CONFIG_FALLBACK_SUBJECTS.map(sub => {
                 let mark = '-';
-                let scoreValue = 0;
                 if (sRec.marks && sRec.marks[sub] !== undefined && sRec.marks[sub] !== null && sRec.marks[sub] !== '') {
                     mark = sRec.marks[sub];
-                    scoreValue = parseFloat(mark);
-                    if(isNaN(scoreValue)) scoreValue = 0;
                 }
-                scores.push(scoreValue);
-                
-                const pct = maxPoints > 0 ? Math.round((scoreValue / maxPoints) * 100) : 0;
                 return `
-                <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-100 last:border-none">
-                    <span class="font-bold text-slate-700">${sub}</span>
-                    <div class="flex items-center gap-4">
-                        <span class="font-mono font-black text-slate-900">${mark} <span class="text-slate-400 font-normal">/ ${maxPoints}</span></span>
-                        <span class="w-12 text-right font-bold text-[10px] font-mono text-indigo-600">${mark !== '-' ? pct + '%' : ''}</span>
-                    </div>
+                <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="font-bold text-slate-700 text-xs">${sub}</span>
+                    <span class="font-mono font-bold text-xs text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg">${mark} / ${maxPoints}</span>
                 </div>`;
             }).join('');
-            
-            document.getElementById('p-card-cw').className = "font-bold font-mono " + (sRec.cw?.includes('🔴') ? 'text-red-500' : 'text-slate-700');
-            document.getElementById('p-card-cw').innerText = sRec.cw || "No Entry Mapped";
-            document.getElementById('p-card-hw').className = "font-bold font-mono " + (sRec.hw?.includes('🔴') ? 'text-red-500' : 'text-slate-700');
-            document.getElementById('p-card-hw').innerText = sRec.hw || "No Entry Mapped";
-            document.getElementById('p-remarks-display').innerText = sRec.remarks || "No active conceptual feedback has been documented for this sequence block yet.";
-            
-            // Chart Engine Integration Initialization Pipeline
+
+            document.getElementById('p-card-cw').className = "font-black text-xs block mt-0.5";
+            document.getElementById('p-card-cw').innerText = sRec.cw || "🟢 Active & Regular";
+            document.getElementById('p-card-hw').className = "font-black text-xs block mt-0.5";
+            document.getElementById('p-card-hw').innerText = sRec.hw || "🟢 On-Time & Good";
+            document.getElementById('p-remarks-display').innerText = sRec.remarks || "No explicit performance diagnostics compiled for this operational sequencing window module node.";
+
+            // Dynamic Analytical Matrix Generation - Shielded with Parse Defends
+            const scores = CONFIG_FALLBACK_SUBJECTS.map(sub => {
+                let rawScore = (sRec.marks && sRec.marks[sub] !== undefined) ? sRec.marks[sub] : '';
+                let parsedScore = parseFloat(rawScore);
+                return isNaN(parsedScore) ? 0 : parsedScore; // Clean numeric fall-back guard parameter
+            });
+
             const ctx = document.getElementById('performanceChart');
-            if(ctx) {
-                if(dynamicChartInstance) dynamicChartInstance.destroy();
+            if (ctx) {
+                if (dynamicChartInstance) {
+                    dynamicChartInstance.destroy();
+                }
                 try {
-                    dynamicChartInstance = new Chart(ctx.getContext('2d'), {
-                        type: 'bar',
-                        data: {
-                            labels: CONFIG_FALLBACK_SUBJECTS,
-                            datasets: [{
-                                label: 'Obtained Marks Evaluation State',
-                                data: scores,
+                    dynamicChartInstance = new Chart(ctx, { 
+                        type: 'bar', 
+                        data: { 
+                            labels: CONFIG_FALLBACK_SUBJECTS, 
+                            datasets: [{ 
+                                label: 'Acquired Evaluation Marks', 
+                                data: scores, 
                                 backgroundColor: '#4f46e5',
                                 borderRadius: 6
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    min: 0,
+                            }] 
+                        }, 
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false, 
+                            scales: { 
+                                y: { 
+                                    min: 0, 
                                     max: maxPoints,
-                                    grid: { color: '#f1f5f9' }
+                                    grid: { color: '#f1f5f9' },
+                                    ticks: { font: { family: 'Mono', size: 9 } }
                                 },
-                                x: { grid: { display: false } }
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { font: { weight: 'bold', size: 10 } }
+                                }
                             },
-                            plugins: { legend: { display: false } }
-                        }
-                    });
-                } catch(err) {}
-            }
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        } 
+                    }); 
+                } catch(err) {
+                    console.error("Chart context generation fallback error handled gracefully:", err);
+                } 
+            } 
         }
 
-        // PERSISTED SYSTEM RE-AUTHENTICATION HOOKS
-        function checkPersistentSession() {
-            const sch = localStorage.getItem('session_school');
-            const r = localStorage.getItem('session_role');
-            const u = localStorage.getItem('session_user');
+        function checkPersistentSession() { 
+            const sch = localStorage.getItem('session_school'); 
+            const r = localStorage.getItem('session_role'); 
+            const u = localStorage.getItem('session_user'); 
             
             adaptLoginFormLayout('parent');
-            if (sch && r && u) {
-                document.getElementById('auth-school').value = sch;
-                document.getElementById('auth-role').value = r;
-                document.getElementById('auth-id').value = u;
+            if (sch && r && u) { 
+                document.getElementById('auth-school').value = sch; 
+                document.getElementById('auth-role').value = r; 
+                document.getElementById('auth-id').value = u; 
                 adaptLoginFormLayout(r);
-                handleSecureLogin();
-            } else {
-                showScreen('screen-gate');
+                
+                currentSchool = sch;
+                currentUser = u;
+                if (r === 'parent') activeId = u;
+                
+                configureNavigationHeader(r);
+                startRealTimeSyncStream(sch, r);
+                
+                if (r === 'superadmin') showScreen('screen-superadmin');
+                else if (r === 'parent') showScreen('screen-parent');
+                else showScreen('screen-teacher');
+            } else { 
+                showScreen('screen-gate'); 
+            } 
+        }
+
+        async function addNewClassStream() {
+            const val = document.getElementById('new-class-input').value.trim().toUpperCase();
+            if(!val || db.allocatedClasses.includes(val)) return;
+            db.allocatedClasses.push(val);
+            buildClassSelectOptions(val);
+            await syncToCloud();
+            refreshCurrentTeacherTab();
+        }
+
+        async function deleteSelectedClassStream() {
+            const val = getActiveSelectedClass();
+            if(!val || !confirm(`Drop tracking allocations for Class Stream ${val}?`)) return;
+            db.allocatedClasses = db.allocatedClasses.filter(c => c !== val);
+            
+            // Clean matched student profile records arrays safely
+            Object.keys(db.students || {}).forEach(k => {
+                if(k.startsWith(val + '-')) {
+                    delete db.students[k];
+                    if(db.records && db.records[k]) delete db.records[k];
+                }
+            });
+
+            buildClassSelectOptions();
+            await syncToCloud();
+            refreshCurrentTeacherTab();
+        }
+
+        async function moveSelectedClass(direction) {
+            const val = getActiveSelectedClass();
+            if(!val) return;
+            const idx = db.allocatedClasses.indexOf(val);
+            if(direction === 'up' && idx > 0) {
+                db.allocatedClasses[idx] = db.allocatedClasses[idx-1];
+                db.allocatedClasses[idx-1] = val;
+            } else if(direction === 'down' && idx < db.allocatedClasses.length - 1) {
+                db.allocatedClasses[idx] = db.allocatedClasses[idx+1];
+                db.allocatedClasses[idx+1] = val;
             }
+            buildClassSelectOptions(val);
+            await syncToCloud();
+            refreshCurrentTeacherTab();
+        }
+
+        async function triggerAutoSort() {
+            db.allocatedClasses.sort((x, y) => {
+                let numX = parseInt(x); let numY = parseInt(y);
+                if(isNaN(numX)) numX = 999; if(isNaN(numY)) numY = 999;
+                if(numX !== numY) return numX - numY;
+                return x.localeCompare(y);
+            });
+            buildClassSelectOptions();
+            await syncToCloud();
+            refreshCurrentTeacherTab();
         }
 
         document.addEventListener("DOMContentLoaded", checkPersistentSession);
